@@ -5,15 +5,13 @@
 
 #include "Camera.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct Perspective : public Camera
 {
-  Perspective(rpr_camera &camera);
+  explicit Perspective(rpr_camera &camera);
 
   void commit() override;
 };
 
-} // namespace reference
 } // namespace anari

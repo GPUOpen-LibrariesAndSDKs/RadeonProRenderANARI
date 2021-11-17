@@ -244,10 +244,10 @@ void ObjectArray::removeAppendedHandles()
 
 } // namespace rpr
 
-ANARI_TYPEFOR_DEFINITION(example_device::Array *);
-ANARI_TYPEFOR_DEFINITION(example_device::Array1D *);
-ANARI_TYPEFOR_DEFINITION(example_device::Array2D *);
-ANARI_TYPEFOR_DEFINITION(example_device::Array3D *);
-ANARI_TYPEFOR_DEFINITION(example_device::ObjectArray *);
+ANARI_TYPEFOR_DEFINITION(rpr::Array *);
+ANARI_TYPEFOR_DEFINITION(rpr::Array1D *);
+ANARI_TYPEFOR_DEFINITION(rpr::Array2D *);
+ANARI_TYPEFOR_DEFINITION(rpr::Array3D *);
+ANARI_TYPEFOR_DEFINITION(rpr::ObjectArray *);
 
 } // namespace anari

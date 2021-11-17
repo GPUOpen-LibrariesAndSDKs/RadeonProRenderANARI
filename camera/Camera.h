@@ -13,13 +13,14 @@ namespace rpr {
 struct Camera : public Object
 {
   friend struct Frame;
-  Camera(rpr_camera &camera);
 
-  virtual void commit() override;
+  explicit Camera(rpr_camera &camera);
+
+  void commit() override;
 
   static Camera *createInstance(rpr_context &context, const char *type);
 
-  ~Camera();
+  ~Camera() override;
 
   protected:
   rpr_camera m_camera;
@@ -30,6 +31,6 @@ struct Camera : public Object
 
 } // namespace reference
 
-ANARI_TYPEFOR_SPECIALIZATION(rpr::Camera *, ANARI_CAMERA);
+ANARI_TYPEFOR_SPECIALIZATION(rpr::Camera *, ANARI_CAMERA)
 
 } // namespace anari

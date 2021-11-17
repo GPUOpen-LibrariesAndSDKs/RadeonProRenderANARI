@@ -1,6 +1,7 @@
 #include "RPRDevice.h"
 
 #include "Array.h"
+#include "camera/Camera.h"
 
 // std
 #include <chrono>
@@ -338,7 +339,12 @@ void RPRDevice::unmapArray(ANARIArray a)
   referenceFromHandle<Array>(a).unmap();
 }
 
+// Renderable Objects /////////////////////////////////////////////////////////
 
+ANARICamera RPRDevice::newCamera(const char *type)
+{
+  return (ANARICamera)Camera::createInstance(m_context, type);
+}
 } // rpr
 } // anari
 
