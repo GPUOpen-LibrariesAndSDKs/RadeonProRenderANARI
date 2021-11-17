@@ -1,6 +1,6 @@
 #pragma once
 
-#include <assert.h> 
+#include <cassert>
 #include <iostream>
 #include <vector>
 #include "RadeonProRender.h"
@@ -45,32 +45,31 @@ inline void CheckNoLeak(rpr_context context)
 
 	std::vector<void*> listRemainingObjects;
 
-	for(int iType=0; iType<type.size(); iType++)
+	for(unsigned int iType : type)
 	{
-
 		size_t sizeParam = 0;
-		status = rprContextGetInfo(context,type[iType],0,0,&sizeParam);CHECK(status);
+		status = rprContextGetInfo(context,iType,0,nullptr,&sizeParam);CHECK(status);
 		
 		unsigned int nbObject = sizeParam / sizeof(void*);
 
 		if ( nbObject > 0 )
 		{
 			std::cout<<"leak of "<< nbObject ;
-				 if ( type[iType] == RPR_CONTEXT_LIST_CREATED_CAMERAS ) std::cout<<" cameras\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_MATERIALNODES ) std::cout<<" material nodes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_LIGHTS ) std::cout<<" lights\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_SHAPES ) std::cout<<" shapes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_POSTEFFECTS ) std::cout<<" postEffects\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_HETEROVOLUMES ) std::cout<<" heteroVolumes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_GRIDS ) std::cout<<" grids\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_BUFFERS ) std::cout<<" buffers\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_IMAGES ) std::cout<<" images\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_FRAMEBUFFERS ) std::cout<<" framebuffers\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_SCENES ) std::cout<<" scenes\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_CURVES ) std::cout<<" curves\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_MATERIALSYSTEM ) std::cout<<" materialsystems\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_COMPOSITE ) std::cout<<" composites\n";
-			else if ( type[iType] == RPR_CONTEXT_LIST_CREATED_LUT ) std::cout<<" luts\n";
+			if ( iType == RPR_CONTEXT_LIST_CREATED_CAMERAS ) std::cout<<" cameras\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_MATERIALNODES ) std::cout<<" material nodes\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_LIGHTS ) std::cout<<" lights\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_SHAPES ) std::cout<<" shapes\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_POSTEFFECTS ) std::cout<<" postEffects\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_HETEROVOLUMES ) std::cout<<" heteroVolumes\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_GRIDS ) std::cout<<" grids\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_BUFFERS ) std::cout<<" buffers\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_IMAGES ) std::cout<<" images\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_FRAMEBUFFERS ) std::cout<<" framebuffers\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_SCENES ) std::cout<<" scenes\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_CURVES ) std::cout<<" curves\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_MATERIALSYSTEM ) std::cout<<" materialsystems\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_COMPOSITE ) std::cout<<" composites\n";
+			else if ( iType == RPR_CONTEXT_LIST_CREATED_LUT ) std::cout<<" luts\n";
 			else 
 			{
 				std::cout<<" ???\n"; 
@@ -78,11 +77,11 @@ inline void CheckNoLeak(rpr_context context)
 
 			unsigned int idFirstTime = listRemainingObjects.size();
 			listRemainingObjects.assign( idFirstTime + nbObject, nullptr );
-			status = rprContextGetInfo(context,type[iType],sizeParam,&listRemainingObjects[idFirstTime],nullptr);CHECK(status);
+			status = rprContextGetInfo(context,iType,sizeParam,&listRemainingObjects[idFirstTime],nullptr);CHECK(status);
 		}
 	}
 
-	if ( listRemainingObjects.size() != 0 )
+	if ( !listRemainingObjects.empty() )
 	{
 		std::cout<<"Warning : this context has some leak ("<< listRemainingObjects.size() <<" item(s))\n";
 	}

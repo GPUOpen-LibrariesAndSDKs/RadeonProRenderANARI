@@ -90,6 +90,7 @@ find_library(RPR_PLUGIN_HYBRID
 add_library(${PROJECT_NAME} SHARED
   Object.cpp
   RPRDevice.cpp
+  Array.cpp
 
   camera/Camera.cpp
   camera/Perspective.cpp

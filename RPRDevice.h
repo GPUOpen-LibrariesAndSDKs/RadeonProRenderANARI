@@ -10,6 +10,8 @@
 namespace anari {
 namespace rpr {
 
+struct Object;
+
 struct RPRDevice : public Device,
         public ParameterizedObject,
         public RefCounted

@@ -8,6 +8,8 @@
 #include "anari/anari_cpp/ext/glm.h"
 // glm
 #include "glm_extras.h"
+//rpr
+#include "rpr_common.h"
 // std
 #include <functional>
 #include <map>

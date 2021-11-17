@@ -56,8 +56,8 @@ void Object::setCommitPriority(int p)
     m_commitPriority = p;
 }
 
-} // namespace example_device
+} // namespace rpr
 
 ANARI_TYPEFOR_DEFINITION(rpr::Object *);
 
-} // namespace rpr
+} // namespace anari

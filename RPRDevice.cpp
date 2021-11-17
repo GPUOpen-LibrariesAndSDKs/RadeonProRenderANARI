@@ -1,11 +1,50 @@
 #include "RPRDevice.h"
 
+#include "Array.h"
+
 // std
 #include <chrono>
 #include <exception>
 #include <functional>
 #include <limits>
 #include <map>
+
+// Define list of available render plugins
+#if defined(WIN32)
+std::map<std::string, std::string> RPRPlugins = {
+    {"Northstar", "Northstar64.dll"},
+    {"Tahoe", "Tahoe64.dll"},
+    {"Hybrid", "Hybrid.dll"}};
+#elif defined(__APPLE__)
+std::map<std::string, std::string> RPRPlugins = {
+    {"Northstar", "libNorthstar64.dylib"}, {"Tahoe", "libTahoe64.dylib"}};
+#else
+std::map<std::string, std::string> RPRPlugins = {
+    {"Northstar", "./libNorthstar64.so"},
+    {"Tahoe", "./libTahoe64.so"},
+    {"Hybrid", "./Hybrid.so"}};
+#endif
+
+std::map<unsigned int, unsigned int> RPRDeviceMap = {
+    {0, RPR_CREATION_FLAGS_ENABLE_CPU},
+    {1, RPR_CREATION_FLAGS_ENABLE_GPU0},
+    {2, RPR_CREATION_FLAGS_ENABLE_GPU1},
+    {3, RPR_CREATION_FLAGS_ENABLE_GPU2},
+    {4, RPR_CREATION_FLAGS_ENABLE_GPU3},
+    {5, RPR_CREATION_FLAGS_ENABLE_GPU4},
+    {6, RPR_CREATION_FLAGS_ENABLE_GPU5},
+    {7, RPR_CREATION_FLAGS_ENABLE_GPU6},
+    {8, RPR_CREATION_FLAGS_ENABLE_GPU7},
+    {9, RPR_CREATION_FLAGS_ENABLE_GPU8},
+    {10, RPR_CREATION_FLAGS_ENABLE_GPU9},
+    {11, RPR_CREATION_FLAGS_ENABLE_GPU10},
+    {12, RPR_CREATION_FLAGS_ENABLE_GPU11},
+    {13, RPR_CREATION_FLAGS_ENABLE_GPU12},
+    {14, RPR_CREATION_FLAGS_ENABLE_GPU13},
+    {15, RPR_CREATION_FLAGS_ENABLE_GPU14},
+    {16, RPR_CREATION_FLAGS_ENABLE_GPU15},
+};
+
 
 namespace anari{
 namespace rpr{
@@ -120,13 +159,13 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Geometry *),
     declare_param_setter_object(Group *),
     declare_param_setter_object(Instance *),
-    // declare_param_setter_object(Light *),
+    declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
     // declare_param_setter_object(Sampler *),
     declare_param_setter_object(Surface *),
     declare_param_setter_object(SpatialField *),
-    declare_param_setter_object(Volume *),
+    // declare_param_setter_object(Volume *),
     declare_param_setter_object(World *),
     declare_param_setter_string(const char *),
     declare_param_setter(char),
@@ -159,6 +198,146 @@ static std::map<int, SetParamFcn *> setParamFcns = {
 #undef declare_param_setter_object
 #undef declare_param_setter_string
 #undef declare_param_setter_void_ptr
+
+///////////////////////////////////////////////////////////////////////////////
+// ExampleDevice definitions //////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+int RPRDevice::deviceImplements(const char *_extension)
+{
+    std::string extension = _extension;
+    if (extension == ANARI_KHR_AREA_LIGHTS)
+        return 1;
+    return 0;
+}
+
+void RPRDevice::deviceSetParameter(
+        const char *_id, ANARIDataType type, const void *mem)
+{
+    std::string id = _id;
+    if (type == ANARI_STRING)
+        setParam(id, std::string((static_cast<const char *>(mem))));
+    else if (type == ANARI_UINT32)
+        setParam(id, *(static_cast<const unsigned int *>(mem)));
+}
+
+void RPRDevice::deviceUnsetParameter(const char *id)
+{
+    removeParam(id);
+}
+
+void RPRDevice::deviceCommit()
+{
+  m_plugin_name = getParam<std::string>("RPRPlugin", m_plugin_name);
+  m_render_device = getParam<unsigned int>("RPRDevice", m_render_device);
+
+  // Register rendering plugin
+  rpr_int pluginID = rprRegisterPlugin(RPRPlugins[m_plugin_name].c_str());
+  CHECK_NE(pluginID, -1)
+  rpr_int plugins[] = {pluginID};
+  size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
+
+  // Create context the selected GPU
+  // TODO handle multiple devices
+  rpr_creation_flags flags = RPRDeviceMap[m_render_device];
+#ifdef __APPLE__
+  flags |= RPR_CREATION_FLAGS_ENABLE_METAL;
+#endif
+  CHECK(rprCreateContext(
+      RPR_API_VERSION, plugins, pluginCount, flags, NULL, NULL, &m_context));
+
+  // Set active plugin.
+  CHECK(rprContextSetActivePlugin(m_context, plugins[0]));
+
+  CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_Y_FLIP, 0))
+
+  CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
+
+  rpr_scene scene;
+  CHECK(rprContextCreateScene(m_context, &scene))
+  CHECK(rprContextSetScene(m_context, scene))
+}
+
+void RPRDevice::deviceRetain()
+{
+  this->refInc();
+}
+
+void RPRDevice::deviceRelease()
+{
+  this->refDec();
+}
+
+// Data Arrays ////////////////////////////////////////////////////////////////
+
+ANARIArray1D RPRDevice::newArray1D(void *appMemory,
+    ANARIMemoryDeleter deleter,
+    void *userData,
+    ANARIDataType type,
+    uint64_t numItems,
+    uint64_t byteStride)
+{
+  if (isObject(type)) {
+    return createObjectForAPI<ObjectArray, ANARIArray1D>(
+        appMemory, deleter, userData, type, numItems, byteStride);
+  } else {
+    return createObjectForAPI<Array1D, ANARIArray1D>(
+        appMemory, deleter, userData, type, numItems, byteStride);
+  }
+}
+
+ANARIArray2D RPRDevice::newArray2D(void *appMemory,
+    ANARIMemoryDeleter deleter,
+    void *userData,
+    ANARIDataType type,
+    uint64_t numItems1,
+    uint64_t numItems2,
+    uint64_t byteStride1,
+    uint64_t byteStride2)
+{
+  return createObjectForAPI<Array2D, ANARIArray2D>(appMemory,
+      deleter,
+      userData,
+      type,
+      numItems1,
+      numItems2,
+      byteStride1,
+      byteStride2);
+}
+
+ANARIArray3D RPRDevice::newArray3D(void *appMemory,
+    ANARIMemoryDeleter deleter,
+    void *userData,
+    ANARIDataType type,
+    uint64_t numItems1,
+    uint64_t numItems2,
+    uint64_t numItems3,
+    uint64_t byteStride1,
+    uint64_t byteStride2,
+    uint64_t byteStride3)
+{
+  return createObjectForAPI<Array3D, ANARIArray3D>(appMemory,
+      deleter,
+      userData,
+      type,
+      numItems1,
+      numItems2,
+      numItems3,
+      byteStride1,
+      byteStride2,
+      byteStride3);
+}
+
+void *RPRDevice::mapArray(ANARIArray a)
+{
+  return referenceFromHandle<Array>(a).map();
+}
+
+void RPRDevice::unmapArray(ANARIArray a)
+{
+  referenceFromHandle<Array>(a).unmap();
+}
+
 
 } // rpr
 } // anari
