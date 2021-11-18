@@ -2,6 +2,7 @@
 
 #include "Array.h"
 #include "camera/Camera.h"
+#include "scene/lights/Light.h"
 
 // std
 #include <chrono>
@@ -340,6 +341,11 @@ void RPRDevice::unmapArray(ANARIArray a)
 }
 
 // Renderable Objects /////////////////////////////////////////////////////////
+
+ANARILight RPRDevice::newLight(const char *type)
+{
+  return (ANARILight)Light::createInstance(m_context, m_matsys, type);
+}
 
 ANARICamera RPRDevice::newCamera(const char *type)
 {

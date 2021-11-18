@@ -41,7 +41,7 @@ void AreaLight::commit(){
 
   std::vector<rpr_int> faces(1, 4);
 
-  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex.data(), 4, sizeof(rpr_float)*3, NULL, 0, 0, NULL, 0, 0, index, sizeof(rpr_int), NULL, 0, NULL, 0, faces.data(), 1, &m_light))
+  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex.data(), 4, sizeof(rpr_float)*3, nullptr, 0, 0, nullptr, 0, 0, index, sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), 1, &m_light))
 
   CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_EMISSIVE, &m_material))
   CHECK(rprMaterialNodeSetInputFByKey(m_material, RPR_MATERIAL_INPUT_COLOR, color.r, color.g, color.b, 1.f))

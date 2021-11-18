@@ -4,6 +4,8 @@
 #include "AnalyticLight.h"
 #include "Math/mathutils.h"
 
+
+
 namespace anari {
 namespace rpr {
 
@@ -25,11 +27,10 @@ void AnalyticLight::commit()
   }
 
   bool visible = getParam<bool>("visible", true);
-  auto intensity = getParam<float>("intensity", 1.f) * (float)visible;
-  vec3 color = getParam<vec3>("color", vec3(1.f)) * intensity;
+  vec3 color = getParam<vec3>("color", vec3(1.f));
 
-  if(strcmp(m_type, "distant") == 0) {
-
+  if(strcmp(m_type, "directional") == 0) {
+    auto irradiance = getParam<float>("irradiance", 1.f) * (float)visible;
     auto direction = getParam<vec3>( "direction", vec3(0, 0, 1));
     auto angle = getParam<float>("angularDiameter", 0);
 
@@ -37,14 +38,15 @@ void AnalyticLight::commit()
 
     CHECK(rprContextCreateDirectionalLight(m_context, &m_light))
     CHECK(rprDirectionalLightSetShadowSoftnessAngle(m_light, angle))
-    CHECK(rprDirectionalLightSetRadiantPower3f(m_light, color.r, color.g, color.b))
+    CHECK(rprDirectionalLightSetRadiantPower3f(m_light, color.r * irradiance, color.g * irradiance, color.b * irradiance))
     CHECK(rprLightSetTransform(m_light, RPR_TRUE, &transform.m00))
   }
 
-  else if(strcmp(m_type, "sphere") == 0) {
+  else if(strcmp(m_type, "point") == 0) {
 
     auto position = getParam<vec3>( "position", vec3(0, 0, 0));
     auto radius = getParam<float>("radius", 0);
+    auto intensity = getParam<float>("intensity", 1.f) * (float)visible;
 
     RadeonProRender::matrix transform = RadeonProRender::translation(RadeonProRender::float3(position.x, position.y, position.z));
 
@@ -52,11 +54,11 @@ void AnalyticLight::commit()
       //Sphere light only available with Northstar. Tahoe plugin DOESN'T support sphere lights
       CHECK(rprContextCreateSphereLight(m_context, &m_light))
       CHECK(rprSphereLightSetRadius(m_light, radius))
-      CHECK(rprSphereLightSetRadiantPower3f(m_light, color.r, color.g, color.b))
+      CHECK(rprSphereLightSetRadiantPower3f(m_light, color.r * intensity, color.g * intensity, color.b * intensity))
     }
     else{
       CHECK(rprContextCreatePointLight(m_context, &m_light))
-      CHECK(rprPointLightSetRadiantPower3f(m_light, color.r, color.g, color.b))
+      CHECK(rprPointLightSetRadiantPower3f(m_light, color.r * intensity, color.g * intensity, color.b * intensity))
     }
     CHECK(rprLightSetTransform(m_light, RPR_TRUE, &transform.m00))
   }
@@ -65,22 +67,21 @@ void AnalyticLight::commit()
 
     auto position = getParam<vec3>( "position", vec3(0, 0, 0));
     auto direction = getParam<vec3>( "direction", vec3(0, 0, 1));
-    auto openingAngle = getParam<float>("openingAngle", 180);
-    auto penumbraAngle = getParam<float>("penumbraAngle", 5);
-    auto radius = getParam<float>("radius", 0); // not used yet
-    auto innerRadius = getParam<float>("innerRadius", 0); // not used yet
+    auto openingAngle = getParam<float>("openingAngle", pi<float>());
+    auto falloffAngle = getParam<float>("falloffAngle", 0.1);
+    auto intensity = getParam<float>("intensity", 1.f) * (float)visible;
 
     RadeonProRender::matrix transform = RadeonProRender::translation(RadeonProRender::float3(position.x, position.y, position.z));
     transform *= calculateRotation(vec3(direction.x, direction.y, -direction.z));
 
     CHECK(rprContextCreateSpotLight(m_context, &m_light))
-    CHECK(rprSpotLightSetConeShape(m_light, radians(penumbraAngle), radians(openingAngle)))
-    CHECK(rprSpotLightSetRadiantPower3f(m_light, color.r, color.g, color.b))
+    CHECK(rprSpotLightSetConeShape(m_light, falloffAngle, openingAngle))
+    CHECK(rprSpotLightSetRadiantPower3f(m_light, color.r * intensity, color.g * intensity, color.b * intensity))
     CHECK(rprLightSetTransform(m_light, RPR_TRUE, &transform.m00))
   }
 
   else {
-    throw std::runtime_error("Unhandled Light type!");
+    throw std::runtime_error("could not create light");
   }
 
 

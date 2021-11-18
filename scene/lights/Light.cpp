@@ -16,7 +16,7 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
   if(std::strcmp(type, "quad")==0){
     return new AreaLight(context, matsys);
   }
-  if(std::strcmp(type, "ambient")==0 || std::strcmp(type, "hdri")==0){
+  if(std::strcmp(type, "hdri")==0){
     return new EnvironmentLight(context, type);
   }
   else {
