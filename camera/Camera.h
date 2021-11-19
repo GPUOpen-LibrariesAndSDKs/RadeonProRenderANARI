@@ -5,7 +5,6 @@
 
 #include "../Object.h"
 #include "../rpr_common.h"
-#include "../RPRDevice.h"
 
 namespace anari {
 namespace rpr {

@@ -1,7 +1,7 @@
 #include "Spheres.h"
+#include "Math/mathutils.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 Spheres::Spheres(rpr_context &context) : Geometry(context) {}
 
@@ -10,11 +10,11 @@ void Spheres::commit(){
   if (!hasParam("sphere.position"))
     throw std::runtime_error("missing 'sphere' data array 'sphere.position'!");
 
-  DataView<vec3> vertexData(getParamObject<Data>("sphere.position"));
-  DataView<float> radiusData(getParamObject<Data>("sphere.radius"));
-  auto globalRadius = getParam<float>("radius", 0.01f);
+  auto vertexData = getParamObject<Array1D>("sphere.position");
+  auto radiusData = getParamObject<Array1D>("sphere.radius");
+  auto globalRadius = getParam<float>("radius", 1.f);
 
-  if (radiusData && radiusData.size()!=vertexData.size()){
+  if (radiusData && radiusData->size()!=vertexData->size()){
     throw std::runtime_error("'sphere.position' and 'sphere.radius' sizes are incompatible");
   }
 
@@ -23,7 +23,7 @@ void Spheres::commit(){
   }
 
   m_shapes.clear();
-  m_shapes.resize(vertexData.size()+1);
+  m_shapes.resize(vertexData->size()+1);
 
   if(!m_base_sphere){
     createBaseSphere();
@@ -32,9 +32,9 @@ void Spheres::commit(){
   m_lower_bound = vec3(std::numeric_limits<float>::max());
   m_upper_bound = vec3(-std::numeric_limits<float>::max());
 
-  for(int vertexNumber=0; vertexNumber<vertexData.size(); vertexNumber++){
-    vec3 vertex = vertexData.data()[vertexNumber];
-    float radius = radiusData ? radiusData.data()[vertexNumber] : globalRadius;
+  for(int vertexNumber=0; vertexNumber<vertexData->size(); vertexNumber++){
+    vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
+    float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
     rprContextCreateInstance(m_context, m_base_sphere, &(m_shapes[vertexNumber]));
 
     //transform
@@ -51,7 +51,7 @@ void Spheres::commit(){
     m_lower_bound.y = min(m_lower_bound.y, vertex.y - radius);
     m_lower_bound.z = min(m_lower_bound.z, vertex.z - radius);
   }
-  m_shapes[vertexData.size()] = m_base_sphere; //attach invisible base sphere last
+  m_shapes[vertexData->size()] = m_base_sphere; //attach invisible base sphere last
 }
 
 void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and radius 1
@@ -90,7 +90,7 @@ void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and r
 
   std::vector<rpr_int> faces(num_faces, 4);
 
-  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, NULL, 0, 0, NULL, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), NULL, 0, NULL, 0, faces.data(), num_faces, &m_base_sphere))
+  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_sphere))
   CHECK(rprShapeSetVisibility(m_base_sphere, false)) //this is invisible 'original' sphere. It's instances will be visible
 }
 
@@ -103,5 +103,4 @@ Spheres::~Spheres(){
   }
 }
 
-}//rpr
 }//anari

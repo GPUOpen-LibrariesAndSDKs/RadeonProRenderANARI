@@ -5,8 +5,7 @@
 
 #include "AnalyticLight.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct EnvironmentLight : public AnalyticLight
 {
@@ -14,12 +13,11 @@ struct EnvironmentLight : public AnalyticLight
 
   void commit() override;
 
-  ~EnvironmentLight();
+  ~EnvironmentLight() override;
 
  private:
   rpr_image m_color_texture = nullptr;
 
 };
 
-} // namespace rpr
 } // namespace anari

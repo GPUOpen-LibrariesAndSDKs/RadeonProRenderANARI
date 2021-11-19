@@ -3,8 +3,7 @@
 
 #include "EnvironmentLight.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 EnvironmentLight::EnvironmentLight(rpr_context &context, const char *type)  : AnalyticLight(context, type){}
 
@@ -57,5 +56,4 @@ EnvironmentLight::~EnvironmentLight(){
 }
 
 
-} // namespace rpr
 } // namespace anari

@@ -4,10 +4,7 @@
 #include "AnalyticLight.h"
 #include "Math/mathutils.h"
 
-
-
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 RadeonProRender::matrix calculateRotation(vec3 direction, vec3 startDirection=vec3(0,0,1)){
   float angle = acos(dot(normalize(direction), normalize(startDirection)));
@@ -67,7 +64,7 @@ void AnalyticLight::commit()
 
     auto position = getParam<vec3>( "position", vec3(0, 0, 0));
     auto direction = getParam<vec3>( "direction", vec3(0, 0, 1));
-    auto openingAngle = getParam<float>("openingAngle", pi<float>());
+    auto openingAngle = getParam<float>("openingAngle", M_PI);
     auto falloffAngle = getParam<float>("falloffAngle", 0.1);
     auto intensity = getParam<float>("intensity", 1.f) * (float)visible;
 
@@ -92,5 +89,4 @@ void AnalyticLight::addToScene(rpr_scene scene){
 }
 
 
-} // namespace rpr
 } // namespace anari

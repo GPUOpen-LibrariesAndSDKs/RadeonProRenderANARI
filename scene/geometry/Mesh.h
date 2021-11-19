@@ -6,18 +6,16 @@
 #include "Geometry.h"
 // bvh
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct Mesh : public Geometry
 {
-  Mesh(rpr_context & context);
+  explicit Mesh(rpr_context & context);
 
   void commit() override;
 
-  ~Mesh();
+  ~Mesh() override;
 
 };
 
-} // namespace rpr
 } // namespace anari

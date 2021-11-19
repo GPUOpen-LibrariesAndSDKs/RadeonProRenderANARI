@@ -1,14 +1,12 @@
 #pragma once
 
 #include "Geometry.h"
-#include "Math/mathutils.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct Spheres : public Geometry
 {
@@ -16,7 +14,7 @@ struct Spheres : public Geometry
 
   void commit() override;
 
-  ~Spheres();
+  ~Spheres() override;
 
  private:
 
@@ -30,5 +28,4 @@ struct Spheres : public Geometry
 
 };
 
-} // namespace rpr
 } // namespace anari

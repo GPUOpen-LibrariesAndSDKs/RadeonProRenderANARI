@@ -5,8 +5,7 @@
 
 #include "Light.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct AreaLight : public Light
 {
@@ -16,12 +15,11 @@ struct AreaLight : public Light
 
   void addToScene(rpr_scene scene) override;
 
-  ~AreaLight();
+  ~AreaLight() override;
 
  private:
   rpr_material_node m_material = nullptr;
   rpr_material_system m_matsys; //we need to store matsys to use it in commit
 };
 
-} // namespace rpr
 } // namespace anari

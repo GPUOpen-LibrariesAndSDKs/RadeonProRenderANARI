@@ -105,7 +105,7 @@ add_library(${PROJECT_NAME} SHARED
 
   scene/Instance.cpp
   scene/World.cpp
-  scene/geometry/GeometricModel.cpp
+  scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
   scene/geometry/Mesh.cpp
   scene/geometry/Spheres.cpp

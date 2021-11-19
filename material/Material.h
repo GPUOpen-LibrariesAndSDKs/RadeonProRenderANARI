@@ -5,14 +5,14 @@
 
 #include "../Object.h"
 #include "../rpr_common.h"
-#include "../scene/geometry/GeometricModel.h"
+#include "../scene/geometry/Surface.h"
 
 namespace anari {
 namespace rpr {
 
 struct Material : public Object
 {
-  friend struct GeometricModel;
+  friend struct Surface;
 
   Material() = default;
 

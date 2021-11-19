@@ -3,8 +3,7 @@
 
 #include "AreaLight.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 AreaLight::AreaLight(rpr_context &context, rpr_material_system& matsys)  : Light(context){
   m_matsys = matsys;
@@ -63,5 +62,4 @@ AreaLight::~AreaLight(){
 }
 
 
-} // namespace rpr
 } // namespace anari

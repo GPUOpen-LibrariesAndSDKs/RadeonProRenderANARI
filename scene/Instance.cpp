@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Instance.h"
-#include "geometry/GeometricModel.h"
+#include "geometry/Surface.h"
 
 namespace anari {
 namespace rpr {
@@ -18,7 +18,7 @@ void Instance::commit(){
   m_upper_bound = vec3(-std::numeric_limits<float>::max());
 
   for(int model_number=0; model_number< models.size(); model_number++){
-    GeometricModel* model = models.data()[model_number];
+    Surface* model = models.data()[model_number];
 
     //bounds calculating
     m_upper_bound.x = max(m_upper_bound.x, model->m_upper_bound.x);

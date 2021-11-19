@@ -12,7 +12,7 @@ namespace rpr {
 
 Geometry *Geometry::createInstance(rpr_context &context, const char *type)
 {
-  if(std::strcmp(type, "mesh")==0){
+  if(std::strcmp(type, "triangle")==0){
     return new Mesh(context);
   }
   if(std::strcmp(type, "sphere")==0){

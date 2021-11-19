@@ -1,62 +1,27 @@
-// Copyright 2020 The Khronos GeometricModel
+// Copyright 2020 The Khronos Surface
 // SPDX-License-Identifier: Apache-2.0
 
-#include "GeometricModel.h"
+#include "Surface.h"
 #include "Geometry.h"
+#include "../../material/Material.h"
 
 namespace anari {
 namespace rpr {
 
-void GeometricModel::commit()
+void Surface::commit()
 {
-  auto* material = getParamObject<Material>("material");
-  auto* geometry = getParamObject<Geometry>("geometry");
-  auto singleColor = getParam<vec4>("color", vec4(-1));
-  auto* multipleColor = getParamObject<Data>("color", nullptr);
+  auto material = getParamObject<Material>("material");
+  auto geometry = getParamObject<Geometry>("geometry");
+
+  if(!geometry) throw std::runtime_error("'geometry' is a required attribute");
+  if(!material) throw std::runtime_error("'material' is a required attribute");
 
   m_shapes = geometry->m_shapes;
   m_upper_bound = geometry->m_upper_bound;
   m_lower_bound = geometry->m_lower_bound;
 
-  //instance colors
-  if(singleColor.r>=0 && singleColor.g>=0 && singleColor.b>=0 && singleColor.a>=0 || multipleColor) {
-    std::vector<rpr_float> colorVector{};
-    if(multipleColor){
-      DataView<vec4> color(multipleColor);
-      for(int i=0; i<color.size(); i++){
-        colorVector.push_back(color.data()[i].r);
-        colorVector.push_back(color.data()[i].g);
-        colorVector.push_back(color.data()[i].b);
-        colorVector.push_back(color.data()[i].a);
-      }
-    }
-    else{
-      for(int i=0; i<m_shapes.size(); i++){
-        colorVector.push_back(singleColor.r);
-        colorVector.push_back(singleColor.g);
-        colorVector.push_back(singleColor.b);
-        colorVector.push_back(singleColor.a);
-      }
-    }
-    clearMaterialNodeInstance();
-
-    rpr_buffer_desc bufferDesc;
-    bufferDesc.element_channel_size = 4;
-    bufferDesc.nb_element = colorVector.size() / 4;
-    bufferDesc.element_type = RPR_BUFFER_ELEMENT_TYPE_FLOAT32;
-
-    CHECK(rprContextCreateBuffer(m_context, &bufferDesc, colorVector.data(), &m_color_buffer))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_id_lookup))
-    CHECK(rprMaterialNodeSetInputUByKey(m_id_lookup, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_BUFFER_SAMPLER, &m_color_sampler))
-    CHECK(rprMaterialNodeSetInputNByKey(m_color_sampler, RPR_MATERIAL_INPUT_UV, m_id_lookup))
-    CHECK(rprMaterialNodeSetInputBufferDataByKey(m_color_sampler, RPR_MATERIAL_INPUT_DATA, m_color_buffer))
-
-    m_material = material->generateMaterial(m_color_sampler);
-  }
-
   //vertex colors
-  else if(geometry->hasVertexColor){
+  if(geometry->hasVertexColor){
     clearMaterialNodesVertex();
     CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_r))
     CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_g))
@@ -114,7 +79,7 @@ void GeometricModel::commit()
   }
 }
 
-void GeometricModel::clearMaterialNodesVertex(){
+void Surface::clearMaterialNodesVertex(){
   if(m_vertex_color){
     CHECK(rprObjectDelete(m_vertex_color))
     m_vertex_color = nullptr;
@@ -161,29 +126,13 @@ void GeometricModel::clearMaterialNodesVertex(){
   }
 }
 
-void GeometricModel::clearMaterialNodeInstance(){
-  if(m_color_buffer){
-    CHECK(rprObjectDelete(m_color_buffer))
-    m_color_buffer = nullptr;
-  }
-  if(m_color_sampler){
-    CHECK(rprObjectDelete(m_color_sampler))
-    m_color_sampler = nullptr;
-  }
-  if(m_id_lookup){
-    CHECK(rprObjectDelete(m_id_lookup))
-    m_id_lookup = nullptr;
-  }
-}
-
-GeometricModel::~GeometricModel(){
+Surface::~Surface(){
   clearMaterialNodesVertex();
-  clearMaterialNodeInstance();
   CHECK(rprObjectDelete(m_material))
 }
 
 } // namespace rpr
 
-ANARI_TYPEFOR_DEFINITION(rpr::GeometricModel *);
+ANARI_TYPEFOR_DEFINITION(rpr::Surface *);
 } // namespace anari
 

@@ -1,8 +1,9 @@
 #include "RPRDevice.h"
 
-#include "Array.h"
 #include "camera/Camera.h"
 #include "scene/lights/Light.h"
+#include "scene/geometry/Geometry.h"
+#include "scene/geometry/Surface.h"
 
 // std
 #include <chrono>
@@ -166,7 +167,7 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Renderer *),
     // declare_param_setter_object(Sampler *),
     declare_param_setter_object(Surface *),
-    declare_param_setter_object(SpatialField *),
+    // declare_param_setter_object(SpatialField *),
     // declare_param_setter_object(Volume *),
     declare_param_setter_object(World *),
     declare_param_setter_string(const char *),
@@ -351,6 +352,28 @@ ANARICamera RPRDevice::newCamera(const char *type)
 {
   return (ANARICamera)Camera::createInstance(m_context, type);
 }
+
+ANARIGeometry RPRDevice::newGeometry(const char *type)
+{
+    return (ANARIGeometry)Geometry::createInstance(m_context, type);
+}
+
+ANARISpatialField RPRDevice::newSpatialField(const char *type)
+{
+    return createPlaceholderObject<ANARISpatialField>();
+}
+
+ANARISurface RPRDevice::newSurface()
+{
+  return createObjectForAPI<Surface, ANARISurface>(m_context);
+}
+
+ANARIVolume RPRDevice::newVolume(const char *_type)
+{
+    return createPlaceholderObject<ANARIVolume>();
+}
+
+
 } // rpr
 } // anari
 

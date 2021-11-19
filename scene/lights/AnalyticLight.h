@@ -5,8 +5,11 @@
 
 #include "Light.h"
 
-namespace anari {
-namespace rpr {
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+namespace anari::rpr {
 
 struct AnalyticLight : public Light
 {
@@ -20,5 +23,4 @@ struct AnalyticLight : public Light
     void addToScene(rpr_scene scene) override;
 };
 
-} // namespace rpr
 } // namespace anari
