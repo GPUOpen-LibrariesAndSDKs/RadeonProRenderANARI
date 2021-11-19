@@ -1,9 +1,12 @@
 #include "RPRDevice.h"
 
 #include "camera/Camera.h"
+
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
+
+#include "material/Material.h"
 
 // std
 #include <chrono>
@@ -247,7 +250,7 @@ void RPRDevice::deviceCommit()
   flags |= RPR_CREATION_FLAGS_ENABLE_METAL;
 #endif
   CHECK(rprCreateContext(
-      RPR_API_VERSION, plugins, pluginCount, flags, NULL, NULL, &m_context));
+      RPR_API_VERSION, plugins, pluginCount, flags, nullptr, nullptr, &m_context));
 
   // Set active plugin.
   CHECK(rprContextSetActivePlugin(m_context, plugins[0]));
@@ -372,6 +375,19 @@ ANARIVolume RPRDevice::newVolume(const char *_type)
 {
     return createPlaceholderObject<ANARIVolume>();
 }
+
+// Model Meta-Data ////////////////////////////////////////////////////////////
+
+ANARIMaterial RPRDevice::newMaterial(const char *type)
+{
+    return (ANARIMaterial)Material::createInstance(type, m_matsys);
+}
+
+ANARISampler RPRDevice::newSampler(const char *type)
+{
+  return createPlaceholderObject<ANARISampler>();
+}
+
 
 
 } // rpr

@@ -10,10 +10,7 @@
 #include <optional>
 #include <random>
 
-namespace anari {
-namespace rpr {
-
-struct Material;
+namespace anari::rpr {
 
 using namespace glm;
 
@@ -114,5 +111,4 @@ inline float reduce_max(const vec4 &v)
   return std::max(std::max(std::max(v.x, v.y), v.z), v.w);
 }
 
-} // namespace reference
 } // namespace anari

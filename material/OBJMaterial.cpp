@@ -3,8 +3,7 @@
 
 #include "OBJMaterial.h"
 
-namespace anari{
-namespace rpr{
+namespace anari::rpr{
 
 OBJMaterial::OBJMaterial(rpr_material_system materialSystem){
   m_matsys = materialSystem;
@@ -56,5 +55,4 @@ rpr_material_node OBJMaterial::generateMaterial(rpr_material_node vertex_color){
 }
 
 
-}
 }

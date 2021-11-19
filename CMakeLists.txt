@@ -113,7 +113,7 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/AnalyticLight.cpp
   scene/lights/AreaLight.cpp
   scene/lights/EnvironmentLight.cpp
-)
+        material/SimpleMaterial.cpp material/SimpleMaterial.h)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -Danari_EXPORTS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${RPR_DIR}/inc)

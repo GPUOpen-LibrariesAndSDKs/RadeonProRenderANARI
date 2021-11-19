@@ -5,7 +5,6 @@
 
 #include "../Object.h"
 #include "../rpr_common.h"
-#include "../scene/geometry/Surface.h"
 
 namespace anari {
 namespace rpr {
@@ -19,7 +18,7 @@ struct Material : public Object
   static Material *createInstance(const char *type, rpr_material_system matsys);
 
  protected:
-  rpr_material_system m_matsys;
+  rpr_material_system m_matsys{};
   virtual inline rpr_material_node generateMaterial(rpr_material_node vertex_color = nullptr){return nullptr;};
 };
 
