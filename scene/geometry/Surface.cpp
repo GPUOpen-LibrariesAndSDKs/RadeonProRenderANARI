@@ -10,30 +10,44 @@ namespace rpr {
 
 void Surface::commit()
 {
-  auto material = getParamObject<Material>("material");
-  auto geometry = getParamObject<Geometry>("geometry");
+  m_material = getParamObject<Material>("material");
+  m_geometry = getParamObject<Geometry>("geometry");
 
-  if(!geometry) throw std::runtime_error("'geometry' is a required attribute");
-  if(!material) throw std::runtime_error("'material' is a required attribute");
+  if(!m_geometry) throw std::runtime_error("'geometry' is a required attribute");
+  if(!m_material) throw std::runtime_error("'material' is a required attribute");
 
-  m_shapes = geometry->m_shapes;
-  m_upper_bound = geometry->m_upper_bound;
-  m_lower_bound = geometry->m_lower_bound;
+  m_bounds = m_geometry->bounds();
+  markUpdated();
+}
 
-  //vertex colors
-  if(geometry->hasVertexColor){
+void Surface::addToScene(rpr_scene scene) {
+    if(m_material_instance){
+        CHECK(rprObjectDelete(m_material_instance));
+    }
+    if(m_geometry->hasVertexColor && !m_vertex_color){
+        generateVertexColorNode();
+    } else if(!m_geometry->hasVertexColor){
+        m_vertex_color = nullptr;
+    }
+    m_material_instance = m_material->generateMaterial(m_vertex_color);
+    m_geometry->applyMaterial(m_material_instance);
+    m_geometry->addToScene(scene);
+    markAttached();
+}
+
+void Surface::generateVertexColorNode() {
     clearMaterialNodesVertex();
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_r))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_g))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_b))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_a))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_r))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_g))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_b))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_a))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_rg))
-    CHECK(rprMaterialSystemCreateNode(material->m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_rgb))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_r))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_g))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_b))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_INPUT_LOOKUP, &m_vertex_color_lookup_a))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_r))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_g))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_b))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_a))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_rg))
+    CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_vertex_color_rgb))
 
     CHECK(rprMaterialNodeSetInputUByKey(m_vertex_color_lookup_r, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_VERTEX_VALUE0))
     CHECK(rprMaterialNodeSetInputUByKey(m_vertex_color_lookup_g, RPR_MATERIAL_INPUT_VALUE, RPR_MATERIAL_NODE_LOOKUP_VERTEX_VALUE1))
@@ -67,16 +81,6 @@ void Surface::commit()
     CHECK(rprMaterialNodeSetInputNByKey(m_vertex_color, RPR_MATERIAL_INPUT_COLOR0, m_vertex_color_rgb))
     CHECK(rprMaterialNodeSetInputNByKey(m_vertex_color, RPR_MATERIAL_INPUT_COLOR1, m_vertex_color_a))
     CHECK(rprMaterialNodeSetInputUByKey(m_vertex_color, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_ADD))
-
-    m_material = material->generateMaterial(m_vertex_color);
-  }
-  else{
-    m_material = material->generateMaterial();
-  }
-
-  for(rpr_shape shape : m_shapes){
-    CHECK(rprShapeSetMaterial(shape, m_material))
-  }
 }
 
 void Surface::clearMaterialNodesVertex(){
@@ -128,7 +132,9 @@ void Surface::clearMaterialNodesVertex(){
 
 Surface::~Surface(){
   clearMaterialNodesVertex();
-  CHECK(rprObjectDelete(m_material))
+  if(m_material_instance){
+      CHECK(rprObjectDelete(m_material_instance));
+  }
 }
 
 } // namespace rpr

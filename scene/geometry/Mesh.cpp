@@ -25,21 +25,21 @@ void Mesh::commit()
   std::vector<rpr_int> faces(num_faces, 3);
 
   //bounds calculation
-  m_lower_bound = vec3(std::numeric_limits<float>::max());
-  m_upper_bound = vec3(-std::numeric_limits<float>::max());
+  resetBounds();
+
   for(int i=0; i<vertex->size()*3; i++){
     float coordinate = vertex->dataAs<rpr_float>()[i];
     if(i%3==0){  //x coordinate
-      m_upper_bound.x = max(m_upper_bound.x, coordinate);
-      m_lower_bound.x = min(m_lower_bound.x, coordinate);
+      m_bounds.upper.x = max(m_bounds.upper.x, coordinate);
+      m_bounds.lower.x = min(m_bounds.lower.x, coordinate);
     }
     if(i%3==1){  //y coordinate
-      m_upper_bound.y = max(m_upper_bound.y, coordinate);
-      m_lower_bound.y = min(m_lower_bound.y, coordinate);
+      m_bounds.upper.y = max(m_bounds.upper.y, coordinate);
+      m_bounds.lower.y = min(m_bounds.lower.y, coordinate);
     }
     if(i%3==2){  //z coordinate
-      m_upper_bound.z = max(m_upper_bound.z, coordinate);
-      m_lower_bound.z = min(m_lower_bound.z, coordinate);
+      m_bounds.upper.z = max(m_bounds.upper.z, coordinate);
+      m_bounds.lower.z = min(m_bounds.lower.z, coordinate);
     }
   }
 
@@ -67,6 +67,8 @@ void Mesh::commit()
     CHECK(rprShapeSetVertexValue(m_shapes[0], 3, color_index.data(), a.data(), num_color_vertex))
 
     hasVertexColor = true;
+
+    markUpdated();
   }
 
 }

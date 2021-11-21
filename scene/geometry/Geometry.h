@@ -16,16 +16,15 @@ struct Geometry : public Object
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 
-  inline box3 bounds() const override{
-    return {m_lower_bound, m_upper_bound};
-  }
+  void addToScene(rpr_scene scene) override;
+
 
   protected:
     rpr_context m_context; // we need to store the context so we can create mesh at commit
     std::vector<rpr_shape> m_shapes;
-    vec3 m_lower_bound{};
-    vec3 m_upper_bound{};
     bool hasVertexColor = false;
+
+    void applyMaterial(rpr_material_node material);
 };
 
 } // namespace reference

@@ -22,6 +22,20 @@ Geometry *Geometry::createInstance(rpr_context &context, const char *type)
 
 }
 
+void Geometry::addToScene(rpr_scene scene){
+    for(rpr_shape shape : m_shapes){
+        CHECK(rprSceneAttachShape(scene, shape))
+    }
+    markAttached();
+}
+
+void Geometry::applyMaterial(rpr_material_node material) {
+    for(rpr_shape shape : m_shapes){
+        CHECK(rprShapeSetMaterial(shape, material))
+    }
+    markUpdated();
+}
+
 } // namespace rpr
 
 ANARI_TYPEFOR_DEFINITION(rpr::Geometry *);

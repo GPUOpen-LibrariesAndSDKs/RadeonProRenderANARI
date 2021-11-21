@@ -368,7 +368,7 @@ ANARISpatialField RPRDevice::newSpatialField(const char *type)
 
 ANARISurface RPRDevice::newSurface()
 {
-  return createObjectForAPI<Surface, ANARISurface>(m_context);
+  return createObjectForAPI<Surface, ANARISurface>(m_matsys);
 }
 
 ANARIVolume RPRDevice::newVolume(const char *_type)
@@ -388,7 +388,17 @@ ANARISampler RPRDevice::newSampler(const char *type)
   return createPlaceholderObject<ANARISampler>();
 }
 
+// Instancing /////////////////////////////////////////////////////////////////
 
+ANARIGroup RPRDevice::newGroup()
+{
+  return createPlaceholderObject<ANARIGroup>();
+}
+
+ANARIInstance RPRDevice::newInstance()
+{
+  return createPlaceholderObject<ANARIInstance>();
+}
 
 } // rpr
 } // anari

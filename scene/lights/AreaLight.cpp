@@ -48,10 +48,13 @@ void AreaLight::commit(){
   CHECK(rprShapeSetMaterial(m_light, m_material))
 
   CHECK(rprShapeSetVisibility(m_light, visible))
+
+  markUpdated();
 }
 
 void AreaLight::addToScene(rpr_scene scene){
   CHECK(rprSceneAttachShape(scene, m_light))
+  markAttached();
 }
 
 AreaLight::~AreaLight(){

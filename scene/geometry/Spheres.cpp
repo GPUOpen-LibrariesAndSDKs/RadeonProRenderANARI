@@ -29,8 +29,7 @@ void Spheres::commit(){
     createBaseSphere();
   }
 
-  m_lower_bound = vec3(std::numeric_limits<float>::max());
-  m_upper_bound = vec3(-std::numeric_limits<float>::max());
+  resetBounds();
 
   for(int vertexNumber=0; vertexNumber<vertexData->size(); vertexNumber++){
     vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
@@ -44,12 +43,12 @@ void Spheres::commit(){
     CHECK(rprShapeSetObjectID(m_shapes[vertexNumber], vertexNumber))
 
     //bounds
-    m_upper_bound.x = max(m_upper_bound.x, vertex.x + radius);
-    m_upper_bound.y = max(m_upper_bound.y, vertex.y + radius);
-    m_upper_bound.z = max(m_upper_bound.z, vertex.z + radius);
-    m_lower_bound.x = min(m_lower_bound.x, vertex.x - radius);
-    m_lower_bound.y = min(m_lower_bound.y, vertex.y - radius);
-    m_lower_bound.z = min(m_lower_bound.z, vertex.z - radius);
+    m_bounds.upper.x = max(m_bounds.upper.x, vertex.x + radius);
+    m_bounds.upper.y = max(m_bounds.upper.y, vertex.y + radius);
+    m_bounds.upper.z = max(m_bounds.upper.z, vertex.z + radius);
+    m_bounds.lower.x = min(m_bounds.lower.x, vertex.x - radius);
+    m_bounds.lower.y = min(m_bounds.lower.y, vertex.y - radius);
+    m_bounds.lower.z = min(m_bounds.lower.z, vertex.z - radius);
   }
   m_shapes[vertexData->size()] = m_base_sphere; //attach invisible base sphere last
 }
@@ -99,7 +98,7 @@ Spheres::~Spheres(){
     CHECK(rprObjectDelete(shape))
   }
   if(m_base_sphere){
-    CHECK(rprObjectDelete(m_base_sphere));
+    CHECK(rprObjectDelete(m_base_sphere))
   }
 }
 

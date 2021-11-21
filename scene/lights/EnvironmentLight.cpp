@@ -46,6 +46,7 @@ void EnvironmentLight::commit(){
   else {
     throw std::runtime_error("Unhandled Light type!");
   }
+  markUpdated();
 
 }
 

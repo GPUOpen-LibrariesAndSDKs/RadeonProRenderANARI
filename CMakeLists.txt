@@ -99,11 +99,12 @@ add_library(${PROJECT_NAME} SHARED
 
   material/Material.cpp
   material/OBJMaterial.cpp
+  material/SimpleMaterial.cpp
 
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp
 
-  scene/Instance.cpp
+  #scene/Instance.cpp
   scene/World.cpp
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
@@ -112,8 +113,7 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/Light.cpp
   scene/lights/AnalyticLight.cpp
   scene/lights/AreaLight.cpp
-  scene/lights/EnvironmentLight.cpp
-        material/SimpleMaterial.cpp material/SimpleMaterial.h)
+  scene/lights/EnvironmentLight.cpp)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -Danari_EXPORTS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${RPR_DIR}/inc)

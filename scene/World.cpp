@@ -2,41 +2,39 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "World.h"
-#include "Instance.h"
+#include "geometry/Surface.h"
+#include "lights/Light.h"
 
 namespace anari {
 namespace rpr {
 
 void World::commit(){
-  DataView<Instance *> instances(getParamObject<Data>("instance"));
 
-  m_instances.clear();
+  auto surfaces = getParamObject<ObjectArray>("surface");
+  auto lights = getParamObject<ObjectArray>("light");
+  m_surfaces.clear();
+  m_lights.clear();
 
-  m_lower_bound = vec3(std::numeric_limits<float>::max());
-  m_upper_bound = vec3(-std::numeric_limits<float>::max());
+  resetBounds();
 
-  for(int instance_number=0; instance_number<instances.size(); instance_number++){
-    Instance * instance = instances.data()[instance_number];
-
-    m_upper_bound.x = max(m_upper_bound.x, instance->m_upper_bound.x);
-    m_upper_bound.y = max(m_upper_bound.y, instance->m_upper_bound.y);
-    m_upper_bound.z = max(m_upper_bound.z, instance->m_upper_bound.z);
-
-    m_lower_bound.x = min(m_lower_bound.x, instance->m_lower_bound.x);
-    m_lower_bound.y = min(m_lower_bound.y, instance->m_lower_bound.y);
-    m_lower_bound.z = min(m_lower_bound.z, instance->m_lower_bound.z);
-
-    m_instances.push_back(instance);
+  for(int surface_number=0; surface_number < surfaces->size(); surface_number++){
+    Surface * surface = surfaces->dataAs<Surface>() + surface_number;
+    extendBounds(surface->bounds());
+    m_surfaces.push_back(surface);
   }
-  is_changed = true;
+
+  for(int light_number=0; light_number < lights->size(); light_number++){
+    Light* light = lights->dataAs<Light>() + light_number;
+    m_lights.push_back(light);
+  }
+  markUpdated();
 }
 
 void World::addToScene(rpr_scene scene){
-  if (is_changed) {
     size_t prev_shapes_count;
     size_t prev_lights_count;
-    rprSceneGetInfo(scene, RPR_SCENE_SHAPE_COUNT, sizeof(size_t), &prev_shapes_count, NULL);
-    rprSceneGetInfo(scene, RPR_SCENE_LIGHT_COUNT, sizeof(size_t), &prev_lights_count, NULL);
+    rprSceneGetInfo(scene, RPR_SCENE_SHAPE_COUNT, sizeof(size_t), &prev_shapes_count, nullptr);
+    rprSceneGetInfo(scene, RPR_SCENE_LIGHT_COUNT, sizeof(size_t), &prev_lights_count, nullptr);
 
 
     //detach all previous attached shapes
@@ -44,7 +42,7 @@ void World::addToScene(rpr_scene scene){
       std::vector<rpr_shape> prev_shapes;
       prev_shapes.resize(prev_shapes_count);
       rprSceneGetInfo(scene, RPR_SCENE_SHAPE_LIST,
-                      prev_shapes_count * sizeof(rpr_shape), prev_shapes.data(), NULL);
+                      prev_shapes_count * sizeof(rpr_shape), prev_shapes.data(), nullptr);
       for(rpr_shape shape : prev_shapes){
         CHECK(rprSceneDetachShape(scene, shape))
       }
@@ -55,17 +53,24 @@ void World::addToScene(rpr_scene scene){
       std::vector<rpr_light> prev_lights;
       prev_lights.resize(prev_lights_count);
       rprSceneGetInfo(scene, RPR_SCENE_LIGHT_LIST,
-                      prev_lights_count * sizeof(rpr_light), prev_lights.data(), NULL);
+                      prev_lights_count * sizeof(rpr_light), prev_lights.data(), nullptr);
       for(rpr_light light : prev_lights){
         CHECK(rprSceneDetachLight(scene, light))
       }
     }
 
-    for(Instance* instance : m_instances){
-      instance->addToScene(scene);
+    for(Surface* surface : m_surfaces){
+      if(surface->lastUpdated() > lastAttached()){  // if object has been modified after last attach
+          surface->addToScene(scene);
+      }
     }
-    is_changed = false;
-  }
+
+    for(Light* light : m_lights){
+      if(light->lastUpdated() > lastAttached()){  // if object has been modified after last attach
+          light->addToScene(scene);
+      }
+    }
+    markAttached();
 }
 
 } // namespace rpr
