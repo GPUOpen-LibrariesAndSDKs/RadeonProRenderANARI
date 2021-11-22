@@ -33,7 +33,6 @@ void Camera::commit()
 
 void Camera::addToScene(rpr_scene scene){
     CHECK(rprSceneSetCamera(scene, m_camera))
-    markAttached();
 }
 
 Camera::~Camera(){

@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #pragma once
-#include "../Object.h"
 #include "../rpr_common.h"
-#include "../RPRDevice.h"
 #include "../renderer/Renderer.h"
 #include "../camera/Camera.h"
 #include "../scene/World.h"
@@ -18,54 +16,66 @@ namespace rpr {
 
 struct Frame : public Object
 {
-  friend struct RPRDevice;
+    explicit Frame(rpr_context context);
+    ~Frame();
 
-  Frame(rpr_context &context);
+    bool getProperty(const std::string &name,
+                     ANARIDataType type,
+                     void *ptr,
+                     ANARIWaitMask mask) override;
 
-  ivec2 size() const;
-  ANARIFrameFormat format() const;
+    void commit() override;
+    void *mapColorBuffer();
+    float *mapDepthBuffer();
+    void unmapColorBuffer();
+    void unmapDepthBuffer(){};
 
-  void *mapColorBuffer();
+    void renderFrame();
+    void invokeContinuation(ANARIDevice device) const;
 
-  void clear();
+    void renewFuture();
+    bool futureIsValid() const;
+    FuturePtr future();
 
-  void invokeContinuation(ANARIDevice d) const;
+    void setDuration(float);
+    float duration() const;
 
-  void commit() override;
+private:
+    int frameID() const;
+    void newFrame();
+    void deleteFramebuffers();
 
-  void addToScene(rpr_scene scene) override;
+    vec2 screenFromPixel(const vec2 &p) const;
 
-  void prepScene(rpr_context &context);
+    // Data //
+    ANARIDataType m_format{ANARI_UNKNOWN};
 
-  Future &future();
+    uvec2 m_size;
 
-  ~Frame();
+    float m_lastFrameDuration{0.f};
 
- private:
-  int frameID() const;
-  void newFrame();
+    std::vector<vec4> m_accum;
+    std::vector<unsigned char> m_mappedPixelBuffer;
 
-  // Data //
-  ANARIFrameFormat m_format{ANARI_FB_NONE};
+    std::vector<float> m_depthBuffer;
 
-  ivec2 m_size;
+    IntrusivePtr<Renderer> m_renderer;
+    IntrusivePtr<Camera> m_camera;
+    IntrusivePtr<World> m_world;
 
-  int m_frameID{-1};
-  float m_invFrameID{1.f};
+    FuturePtr m_future;
+    ANARIFrameCompletionCallback m_continuation{nullptr};
+    void *m_continuationPtr{nullptr};
 
-  std::vector<vec4> m_accum;
-  std::vector<unsigned char> m_mappedPixelBuffer;
-  rpr_framebuffer m_fb;
-  rpr_framebuffer m_fb_resolved;
-  rpr_context m_context;
+    bool m_frameChanged{true};
+    TimeStamp m_cameraLastChanged{0};
+    TimeStamp m_rendererLastChanged{0};
+    TimeStamp m_worldLastChanged{0};
 
-  IntrusivePtr<Renderer> m_renderer;
-  IntrusivePtr<Camera> m_camera;
-  IntrusivePtr<World> m_world;
-
-  std::unique_ptr<Future> m_future;
-  ANARIRenderContinuation m_continuation{nullptr};
-  void *m_continuationPtr{nullptr};
+    rpr_context m_context;
+    rpr_scene m_scene;
+    rpr_framebuffer m_framebuffer;
+    rpr_framebuffer m_framebuffer_resolved;
 };
 
 } // namespace rpr

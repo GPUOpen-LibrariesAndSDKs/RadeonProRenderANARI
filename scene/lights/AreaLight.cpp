@@ -54,7 +54,6 @@ void AreaLight::commit(){
 
 void AreaLight::addToScene(rpr_scene scene){
   CHECK(rprSceneAttachShape(scene, m_light))
-  markAttached();
 }
 
 AreaLight::~AreaLight(){

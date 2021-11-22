@@ -67,7 +67,6 @@ void World::addToScene(rpr_scene scene){
     for(Light* light : m_lights){
         light->addToScene(scene);
     }
-    markAttached();
 }
 
 } // namespace rpr

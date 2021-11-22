@@ -51,6 +51,7 @@ void Spheres::commit(){
     m_bounds.lower.z = min(m_bounds.lower.z, vertex.z - radius);
   }
   m_shapes[vertexData->size()] = m_base_sphere; //attach invisible base sphere last
+  markUpdated();
 }
 
 void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and radius 1

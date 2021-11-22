@@ -32,7 +32,6 @@ void Surface::addToScene(rpr_scene scene) {
     m_material_instance = m_material->generateMaterial(m_vertex_color);
     m_geometry->applyMaterial(m_material_instance);
     m_geometry->addToScene(scene);
-    markAttached();
 }
 
 void Surface::generateVertexColorNode() {

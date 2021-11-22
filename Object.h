@@ -60,8 +60,6 @@ struct Object : public RefCounted, public ParameterizedObject
   protected:
     void setCommitPriority(int p);
     virtual void addToScene(rpr_scene scene) {};
-    TimeStamp lastAttached() const;
-    void markAttached();
     void extendBounds(box3 bounds);
     void resetBounds();
 

@@ -46,16 +46,6 @@ void Object::markUpdated()
     m_lastUpdated = newTimeStamp();
 }
 
-TimeStamp Object::lastAttached() const
-{
-    return m_lastAttached;
-}
-
-void Object::markAttached()
-{
-    m_lastAttached = newTimeStamp();
-}
-
 int Object::commitPriority() const
 {
     return m_commitPriority;

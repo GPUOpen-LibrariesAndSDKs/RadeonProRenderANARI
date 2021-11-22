@@ -88,7 +88,6 @@ void AnalyticLight::commit()
 
 void AnalyticLight::addToScene(rpr_scene scene){
   CHECK(rprSceneAttachLight(scene, m_light))
-  markAttached();
 }
 
 

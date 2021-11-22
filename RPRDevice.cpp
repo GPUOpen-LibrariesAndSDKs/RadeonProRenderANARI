@@ -7,6 +7,8 @@
 #include "scene/geometry/Surface.h"
 #include "scene/World.h"
 
+#include "frame/Frame.h"
+
 #include "material/Material.h"
 
 // std
@@ -215,6 +217,8 @@ int RPRDevice::deviceImplements(const char *_extension)
     std::string extension = _extension;
     if (extension == ANARI_KHR_AREA_LIGHTS)
         return 1;
+    if (extension == ANARI_KHR_FRAME_COMPLETION_CALLBACK)
+        return 1;
     return 0;
 }
 
@@ -259,10 +263,6 @@ void RPRDevice::deviceCommit()
   CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_Y_FLIP, 0))
 
   CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
-
-  rpr_scene scene;
-  CHECK(rprContextCreateScene(m_context, &scene))
-  CHECK(rprContextSetScene(m_context, scene))
 }
 
 void RPRDevice::deviceRetain()
@@ -477,12 +477,38 @@ void RPRDevice::retain(ANARIObject o)
   referenceFromHandle(o).refInc(RefType::PUBLIC);
 }
 
+// Frame Manipulation /////////////////////////////////////////////////////////
+
+ANARIFrame RPRDevice::newFrame()
+{
+  return createObjectForAPI<Frame, ANARIFrame>();
+}
+
+const void *RPRDevice::frameBufferMap(ANARIFrame _fb, const char *channel)
+{
+  auto &fb = referenceFromHandle<Frame>(_fb);
+
+  if (channel == std::string("color"))
+    return fb.mapColorBuffer();
+  else if (channel == std::string("depth"))
+    return fb.mapDepthBuffer();
+  else
+    return nullptr;
+}
+
+void RPRDevice::frameBufferUnmap(ANARIFrame _fb, const char *channel)
+{
+    auto &fb = referenceFromHandle<Frame>(_fb);
+
+    if (channel == std::string("color"))
+        fb.unmapColorBuffer();
+    else if (channel == std::string("depth"))
+        fb.unmapDepthBuffer();
+
+}
 
 RPRDevice::~RPRDevice()
 {
-  rpr_scene scene;
-  CHECK(rprContextGetScene(m_context, &scene))
-  CHECK(rprObjectDelete(scene))
   CHECK(rprObjectDelete(m_matsys))
   CheckNoLeak(m_context);
   CHECK(rprObjectDelete(m_context));

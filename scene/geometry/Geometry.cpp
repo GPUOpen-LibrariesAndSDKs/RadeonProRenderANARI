@@ -26,7 +26,6 @@ void Geometry::addToScene(rpr_scene scene){
     for(rpr_shape shape : m_shapes){
         CHECK(rprSceneAttachShape(scene, shape))
     }
-    markAttached();
 }
 
 void Geometry::applyMaterial(rpr_material_node material) {
