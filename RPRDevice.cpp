@@ -5,6 +5,7 @@
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
+#include "scene/World.h"
 
 #include "material/Material.h"
 
@@ -163,8 +164,8 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Array3D *),
     declare_param_setter_object(Frame *),
     declare_param_setter_object(Geometry *),
-    declare_param_setter_object(Group *),
-    declare_param_setter_object(Instance *),
+    // declare_param_setter_object(Group *),
+    // declare_param_setter_object(Instance *),
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
@@ -398,6 +399,94 @@ ANARIGroup RPRDevice::newGroup()
 ANARIInstance RPRDevice::newInstance()
 {
   return createPlaceholderObject<ANARIInstance>();
+}
+
+// Top-level Worlds ///////////////////////////////////////////////////////////
+
+ANARIWorld RPRDevice::newWorld()
+{
+    return createObjectForAPI<World, ANARIWorld>();
+}
+
+int RPRDevice::getProperty(ANARIObject object,
+    const char *name,
+    ANARIDataType type,
+    void *mem,
+    uint64_t size,
+    ANARIWaitMask mask)
+{
+    if ((void *)object == (void *)this) {
+        std::string_view prop = name;
+        if (prop == "version" && type == ANARI_INT32) {
+            writeToVoidP(mem, DEVICE_VERSION);
+            return 1;
+        }
+    } else
+        return referenceFromHandle(object).getProperty(name, type, mem, mask);
+
+    return 0;
+}
+
+// Object + Parameter Lifetime Management /////////////////////////////////////
+
+void RPRDevice::setParameter(
+    ANARIObject object, const char *name, ANARIDataType type, const void *mem)
+{
+  if (type == ANARI_UNKNOWN)
+    throw std::runtime_error("cannot set ANARI_UNKNOWN parameter type");
+
+  auto *fcn = setParamFcns[type];
+
+  if (fcn)
+    fcn(object, name, mem);
+  else {
+    std::stringstream ss;
+    ss << "unknown handler to set parameter on object: " << type;
+    throw std::runtime_error(ss.str());
+  }
+}
+
+void RPRDevice::commit(ANARIObject o)
+{
+  if (!o)
+    return;
+
+  auto &obj = referenceFromHandle(o);
+  obj.commit();
+}
+
+void RPRDevice::release(ANARIObject o)
+{
+  if (!o)
+    return;
+
+  auto &obj = referenceFromHandle(o);
+
+  bool privatizeArray = isArray(obj.type())
+      && obj.useCount(RefType::INTERNAL) > 0
+      && obj.useCount(RefType::PUBLIC) == 1;
+
+  referenceFromHandle(o).refDec(RefType::PUBLIC);
+
+  if (privatizeArray)
+    ((Array *)o)->privatize();
+}
+
+void RPRDevice::retain(ANARIObject o)
+{
+  referenceFromHandle(o).refInc(RefType::PUBLIC);
+}
+
+
+RPRDevice::~RPRDevice()
+{
+  rpr_scene scene;
+  CHECK(rprContextGetScene(m_context, &scene))
+  CHECK(rprObjectDelete(scene))
+  CHECK(rprObjectDelete(m_matsys))
+  CheckNoLeak(m_context);
+  CHECK(rprObjectDelete(m_context));
+  m_context = nullptr; // Always delete the RPR Context last.
 }
 
 } // rpr

@@ -31,6 +31,7 @@ void World::commit(){
 }
 
 void World::addToScene(rpr_scene scene){
+
     size_t prev_shapes_count;
     size_t prev_lights_count;
     rprSceneGetInfo(scene, RPR_SCENE_SHAPE_COUNT, sizeof(size_t), &prev_shapes_count, nullptr);
@@ -60,15 +61,11 @@ void World::addToScene(rpr_scene scene){
     }
 
     for(Surface* surface : m_surfaces){
-      if(surface->lastUpdated() > lastAttached()){  // if object has been modified after last attach
-          surface->addToScene(scene);
-      }
+        surface->addToScene(scene);
     }
 
     for(Light* light : m_lights){
-      if(light->lastUpdated() > lastAttached()){  // if object has been modified after last attach
-          light->addToScene(scene);
-      }
+        light->addToScene(scene);
     }
     markAttached();
 }

@@ -7,6 +7,8 @@
 #include "anari/detail/ParameterizedObject.h"
 #include "anari/detail/IntrusivePtr.h"
 
+#define DEVICE_VERSION 1
+
 namespace anari {
 namespace rpr {
 
@@ -143,8 +145,8 @@ struct RPRDevice : public Device,
     ~RPRDevice() override;
 
     private:
-        rpr_context m_context;
-        rpr_material_system m_matsys;
+        rpr_context m_context{};
+        rpr_material_system m_matsys{};
         std::string m_plugin_name = "Tahoe";
         unsigned int m_render_device = 1; // render with GPU0 by default
     };
