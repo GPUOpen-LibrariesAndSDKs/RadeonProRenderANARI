@@ -1,14 +1,13 @@
 #include "RPRDevice.h"
 
-#include "camera/Camera.h"
+#include "anari/detail/Library.h"
 
+#include "camera/Camera.h"
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
 #include "scene/World.h"
-
 #include "frame/Frame.h"
-
 #include "material/Material.h"
 
 // std
@@ -55,8 +54,7 @@ std::map<unsigned int, unsigned int> RPRDeviceMap = {
 };
 
 
-namespace anari{
-namespace rpr{
+namespace anari::rpr{
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions ///////////////////////////////////////////////////////////
@@ -263,6 +261,8 @@ void RPRDevice::deviceCommit()
   CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_Y_FLIP, 0))
 
   CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
+
+  printf("...context initialized!\n");
 }
 
 void RPRDevice::deviceRetain()
@@ -415,6 +415,9 @@ int RPRDevice::getProperty(ANARIObject object,
     uint64_t size,
     ANARIWaitMask mask)
 {
+    if (mask == ANARI_WAIT)
+        flushCommitBuffer();
+
     if ((void *)object == (void *)this) {
         std::string_view prop = name;
         if (prop == "version" && type == ANARI_INT32) {
@@ -446,13 +449,18 @@ void RPRDevice::setParameter(
   }
 }
 
-void RPRDevice::commit(ANARIObject o)
+void RPRDevice::unsetParameter(ANARIObject o, const char *name)
 {
-  if (!o)
-    return;
+  referenceFromHandle(o).removeParam(name);
+}
 
-  auto &obj = referenceFromHandle(o);
-  obj.commit();
+void RPRDevice::commit(ANARIObject h)
+{
+  auto &o = referenceFromHandle(h);
+  o.refInc(RefType::INTERNAL);
+  if (o.commitPriority() != COMMIT_PRIORITY_DEFAULT)
+    m_needToSortCommits = true;
+  m_objectsToCommit.push_back(&o);
 }
 
 void RPRDevice::release(ANARIObject o)
@@ -481,7 +489,7 @@ void RPRDevice::retain(ANARIObject o)
 
 ANARIFrame RPRDevice::newFrame()
 {
-  return createObjectForAPI<Frame, ANARIFrame>();
+  return createObjectForAPI<Frame, ANARIFrame>(m_context);
 }
 
 const void *RPRDevice::frameBufferMap(ANARIFrame _fb, const char *channel)
@@ -507,6 +515,60 @@ void RPRDevice::frameBufferUnmap(ANARIFrame _fb, const char *channel)
 
 }
 
+// Frame Rendering ////////////////////////////////////////////////////////////
+
+ANARIRenderer RPRDevice::newRenderer(const char *type)
+{
+  return (ANARIRenderer)Renderer::createInstance(m_context, type);
+}
+
+void RPRDevice::renderFrame(ANARIFrame frame)
+{
+  flushCommitBuffer();
+
+  auto *f = &referenceFromHandle<Frame>(frame);
+
+  auto device_handle = this_device();
+
+  f->renewFuture();
+  auto future = f->future();
+
+  std::thread([=]() {
+    auto start = std::chrono::steady_clock::now();
+    f->renderFrame();
+    auto end = std::chrono::steady_clock::now();
+
+    f->invokeContinuation(device_handle);
+    f->setDuration(std::chrono::duration<float>(end - start).count());
+
+    future->markComplete();
+  }).detach();
+}
+
+int RPRDevice::frameReady(ANARIFrame f, ANARIWaitMask m)
+{
+  auto &frame = referenceFromHandle<Frame>(f);
+  if (!frame.futureIsValid())
+    return 0;
+  else if (m == ANARI_NO_WAIT)
+    return frame.future()->isReady();
+  else {
+    frame.future()->wait();
+    return 1;
+  }
+}
+
+void RPRDevice::discardFrame(ANARIFrame)
+{
+  // TODO
+}
+
+// Other RPRDevice definitions ////////////////////////////////////////////
+
+RPRDevice::RPRDevice() {
+    deviceCommit();
+}
+
 RPRDevice::~RPRDevice()
 {
   CHECK(rprObjectDelete(m_matsys))
@@ -515,6 +577,71 @@ RPRDevice::~RPRDevice()
   m_context = nullptr; // Always delete the RPR Context last.
 }
 
-} // rpr
+void RPRDevice::flushCommitBuffer()
+{
+  if (m_needToSortCommits) {
+    std::sort(m_objectsToCommit.begin(),
+        m_objectsToCommit.end(),
+        [](Object *o1, Object *o2) {
+          return o1->commitPriority() < o2->commitPriority();
+        });
+  }
+
+  m_needToSortCommits = false;
+
+  for (auto o : m_objectsToCommit) {
+    o->commit();
+    o->markUpdated();
+    o->refDec(RefType::INTERNAL);
+  }
+
+  m_objectsToCommit.clear();
+}
+
 } // anari
 
+static char deviceName[] = "rpr";
+
+ANARI_DEFINE_LIBRARY_INIT(rpr)
+{
+  printf("...loaded rpr library!\n");
+  anari::Device::registerType<anari::rpr::RPRDevice>(deviceName);
+}
+
+ANARI_DEFINE_LIBRARY_GET_DEVICE_SUBTYPES(rpr, libdata)
+{
+    static const char *devices[] = {deviceName, nullptr};
+    return devices;
+}
+
+ANARI_DEFINE_LIBRARY_GET_OBJECT_SUBTYPES(
+        rpr, libdata, deviceSubtype, objectType)
+{
+    // TODO
+    return nullptr;
+}
+
+ANARI_DEFINE_LIBRARY_GET_OBJECT_PARAMETERS(
+        rpr, libdata, deviceSubtype, objectSubtype, objectType)
+{
+    //TODO
+    return nullptr;
+}
+ANARI_DEFINE_LIBRARY_GET_PARAMETER_PROPERTY(rpr,
+                                            libdata,
+                                            deviceSubtype,
+                                            objectSubtype,
+                                            objectType,
+                                            parameterName,
+                                            parameterType,
+                                            propertyName,
+                                            propertyType)
+{
+    //TODO
+    return nullptr;
+}
+
+extern "C" ANARIDevice anariNewRPRDevice()
+{
+    return (ANARIDevice) new anari::rpr::RPRDevice();
+}

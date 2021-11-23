@@ -34,7 +34,7 @@ static uint32_t cvt_uint32_srgb(const vec4 &v)
 Frame::Frame(rpr_context context) : m_context(context)
 {
     CHECK(rprContextCreateScene(m_context, &m_scene))
-
+    setCommitPriority(COMMIT_PRIORITY_FRAME);
 }
 
 Frame::~Frame()
@@ -170,6 +170,7 @@ void Frame::renderFrame() {
 
     if(r.lastUpdated() > m_rendererLastChanged)
     {
+        r.addToScene(m_scene);
         m_rendererLastChanged = r.lastUpdated();
     }
     if(c.lastUpdated() > m_cameraLastChanged)

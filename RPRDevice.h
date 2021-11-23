@@ -9,8 +9,7 @@
 
 #define DEVICE_VERSION 1
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 struct Object;
 
@@ -140,16 +139,20 @@ struct RPRDevice : public Device,
     // Helper/other functions and data members
     /////////////////////////////////////////////////////////////////////////////
 
-    RPRDevice() = default;
+    RPRDevice();
 
     ~RPRDevice() override;
+
+    void flushCommitBuffer();
 
     private:
         rpr_context m_context{};
         rpr_material_system m_matsys{};
         std::string m_plugin_name = "Tahoe";
         unsigned int m_render_device = 1; // render with GPU0 by default
+
+        std::vector<Object *> m_objectsToCommit;
+        bool m_needToSortCommits{false};
     };
 
-} //namespace rpr
 } // namespace anari

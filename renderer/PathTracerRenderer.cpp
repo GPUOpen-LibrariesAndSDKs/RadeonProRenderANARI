@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "PathTracerRenderer.h"
-#include "../Data.h"
 
-namespace anari {
-namespace rpr {
+namespace anari::rpr {
 
 PathTracerRenderer::PathTracerRenderer(rpr_context context) : Renderer(context){};
 
@@ -38,8 +36,6 @@ void PathTracerRenderer::commit(){
   rpr_image_format format = {4, RPR_COMPONENT_TYPE_FLOAT32};
   rpr_image_desc desc = {1, 1, 0, 3 * sizeof(rpr_float), 0};
   CHECK(rprContextCreateImage(m_context, format, &desc, bgColor, &m_background_image))
-  is_changed = true;
 }
 
-}
 }

@@ -14,13 +14,13 @@ struct Renderer : public Object
 {
   friend struct Frame;
 
-  Renderer(rpr_context context);
+  explicit Renderer(rpr_context context);
 
-  void commit();
+  void commit() override{};
 
   static Renderer *createInstance(rpr_context context, const char *type);
 
-  ~Renderer();
+  ~Renderer() override;
 
 protected:
   rpr_context m_context;

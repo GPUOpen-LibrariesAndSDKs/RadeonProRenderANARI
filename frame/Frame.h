@@ -50,7 +50,7 @@ private:
     // Data //
     ANARIDataType m_format{ANARI_UNKNOWN};
 
-    uvec2 m_size;
+    uvec2 m_size{};
 
     float m_lastFrameDuration{0.f};
 
@@ -73,9 +73,9 @@ private:
     TimeStamp m_worldLastChanged{0};
 
     rpr_context m_context;
-    rpr_scene m_scene;
-    rpr_framebuffer m_framebuffer;
-    rpr_framebuffer m_framebuffer_resolved;
+    rpr_scene m_scene{};
+    rpr_framebuffer m_framebuffer{};
+    rpr_framebuffer m_framebuffer_resolved{};
 };
 
 } // namespace rpr
