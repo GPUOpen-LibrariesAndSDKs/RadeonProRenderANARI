@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Array.h"
+#include "SceneObject.h"
 #include "../rpr_common.h"
 
 namespace anari {
@@ -9,11 +9,11 @@ namespace rpr {
 struct Surface;
 struct Light;
 
-struct World : public Object
+struct World : public SceneObject
 {
   friend struct Frame;
 
-  World() = default;
+  World();
 
   void commit() override;
 

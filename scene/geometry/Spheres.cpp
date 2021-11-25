@@ -31,7 +31,7 @@ void Spheres::commit(){
 
   resetBounds();
 
-  for(int vertexNumber=0; vertexNumber<vertexData->size(); vertexNumber++){
+  for(int vertexNumber=0; vertexNumber < vertexData->size(); vertexNumber++){
     vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
     float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
     rprContextCreateInstance(m_context, m_base_sphere, &(m_shapes[vertexNumber]));

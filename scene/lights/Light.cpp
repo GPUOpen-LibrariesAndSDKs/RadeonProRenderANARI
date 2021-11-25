@@ -10,6 +10,8 @@
 namespace anari {
 namespace rpr {
 
+Light::Light(rpr_context &context)  : m_context(context) {}
+
 
 Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, const char *type)
 {

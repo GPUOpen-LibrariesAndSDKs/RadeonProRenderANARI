@@ -149,8 +149,7 @@ struct ObjectArray : public Array
 template <typename T>
 inline T *Array::dataAs()
 {
-  if (ANARITypeFor<T>::value != m_elementType)
-    throw std::runtime_error("incorrect element type queried for array");
+  assert(ANARITypeFor<T>::value == m_elementType);
   return (T *)m_mem;
 }
 

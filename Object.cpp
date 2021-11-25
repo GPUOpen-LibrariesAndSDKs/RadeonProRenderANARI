@@ -10,11 +10,6 @@ TimeStamp newTimeStamp()
     return g_timeStamp++;
 }
 
-box3 Object::bounds() const
-{
-    return m_bounds;
-}
-
 void Object::commit()
 {
     // no-op
@@ -54,15 +49,6 @@ int Object::commitPriority() const
 void Object::setCommitPriority(int p)
 {
     m_commitPriority = p;
-}
-
-void Object::extendBounds(box3 bounds) {
-    m_bounds.extend(bounds);
-}
-
-void Object::resetBounds() {
-    m_bounds = {vec3(std::numeric_limits<float>::max()),
-                -vec3(std::numeric_limits<float>::max())};
 }
 
 } // namespace rpr

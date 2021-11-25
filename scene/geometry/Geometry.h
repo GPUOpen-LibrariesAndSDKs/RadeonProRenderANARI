@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #pragma once
-#include "../../Array.h"
+#include "../SceneObject.h"
 #include "../../rpr_common.h"
 
 namespace anari {
 namespace rpr {
 
-struct Geometry : public Object
+struct Geometry : public SceneObject
 {
   friend struct Surface;
 
-  explicit Geometry(rpr_context &context) : m_context(context) {};
+  explicit Geometry(rpr_context &context);
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 

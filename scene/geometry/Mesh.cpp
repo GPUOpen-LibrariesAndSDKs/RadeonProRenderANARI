@@ -11,15 +11,12 @@ Mesh::Mesh(rpr_context &context) : Geometry(context) {
 
 void Mesh::commit()
 {
-  if (!hasParam("primitive.index") || !hasParam("vertex.position"))
-    throw std::runtime_error("missing 'mesh' data arrays!");
-
-  auto index = getParamObject<Array1D>("primitive.index");
+  auto index = getParamObject<Array1D>("primitive.index", getParamObject<Array1D>("index"));
   auto vertex = getParamObject<Array1D>("vertex.position");
   auto color = getParamObject<Array1D>("vertex.color");
 
   if (!index || !vertex)
-    throw std::runtime_error("'mesh' data array are incorrect type!");
+    throw std::runtime_error("'mesh' data array are missed or have incorrect type!");
 
   std::size_t num_faces = index->size();
   std::vector<rpr_int> faces(num_faces, 3);
@@ -28,7 +25,7 @@ void Mesh::commit()
   resetBounds();
 
   for(int i=0; i<vertex->size()*3; i++){
-    float coordinate = vertex->dataAs<rpr_float>()[i];
+    float coordinate = ((float*) vertex->dataAs<vec3>())[i];
     if(i%3==0){  //x coordinate
       m_bounds.upper.x = max(m_bounds.upper.x, coordinate);
       m_bounds.lower.x = min(m_bounds.lower.x, coordinate);
@@ -43,7 +40,7 @@ void Mesh::commit()
     }
   }
 
-  CHECK(rprContextCreateMesh(m_context, vertex->dataAs<rpr_float>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, index->dataAs<rpr_int>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &(m_shapes[0])))
+  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex->dataAs<vec3>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int*) index->dataAs<uvec3>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &(m_shapes[0])))
   CHECK(rprShapeSetObjectID(m_shapes[0], 0))
 
   if(color){
@@ -67,10 +64,7 @@ void Mesh::commit()
     CHECK(rprShapeSetVertexValue(m_shapes[0], 3, color_index.data(), a.data(), num_color_vertex))
 
     hasVertexColor = true;
-
-    markUpdated();
   }
-
 }
 
 Mesh::~Mesh(){
@@ -79,3 +73,5 @@ Mesh::~Mesh(){
 
 
 } // namespace anari
+
+std::vector<rpr_float> a;

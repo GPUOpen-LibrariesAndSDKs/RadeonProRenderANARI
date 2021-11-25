@@ -12,8 +12,8 @@ struct SimpleMaterial : public Material{
 private:
     rpr_material_node generateMaterial(rpr_material_node vertex_color) override;
 
-    vec3 m_diffuse_color{};
-    float m_transparency{};
+    vec3 m_diffuse_color{vec3(0.99f)};
+    float m_transparency{0.f};
 };
 
 }//namespace anari

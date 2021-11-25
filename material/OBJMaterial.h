@@ -14,11 +14,11 @@ struct OBJMaterial : public Material{
  private:
   rpr_material_node generateMaterial(rpr_material_node vertex_color) override;
 
-  vec3 m_diffuse_color{};
-  vec3 m_specular_color{};
-  vec3 m_transparency_color{};
-  float m_roughness{};
-  float m_transparency{};
+  vec3 m_diffuse_color{vec3(0.8f)};
+  vec3 m_specular_color{vec3(0.f)};
+  vec3 m_transparency_color{vec3(0.f)};
+  float m_roughness{0.9f};
+  float m_transparency{0.f};
 
 };
 

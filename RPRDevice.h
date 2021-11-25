@@ -6,6 +6,7 @@
 #include "anari/detail/Device.h"
 #include "anari/detail/ParameterizedObject.h"
 #include "anari/detail/IntrusivePtr.h"
+#include "interface.h"
 
 #define DEVICE_VERSION 1
 
@@ -13,9 +14,9 @@ namespace anari::rpr {
 
 struct Object;
 
-struct RPRDevice : public Device,
-        public ParameterizedObject,
-        public RefCounted
+struct RPR_DEVICE_INTERFACE RPRDevice : public Device,
+                                        public ParameterizedObject,
+                                        public RefCounted
 {
     /////////////////////////////////////////////////////////////////////////////
     // Main interface to accepting API calls

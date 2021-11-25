@@ -8,6 +8,10 @@
 namespace anari {
 namespace rpr {
 
+Surface::Surface(rpr_material_system materialSystem) : m_matsys(materialSystem){
+    setCommitPriority(COMMIT_PRIORITY_SURFACE);
+}
+
 void Surface::commit()
 {
   m_material = getParamObject<Material>("material");

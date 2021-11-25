@@ -4,18 +4,18 @@
 #pragma once
 
 #include "../../rpr_common.h"
-#include "../../Object.h"
+#include "../SceneObject.h"
 #include "Geometry.h"
 #include "../../material/Material.h"
 
 namespace anari {
 namespace rpr {
 
-struct Surface : public Object
+struct Surface : public SceneObject
 {
   friend struct Instance;
 
-  explicit Surface(rpr_material_system materialSystem) : m_matsys(materialSystem){};
+  explicit Surface(rpr_material_system materialSystem);
 
   void commit() override;
 
@@ -26,12 +26,9 @@ struct Surface : public Object
  private:
   IntrusivePtr<Geometry> m_geometry;
   IntrusivePtr<Material> m_material;
-  std::vector<rpr_shape> m_shapes;
-  vec3 m_upper_bound{};
-  vec3 m_lower_bound{};
 
   rpr_material_system m_matsys;
-  rpr_material_node m_material_instance;
+  rpr_material_node m_material_instance{};
   //vertex color
   rpr_material_node m_vertex_color_lookup_r = nullptr;
   rpr_material_node m_vertex_color_lookup_g = nullptr;

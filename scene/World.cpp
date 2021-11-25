@@ -8,6 +8,10 @@
 namespace anari {
 namespace rpr {
 
+World::World() {
+    setCommitPriority(COMMIT_PRIORITY_WORLD);
+}
+
 void World::commit(){
 
   auto surfaces = getParamObject<ObjectArray>("surface");
@@ -18,13 +22,13 @@ void World::commit(){
   resetBounds();
 
   for(int surface_number=0; surface_number < surfaces->size(); surface_number++){
-    Surface * surface = surfaces->dataAs<Surface>() + surface_number;
+    Surface *surface = ((Surface**) surfaces->handles())[surface_number];
     extendBounds(surface->bounds());
     m_surfaces.push_back(surface);
   }
 
   for(int light_number=0; light_number < lights->size(); light_number++){
-    Light* light = lights->dataAs<Light>() + light_number;
+    Light* light = ((Light**) lights->handles())[light_number];
     m_lights.push_back(light);
   }
   markUpdated();

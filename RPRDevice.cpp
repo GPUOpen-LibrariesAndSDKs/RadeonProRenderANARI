@@ -602,32 +602,36 @@ void RPRDevice::flushCommitBuffer()
 
 static char deviceName[] = "rpr";
 
-ANARI_DEFINE_LIBRARY_INIT(rpr)
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_NEW_DEVICE(rpr, subtype)
 {
-  printf("...loaded rpr library!\n");
-  anari::Device::registerType<anari::rpr::RPRDevice>(deviceName);
+    return (ANARIDevice) new anari::rpr::RPRDevice();
 }
 
-ANARI_DEFINE_LIBRARY_GET_DEVICE_SUBTYPES(rpr, libdata)
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_INIT(rpr)
+{
+  printf("...loaded rpr library!\n");
+}
+
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_DEVICE_SUBTYPES(rpr, libdata)
 {
     static const char *devices[] = {deviceName, nullptr};
     return devices;
 }
 
-ANARI_DEFINE_LIBRARY_GET_OBJECT_SUBTYPES(
+extern "C"  RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_OBJECT_SUBTYPES(
         rpr, libdata, deviceSubtype, objectType)
 {
     // TODO
     return nullptr;
 }
 
-ANARI_DEFINE_LIBRARY_GET_OBJECT_PARAMETERS(
+extern "C"  RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_OBJECT_PARAMETERS(
         rpr, libdata, deviceSubtype, objectSubtype, objectType)
 {
     //TODO
     return nullptr;
 }
-ANARI_DEFINE_LIBRARY_GET_PARAMETER_PROPERTY(rpr,
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_PARAMETER_PROPERTY(rpr,
                                             libdata,
                                             deviceSubtype,
                                             objectSubtype,
@@ -641,7 +645,7 @@ ANARI_DEFINE_LIBRARY_GET_PARAMETER_PROPERTY(rpr,
     return nullptr;
 }
 
-extern "C" ANARIDevice anariNewRPRDevice()
+extern "C" RPR_DEVICE_INTERFACE ANARIDevice anariNewRPRDevice()
 {
     return (ANARIDevice) new anari::rpr::RPRDevice();
 }

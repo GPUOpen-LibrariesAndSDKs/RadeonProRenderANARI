@@ -19,7 +19,6 @@ void OBJMaterial::commit(){
   m_transparency_color = getParam<vec3>("tf", vec3(0.f));
   m_roughness = std::pow(1.f - ((getParam<rpr_float>("ns", 10.f)) / SHININESS_MAX_VALUE), 2);
   m_transparency = 1.f - getParam<rpr_float>("d", 1.f);
-  markUpdated();
 }
 
 rpr_material_node OBJMaterial::generateMaterial(rpr_material_node vertex_color){

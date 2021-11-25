@@ -46,8 +46,6 @@ struct Object : public RefCounted, public ParameterizedObject
 
     virtual void commit();
 
-    virtual box3 bounds() const;
-
     void setObjectType(ANARIDataType type);
 
     ANARIDataType type() const;
@@ -60,10 +58,6 @@ struct Object : public RefCounted, public ParameterizedObject
   protected:
     void setCommitPriority(int p);
     virtual void addToScene(rpr_scene scene) {};
-    void extendBounds(box3 bounds);
-    void resetBounds();
-
-    box3 m_bounds{};
 
   private:
     ANARIDataType m_type{ANARI_OBJECT};

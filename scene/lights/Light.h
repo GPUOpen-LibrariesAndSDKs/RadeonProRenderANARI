@@ -4,22 +4,18 @@
 #pragma once
 
 #include "../../rpr_common.h"
-#include "../../Object.h"
+#include "../SceneObject.h"
 
 namespace anari {
 namespace rpr {
 
-struct Light : public Object
+struct Light : public SceneObject
 {
   friend struct Instance;
 
-  explicit Light(rpr_context &context) : m_context(context) {};
+  explicit Light(rpr_context &context);
 
   static Light *createInstance(rpr_context &context, rpr_material_system matsys, const char *type);
-
-  inline rpr_light get_light() {
-    return m_light;
-  }
 
   inline void addToScene(rpr_scene) override{};
 
