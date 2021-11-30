@@ -36,7 +36,6 @@ TimeStamp newTimeStamp();
 struct Object : public RefCounted, public ParameterizedObject
 {
     Object() = default;
-    virtual ~Object() = default;
 
     template <typename T>
     T *getParamObject(const std::string &name, T *valIfNotFound = nullptr);
@@ -62,7 +61,6 @@ struct Object : public RefCounted, public ParameterizedObject
   private:
     ANARIDataType m_type{ANARI_OBJECT};
     TimeStamp m_lastUpdated{newTimeStamp()};
-    TimeStamp m_lastAttached{0};
     int m_commitPriority{COMMIT_PRIORITY_DEFAULT};
 };
 

@@ -8,7 +8,7 @@
 #define RPR_DEVICE_INTERFACE
 #else
 #ifdef rpr_device_EXPORTS
-#define RPR_DEVICE_INTERFACE
+#define RPR_DEVICE_INTERFACE __declspec(dllexport)
 #else
 #define RPR_DEVICE_INTERFACE __declspec(dllimport)
 #endif
@@ -16,5 +16,5 @@
 #elif defined __GNUC__
 #define RPR_DEVICE_INTERFACE __attribute__((__visibility__("default")))
 #else
-#define EXAMPLE_DEVICE_INTERFACE
+#define RRP_DEVICE_INTERFACE
 #endif
