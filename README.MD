@@ -1,12 +1,12 @@
-#RadeonProRender ANARI device
-##Description
+# RadeonProRender ANARI device
+## Description
 This is implementation of ANARI device based on RadeonProRender engine
-##Dependencies
+## Dependencies
 [ANARI SDK](https://github.com/KhronosGroup/ANARI-SDK) must be installed on computer before RPR device building.
-##Building the device
+## Building the device
 The repository uses CMake 3.11+ to build the device
 For example, to build (must be in a separate directory from the source directory), you can do:
-####UNIX-like systems
+#### UNIX-like systems
 ```shell
 cd path/to/source
 mkdir build
@@ -14,7 +14,7 @@ cd build
 cmake ..
 cmake --build .
 ```
-####Windows
+#### Windows
 Visual studio 17 or 19 must be installed. Building using MinGW may produce an error!
 * create build directory into directory with source code
 * run `cmake ..` from build directory
