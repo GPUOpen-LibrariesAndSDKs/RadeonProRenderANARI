@@ -43,7 +43,7 @@ void Mesh::commit()
   CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex->dataAs<vec3>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int*) index->dataAs<uvec3>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &(m_shapes[0])))
   CHECK(rprShapeSetObjectID(m_shapes[0], 0))
 
-  if(color){
+  if(color && false){ // temporary disable vertex color because it is not implemented in Northstar
     rpr_int num_color_vertex = color->size();
     std::vector<rpr_float> r;
     std::vector<rpr_float> g;

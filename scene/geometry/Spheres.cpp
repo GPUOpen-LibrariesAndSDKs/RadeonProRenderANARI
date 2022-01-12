@@ -7,15 +7,15 @@ Spheres::Spheres(rpr_context &context) : Geometry(context) {}
 
 void Spheres::commit(){
 
-  if (!hasParam("sphere.position"))
-    throw std::runtime_error("missing 'sphere' data array 'sphere.position'!");
+  if (!hasParam("vertex.position"))
+    throw std::runtime_error("missing 'vertex.position' on sphere geometry");
 
-  auto vertexData = getParamObject<Array1D>("sphere.position");
-  auto radiusData = getParamObject<Array1D>("sphere.radius");
+  auto vertexData = getParamObject<Array1D>("vertex.position");
+  auto radiusData = getParamObject<Array1D>("vertex.radius");
   auto globalRadius = getParam<float>("radius", 1.f);
 
   if (radiusData && radiusData->size()!=vertexData->size()){
-    throw std::runtime_error("'sphere.position' and 'sphere.radius' sizes are incompatible");
+    throw std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible");
   }
 
   for(rpr_shape shape : m_shapes){
