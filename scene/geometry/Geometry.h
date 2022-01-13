@@ -5,6 +5,9 @@
 #include "../SceneObject.h"
 #include "../../rpr_common.h"
 
+//std
+#include <set>
+
 namespace anari {
 namespace rpr {
 
@@ -16,15 +19,14 @@ struct Geometry : public SceneObject
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 
-  void addToScene(rpr_scene scene) override;
+  virtual void getInstances(std::set<rpr_shape> &out_shapes) {};
 
+  rpr_shape getBaseShape();
 
   protected:
-    rpr_context m_context; // we need to store the context so we can create mesh at commit
-    std::vector<rpr_shape> m_shapes;
+    rpr_context m_context; // we need to store the context, so we can create mesh at commit
+    rpr_shape m_base_shape{};
     bool hasVertexColor = false;
-
-    void applyMaterial(rpr_material_node material);
 };
 
 } // namespace reference

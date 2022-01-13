@@ -14,8 +14,11 @@ struct Mesh : public Geometry
 
   void commit() override;
 
+  void addToScene(rpr_scene scene) override;
+
   ~Mesh() override;
 
+  void getInstances(std::set<rpr_shape> &out_shapes) override;
 };
 
 } // namespace anari

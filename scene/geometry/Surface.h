@@ -13,19 +13,21 @@ namespace rpr {
 
 struct Surface : public SceneObject
 {
-  friend struct Instance;
-
   explicit Surface(rpr_material_system materialSystem);
 
   void commit() override;
 
   void addToScene(rpr_scene scene) override;
 
+  void getInstances(std::set<rpr_shape> &out_shapes){};
+
   ~Surface() override;
 
  private:
   IntrusivePtr<Geometry> m_geometry;
   IntrusivePtr<Material> m_material;
+
+  std::set<rpr_shape> m_instances;
 
   rpr_material_system m_matsys;
   rpr_material_node m_material_instance{};
@@ -44,6 +46,7 @@ struct Surface : public SceneObject
 
   void clearMaterialNodesVertex();
   void generateVertexColorNode();
+  void clearInstances();
 };
 
 

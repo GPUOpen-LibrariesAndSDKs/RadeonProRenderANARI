@@ -25,17 +25,9 @@ Geometry *Geometry::createInstance(rpr_context &context, const char *type)
 
 }
 
-void Geometry::addToScene(rpr_scene scene){
-    for(rpr_shape shape : m_shapes){
-        CHECK(rprSceneAttachShape(scene, shape))
-    }
-}
-
-void Geometry::applyMaterial(rpr_material_node material) {
-    for(rpr_shape shape : m_shapes){
-        CHECK(rprShapeSetMaterial(shape, material))
-    }
-    markUpdated();
+rpr_shape Geometry::getBaseShape()
+{
+  return m_base_shape;
 }
 
 } // namespace rpr

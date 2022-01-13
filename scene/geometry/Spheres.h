@@ -14,17 +14,18 @@ struct Spheres : public Geometry
 
   void commit() override;
 
+  void getInstances(std::set<rpr_shape> &out_shapes) override;
+
   ~Spheres() override;
 
  private:
 
   void createBaseSphere();
 
-  rpr_shape m_base_sphere = nullptr;
-
   int sectors=16;
-
   int rings=16;
+
+  std::vector<std::pair<vec3, float>> m_sphere_data;
 
 };
 

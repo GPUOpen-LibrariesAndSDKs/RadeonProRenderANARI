@@ -25,17 +25,38 @@ void Surface::commit()
 }
 
 void Surface::addToScene(rpr_scene scene) {
-    if(m_material_instance){
-        CHECK(rprObjectDelete(m_material_instance));
+    // cleanup before new commit
+    if(m_material_instance)
+    {
+      CHECK(rprObjectDelete(m_material_instance));
+      m_material_instance = nullptr;
     }
-    if(m_geometry->hasVertexColor && !m_vertex_color){
+    clearInstances();
+
+    // prepare material node for vertex color
+    if(m_geometry->hasVertexColor && !m_vertex_color)
+    {
         generateVertexColorNode();
-    } else if(!m_geometry->hasVertexColor){
+    }
+    else if(!m_geometry->hasVertexColor)
+    {
         m_vertex_color = nullptr;
     }
+
+    // generate new material instance
     m_material_instance = m_material->generateMaterial(m_vertex_color);
-    m_geometry->applyMaterial(m_material_instance);
-    m_geometry->addToScene(scene);
+
+    // generate new geometry instance
+    m_geometry->getInstances(m_instances);
+
+    // apply material for instances and add them to scene
+    for(rpr_shape instance : m_instances){
+      CHECK(rprShapeSetMaterial(instance, m_material_instance))
+      CHECK(rprSceneAttachShape(scene, instance));
+    }
+    // attach base invisible shape
+    CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
+
 }
 
 void Surface::generateVertexColorNode() {
@@ -133,11 +154,21 @@ void Surface::clearMaterialNodesVertex(){
   }
 }
 
-Surface::~Surface(){
-  clearMaterialNodesVertex();
-  if(m_material_instance){
-      CHECK(rprObjectDelete(m_material_instance));
+void Surface::clearInstances()
+{
+  for(rpr_shape instance : m_instances)
+  {
+    CHECK(rprObjectDelete(instance))
   }
+  m_instances.clear();
+}
+
+Surface::~Surface(){
+  clearInstances();
+  if(m_material_instance){
+    CHECK(rprObjectDelete(m_material_instance));
+  }
+  clearMaterialNodesVertex();
 }
 
 } // namespace rpr

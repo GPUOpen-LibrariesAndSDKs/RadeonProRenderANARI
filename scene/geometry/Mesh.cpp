@@ -5,9 +5,7 @@
 
 namespace anari::rpr {
 
-Mesh::Mesh(rpr_context &context) : Geometry(context) {
-  m_shapes.resize(1);
-}
+Mesh::Mesh(rpr_context &context) : Geometry(context) {}
 
 void Mesh::commit()
 {
@@ -40,8 +38,7 @@ void Mesh::commit()
     }
   }
 
-  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex->dataAs<vec3>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int*) index->dataAs<uvec3>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &(m_shapes[0])))
-  CHECK(rprShapeSetObjectID(m_shapes[0], 0))
+  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex->dataAs<vec3>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int*) index->dataAs<uvec3>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_shape))
 
   if(color && false){ // temporary disable vertex color because it is not implemented in Northstar
     rpr_int num_color_vertex = color->size();
@@ -58,17 +55,36 @@ void Mesh::commit()
       a.push_back(colorData[i].a);
       color_index.push_back(i);
     }
-    CHECK(rprShapeSetVertexValue(m_shapes[0], 0, color_index.data(), r.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_shapes[0], 1, color_index.data(), g.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_shapes[0], 2, color_index.data(), b.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_shapes[0], 3, color_index.data(), a.data(), num_color_vertex))
+    CHECK(rprShapeSetVertexValue(m_base_shape, 0, color_index.data(), r.data(), num_color_vertex))
+    CHECK(rprShapeSetVertexValue(m_base_shape, 1, color_index.data(), g.data(), num_color_vertex))
+    CHECK(rprShapeSetVertexValue(m_base_shape, 2, color_index.data(), b.data(), num_color_vertex))
+    CHECK(rprShapeSetVertexValue(m_base_shape, 3, color_index.data(), a.data(), num_color_vertex))
 
     hasVertexColor = true;
   }
+
+  CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
 }
 
-Mesh::~Mesh(){
-  CHECK(rprObjectDelete(m_shapes[0]))
+void Mesh::addToScene(rpr_scene scene) {
+  rpr_shape instance;
+  CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
+  CHECK(rprSceneAttachShape(scene, instance))
+  CHECK(rprSceneAttachShape(scene, m_base_shape))
+}
+
+void Mesh::getInstances(std::set<rpr_shape> &out_shapes)
+{
+  rpr_shape instance;
+  CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
+  out_shapes.insert(instance);
+}
+
+Mesh::~Mesh()
+{
+  if(m_base_shape){
+    CHECK(rprObjectDelete(m_base_shape))
+  }
 }
 
 
