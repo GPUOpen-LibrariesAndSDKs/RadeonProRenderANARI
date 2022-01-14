@@ -6,6 +6,7 @@
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
+#include "scene/Group.h"
 #include "scene/World.h"
 #include "frame/Frame.h"
 #include "material/Material.h"
@@ -164,7 +165,7 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Array3D *),
     declare_param_setter_object(Frame *),
     declare_param_setter_object(Geometry *),
-    // declare_param_setter_object(Group *),
+    declare_param_setter_object(Group *),
     // declare_param_setter_object(Instance *),
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),

@@ -19,13 +19,14 @@ struct Surface : public SceneObject
 
   void addToScene(rpr_scene scene) override;
 
-  void getInstances(std::set<rpr_shape> &out_shapes){};
+  void getInstances(std::set<rpr_shape> &out_shapes);
+
+  rpr_shape getBaseShape();
 
   ~Surface() override;
 
  private:
   IntrusivePtr<Geometry> m_geometry;
-  IntrusivePtr<Material> m_material;
 
   std::set<rpr_shape> m_instances;
 

@@ -104,6 +104,7 @@ add_library(${PROJECT_NAME} SHARED
   renderer/PathTracerRenderer.cpp
 
   #scene/Instance.cpp
+  scene/Group.cpp
   scene/World.cpp
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp

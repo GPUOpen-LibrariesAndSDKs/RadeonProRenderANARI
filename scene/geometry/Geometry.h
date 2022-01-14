@@ -13,8 +13,6 @@ namespace rpr {
 
 struct Geometry : public SceneObject
 {
-  friend struct Surface;
-
   explicit Geometry(rpr_context &context);
 
   static Geometry *createInstance(rpr_context &context, const char *type);
@@ -23,10 +21,11 @@ struct Geometry : public SceneObject
 
   rpr_shape getBaseShape();
 
-  protected:
+  bool hasVertexColor = false;
+
+protected:
     rpr_context m_context; // we need to store the context, so we can create mesh at commit
     rpr_shape m_base_shape{};
-    bool hasVertexColor = false;
 };
 
 } // namespace reference

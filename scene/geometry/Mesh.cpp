@@ -40,7 +40,7 @@ void Mesh::commit()
 
   CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertex->dataAs<vec3>(), vertex->size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int*) index->dataAs<uvec3>(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_shape))
 
-  if(color && false){ // temporary disable vertex color because it is not implemented in Northstar
+  if(color){
     rpr_int num_color_vertex = color->size();
     std::vector<rpr_float> r;
     std::vector<rpr_float> g;
@@ -61,6 +61,10 @@ void Mesh::commit()
     CHECK(rprShapeSetVertexValue(m_base_shape, 3, color_index.data(), a.data(), num_color_vertex))
 
     hasVertexColor = true;
+  }
+  else
+  {
+    hasVertexColor = false;
   }
 
   CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
@@ -89,5 +93,3 @@ Mesh::~Mesh()
 
 
 } // namespace anari
-
-std::vector<rpr_float> a;
