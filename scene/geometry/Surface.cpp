@@ -62,15 +62,15 @@ void Surface::addToScene(rpr_scene scene) {
     CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
 }
 
-void Surface::getInstances(std::set<rpr_shape> &out_shapes)
+void Surface::getInstances(std::vector<rpr_shape> &out_shapes)
 {
-  std::set<rpr_shape> instances;
+  std::vector<rpr_shape> instances;
   m_geometry->getInstances(instances);
 
   for(rpr_shape instance: instances)
   {
     CHECK(rprShapeSetMaterial(instance, m_material_instance))
-    out_shapes.insert(instance);
+    out_shapes.push_back(instance);
   }
 }
 

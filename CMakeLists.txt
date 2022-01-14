@@ -53,7 +53,7 @@ target_link_libraries(glm INTERFACE glm::glm)
 ## RPR ##
 fetch_project(
   NAME rpr_sdk
-	URL https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/archive/refs/tags/v2.2.8.zip
+	URL https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/archive/refs/tags/v2.2.10.zip
   DESTINATION rpr
 )
 
@@ -103,7 +103,7 @@ add_library(${PROJECT_NAME} SHARED
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp
 
-  #scene/Instance.cpp
+  scene/Instance.cpp
   scene/Group.cpp
   scene/World.cpp
   scene/geometry/Surface.cpp

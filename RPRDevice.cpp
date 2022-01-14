@@ -6,7 +6,7 @@
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
-#include "scene/Group.h"
+#include "scene/Instance.h"
 #include "scene/World.h"
 #include "frame/Frame.h"
 #include "material/Material.h"
@@ -166,7 +166,7 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Frame *),
     declare_param_setter_object(Geometry *),
     declare_param_setter_object(Group *),
-    // declare_param_setter_object(Instance *),
+    declare_param_setter_object(Instance *),
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
@@ -262,8 +262,6 @@ void RPRDevice::deviceCommit()
   CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_Y_FLIP, 0))
 
   CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
-
-  printf("...context initialized!\n");
 }
 
 void RPRDevice::deviceRetain()
@@ -394,12 +392,12 @@ ANARISampler RPRDevice::newSampler(const char *type)
 
 ANARIGroup RPRDevice::newGroup()
 {
-  return createPlaceholderObject<ANARIGroup>();
+  return createObjectForAPI<Group, ANARIGroup>();
 }
 
 ANARIInstance RPRDevice::newInstance()
 {
-  return createPlaceholderObject<ANARIInstance>();
+  return createObjectForAPI<Instance, ANARIInstance>();
 }
 
 // Top-level Worlds ///////////////////////////////////////////////////////////

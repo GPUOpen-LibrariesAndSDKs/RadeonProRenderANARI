@@ -77,11 +77,11 @@ void Mesh::addToScene(rpr_scene scene) {
   CHECK(rprSceneAttachShape(scene, m_base_shape))
 }
 
-void Mesh::getInstances(std::set<rpr_shape> &out_shapes)
+void Mesh::getInstances(std::vector<rpr_shape> &out_shapes)
 {
   rpr_shape instance;
   CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
-  out_shapes.insert(instance);
+  out_shapes.push_back(instance);
 }
 
 Mesh::~Mesh()

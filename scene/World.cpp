@@ -4,11 +4,13 @@
 #include "World.h"
 #include "geometry/Surface.h"
 #include "lights/Light.h"
+#include "Instance.h"
 
 namespace anari {
 namespace rpr {
 
-World::World() {
+World::World()
+{
     setCommitPriority(COMMIT_PRIORITY_WORLD);
 }
 
@@ -16,21 +18,39 @@ void World::commit(){
 
   auto surfaces = getParamObject<ObjectArray>("surface");
   auto lights = getParamObject<ObjectArray>("light");
+  auto instances = getParamObject<ObjectArray>("instance");
   m_surfaces.clear();
   m_lights.clear();
+  m_instances.clear();
 
   resetBounds();
 
-  for(int surface_number=0; surface_number < surfaces->size(); surface_number++){
-    Surface *surface = ((Surface**) surfaces->handles())[surface_number];
-    extendBounds(surface->bounds());
-    m_surfaces.push_back(surface);
+  if(surfaces)
+  {
+    for(int surface_number=0; surface_number < surfaces->size(); surface_number++){
+      Surface *surface = ((Surface**) surfaces->handles())[surface_number];
+      extendBounds(surface->bounds());
+      m_surfaces.push_back(surface);
+    }
   }
 
-  for(int light_number=0; light_number < lights->size(); light_number++){
-    Light* light = ((Light**) lights->handles())[light_number];
-    m_lights.push_back(light);
+  if(lights)
+  {
+    for(int light_number=0; light_number < lights->size(); light_number++){
+      Light* light = ((Light**) lights->handles())[light_number];
+      m_lights.push_back(light);
+    }
   }
+
+  if(instances)
+  {
+    for(int instance_number=0; instance_number<instances->size(); instance_number++){
+      Instance* instance = ((Instance**) instances->handles())[instance_number];
+      extendBounds(instance->bounds());
+      m_instances.push_back(instance);
+    }
+  }
+
   markUpdated();
 }
 
@@ -65,11 +85,15 @@ void World::addToScene(rpr_scene scene){
     }
 
     for(Surface* surface : m_surfaces){
-        surface->addToScene(scene);
+      surface->addToScene(scene);
     }
 
     for(Light* light : m_lights){
-        light->addToScene(scene);
+      light->addToScene(scene);
+    }
+
+    for(Instance* instance : m_instances){
+      instance->addToScene(scene);
     }
 }
 

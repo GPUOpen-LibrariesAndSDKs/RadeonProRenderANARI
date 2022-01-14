@@ -5,9 +5,6 @@
 #include "../SceneObject.h"
 #include "../../rpr_common.h"
 
-//std
-#include <set>
-
 namespace anari {
 namespace rpr {
 
@@ -17,7 +14,7 @@ struct Geometry : public SceneObject
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 
-  virtual void getInstances(std::set<rpr_shape> &out_shapes) {};
+  virtual void getInstances(std::vector<rpr_shape> &out_shapes) {};
 
   rpr_shape getBaseShape();
 

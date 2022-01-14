@@ -8,6 +8,7 @@ namespace rpr {
 
 struct Surface;
 struct Light;
+struct Instance;
 
 struct World : public SceneObject
 {
@@ -20,6 +21,7 @@ struct World : public SceneObject
  private:
   std::vector<Surface*> m_surfaces;
   std::vector<Light*> m_lights;
+  std::vector<Instance*> m_instances;
 
   void addToScene(rpr_scene scene) override;
 };

@@ -14,7 +14,7 @@ struct Spheres : public Geometry
 
   void commit() override;
 
-  void getInstances(std::set<rpr_shape> &out_shapes) override;
+  void getInstances(std::vector<rpr_shape> &out_shapes) override;
 
   ~Spheres() override;
 

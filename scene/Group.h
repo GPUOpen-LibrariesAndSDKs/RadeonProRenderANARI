@@ -14,6 +14,10 @@ struct Group : public SceneObject
 
   void commit() override;
 
+  void getInstances(std::vector<rpr_shape> &out_shapes);
+
+  void getBaseShapes(std::vector<rpr_shape> &outShapes);
+
 private:
   std::vector<Surface *> m_surfaces;
 };

@@ -111,4 +111,24 @@ inline float reduce_max(const vec4 &v)
   return std::max(std::max(std::max(v.x, v.y), v.z), v.w);
 }
 
+inline vec3 xfmPoint(const mat4 &m, const vec3 &p)
+{
+  return vec3(m * vec4(p, 1.f));
+}
+
+
+inline box3 xfmBox(const mat4 &m, const box3 &b)
+{
+  box3 retval;
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.lower.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.lower.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.upper.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.upper.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.lower.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.lower.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.upper.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.upper.y, b.upper.z)));
+  return retval;
+}
+
 } // namespace anari

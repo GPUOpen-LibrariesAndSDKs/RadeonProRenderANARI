@@ -42,7 +42,7 @@ void Spheres::commit(){
   markUpdated();
 }
 
-void Spheres::getInstances(std::set<rpr_shape> &out_shapes)
+void Spheres::getInstances(std::vector<rpr_shape> &out_shapes)
 {
   for(int sphere_number = 0; sphere_number < m_sphere_data.size(); sphere_number++)
   {
@@ -57,7 +57,7 @@ void Spheres::getInstances(std::set<rpr_shape> &out_shapes)
     CHECK(rprShapeSetTransform(instance, true, &m.m00))
     CHECK(rprShapeSetObjectID(instance, sphere_number))
 
-    out_shapes.insert(instance);
+    out_shapes.push_back(instance);
   }
 }
 
