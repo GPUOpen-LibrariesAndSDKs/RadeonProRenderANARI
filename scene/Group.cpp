@@ -36,10 +36,10 @@ void Group::commit()
   }
 }
 
-void Group::getInstances(std::vector<rpr_shape> &out_shapes)
+void Group::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 {
   for(Surface* surface : m_surfaces){
-    surface->getInstances(out_shapes);
+    surface->getInstances(out_shapes, transform);
   }
 }
 

@@ -28,12 +28,11 @@ void Instance::addToScene(rpr_scene scene)
 {
   std::vector<rpr_shape> base_shapes;
   clearInstances();
-  m_group->getInstances(m_instances);
+  m_group->getInstances(m_instances, m_transform);
   m_group->getBaseShapes(base_shapes);
 
   for(rpr_shape instance : m_instances)
   {
-    CHECK(rprShapeSetTransform(instance, false, value_ptr(m_transform)))
     CHECK(rprSceneAttachShape(scene, instance))
   }
 

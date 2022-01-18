@@ -14,7 +14,7 @@ struct Geometry : public SceneObject
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 
-  virtual void getInstances(std::vector<rpr_shape> &out_shapes) {};
+  virtual void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) {};
 
   rpr_shape getBaseShape();
 

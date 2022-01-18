@@ -52,7 +52,7 @@ void Surface::commit()
 void Surface::addToScene(rpr_scene scene) {
 
     clearInstances();
-    getInstances(m_instances);
+    getInstances(m_instances, mat4x3(1));
 
     // attach instances to scene
     for(rpr_shape instance : m_instances){
@@ -62,10 +62,10 @@ void Surface::addToScene(rpr_scene scene) {
     CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
 }
 
-void Surface::getInstances(std::vector<rpr_shape> &out_shapes)
+void Surface::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 {
   std::vector<rpr_shape> instances;
-  m_geometry->getInstances(instances);
+  m_geometry->getInstances(instances, transform);
 
   for(rpr_shape instance: instances)
   {

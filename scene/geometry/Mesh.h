@@ -18,7 +18,7 @@ struct Mesh : public Geometry
 
   ~Mesh() override;
 
-  void getInstances(std::vector<rpr_shape> &out_shapes) override;
+  void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) override;
 };
 
 } // namespace anari

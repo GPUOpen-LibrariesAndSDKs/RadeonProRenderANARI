@@ -44,7 +44,7 @@ void Spheres::commit(){
   markUpdated();
 }
 
-void Spheres::getInstances(std::vector<rpr_shape> &out_shapes)
+void Spheres::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 {
   for(int sphere_number = 0; sphere_number < m_sphere_positions.size(); sphere_number++)
   {
@@ -52,11 +52,11 @@ void Spheres::getInstances(std::vector<rpr_shape> &out_shapes)
     float radius = m_sphere_radius[sphere_number];
 
     //transform
-    RadeonProRender::matrix m = RadeonProRender::matrix(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1);
+    mat4 sphere_transform = transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1)) * transform;
 
     rpr_shape instance;
     CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
-    CHECK(rprShapeSetTransform(instance, true, &m.m00))
+    CHECK(rprShapeSetTransform(instance, false, value_ptr(sphere_transform)))
     CHECK(rprShapeSetObjectID(instance, sphere_number))
 
     out_shapes.push_back(instance);

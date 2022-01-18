@@ -15,7 +15,7 @@ struct Group : public SceneObject
 
   void commit() override;
 
-  void getInstances(std::vector<rpr_shape> &out_shapes);
+  void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform);
 
   void getBaseShapes(std::vector<rpr_shape> &outShapes);
 
