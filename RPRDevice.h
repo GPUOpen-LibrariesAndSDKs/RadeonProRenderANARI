@@ -149,7 +149,7 @@ struct RPR_DEVICE_INTERFACE RPRDevice : public Device,
     private:
         rpr_context m_context{};
         rpr_material_system m_matsys{};
-        std::string m_plugin_name = "Tahoe";
+        std::string m_plugin_name = "Northstar";
         unsigned int m_render_device = 1; // render with GPU0 by default
 
         std::vector<Object *> m_objectsToCommit;

@@ -14,28 +14,69 @@ Surface::Surface(rpr_material_system materialSystem) : m_matsys(materialSystem){
 
 void Surface::commit()
 {
-  m_material = getParamObject<Material>("material");
+  IntrusivePtr<Material> material = getParamObject<Material>("material");
   m_geometry = getParamObject<Geometry>("geometry");
 
   if(!m_geometry) throw std::runtime_error("'geometry' is a required attribute");
-  if(!m_material) throw std::runtime_error("'material' is a required attribute");
+  if(!material) throw std::runtime_error("'material' is a required attribute");
+
+  // cleanup before new commit
+  if(m_material_instance)
+  {
+    CHECK(rprObjectDelete(m_material_instance));
+    m_material_instance = nullptr;
+  }
 
   m_bounds = m_geometry->bounds();
+
+  // prepare material node for vertex color
+  // TODO move vertex color node to another class
+  if(m_geometry->hasVertexColor && false) // skip vertex colors because now Northstar does not support it
+  {
+    if(!m_vertex_color)
+    {
+      generateVertexColorNode();
+    }
+    // generate new material instance
+    m_material_instance = material->generateMaterial(m_vertex_color);
+  }
+  else
+  {
+    // generate new material instance
+    m_material_instance = material->generateMaterial(nullptr);
+  }
+
   markUpdated();
 }
 
 void Surface::addToScene(rpr_scene scene) {
-    if(m_material_instance){
-        CHECK(rprObjectDelete(m_material_instance));
+
+    clearInstances();
+    getInstances(m_instances, mat4x3(1));
+
+    // attach instances to scene
+    for(rpr_shape instance : m_instances){
+      CHECK(rprSceneAttachShape(scene, instance));
     }
-    if(m_geometry->hasVertexColor && !m_vertex_color){
-        generateVertexColorNode();
-    } else if(!m_geometry->hasVertexColor){
-        m_vertex_color = nullptr;
-    }
-    m_material_instance = m_material->generateMaterial(m_vertex_color);
-    m_geometry->applyMaterial(m_material_instance);
-    m_geometry->addToScene(scene);
+    // attach base invisible shape
+    CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
+}
+
+void Surface::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
+{
+  std::vector<rpr_shape> instances;
+  m_geometry->getInstances(instances, transform);
+
+  for(rpr_shape instance: instances)
+  {
+    CHECK(rprShapeSetMaterial(instance, m_material_instance))
+    out_shapes.push_back(instance);
+  }
+}
+
+rpr_shape Surface::getBaseShape()
+{
+  return m_geometry->getBaseShape();
 }
 
 void Surface::generateVertexColorNode() {
@@ -133,11 +174,21 @@ void Surface::clearMaterialNodesVertex(){
   }
 }
 
-Surface::~Surface(){
-  clearMaterialNodesVertex();
-  if(m_material_instance){
-      CHECK(rprObjectDelete(m_material_instance));
+void Surface::clearInstances()
+{
+  for(rpr_shape instance : m_instances)
+  {
+    CHECK(rprObjectDelete(instance))
   }
+  m_instances.clear();
+}
+
+Surface::~Surface(){
+  clearInstances();
+  if(m_material_instance){
+    CHECK(rprObjectDelete(m_material_instance));
+  }
+  clearMaterialNodesVertex();
 }
 
 } // namespace rpr

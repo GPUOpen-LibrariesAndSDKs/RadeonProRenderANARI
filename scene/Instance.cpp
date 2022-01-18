@@ -2,54 +2,62 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Instance.h"
-#include "geometry/Surface.h"
 
 namespace anari {
 namespace rpr {
 
-void Instance::commit(){
-  DataView<GeometricModel *> models(getParamObject<Data>("geometry"));
-  DataView<Light *> lights(getParamObject<Data>("light"));
-
-  m_shapes.clear();
-  m_lights.clear();
-
-  m_lower_bound = vec3(std::numeric_limits<float>::max());
-  m_upper_bound = vec3(-std::numeric_limits<float>::max());
-
-  for(int model_number=0; model_number< models.size(); model_number++){
-    Surface* model = models.data()[model_number];
-
-    //bounds calculating
-    m_upper_bound.x = max(m_upper_bound.x, model->m_upper_bound.x);
-    m_upper_bound.y = max(m_upper_bound.y, model->m_upper_bound.y);
-    m_upper_bound.z = max(m_upper_bound.z, model->m_upper_bound.z);
-
-    m_lower_bound.x = min(m_lower_bound.x, model->m_lower_bound.x);
-    m_lower_bound.y = min(m_lower_bound.y, model->m_lower_bound.y);
-    m_lower_bound.z = min(m_lower_bound.z, model->m_lower_bound.z);
-
-    for(rpr_shape shape : model->m_shapes){
-      m_shapes.push_back(shape);
-    }
-    //TODO skip non unique shapes
-  }
-
-  for(int light_number=0; light_number<lights.size(); light_number++){
-    m_lights.push_back(lights.data()[light_number]);
-  }
+Instance::Instance()
+{
+  setCommitPriority(COMMIT_PRIORITY_INSTANCE);
 }
 
-void Instance::addToScene(rpr_scene scene){
+void Instance::commit()
+{
+  m_group = getParamObject<Group>("group");
+  m_transform = getParam<mat4x3>("transform", mat4x3(1));
 
-  for(rpr_shape shape : m_shapes){
-    CHECK(rprSceneAttachShape(scene, shape))
+  if(!m_group)
+  {
+    throw std::runtime_error("'group' is a required parameter!");
   }
 
-  for(Light* light : m_lights){
-    light->addToScene(scene);
-  }
+  extendBounds(xfmBox(m_transform, m_group->bounds()));
 }
+
+void Instance::addToScene(rpr_scene scene)
+{
+  std::vector<rpr_shape> base_shapes;
+  clearInstances();
+  m_group->getInstances(m_instances, m_transform);
+  m_group->getBaseShapes(base_shapes);
+
+  for(rpr_shape instance : m_instances)
+  {
+    CHECK(rprSceneAttachShape(scene, instance))
+  }
+
+  for(rpr_shape base_shape : base_shapes)
+  {
+    CHECK(rprSceneAttachShape(scene, base_shape))
+  }
+
+  m_group->addLightsToScene(scene);
+}
+
+void Instance::clearInstances()
+{
+  for(rpr_shape instance : m_instances)
+  {
+    CHECK(rprObjectDelete(instance))
+  }
+  m_instances.clear();
+}
+
+Instance::~Instance()
+{
+  clearInstances();
+}
+
 
 } // namespace rpr
 

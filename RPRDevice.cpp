@@ -6,6 +6,7 @@
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
+#include "scene/Instance.h"
 #include "scene/World.h"
 #include "frame/Frame.h"
 #include "material/Material.h"
@@ -21,16 +22,14 @@
 #if defined(WIN32)
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "Northstar64.dll"},
-    {"Tahoe", "Tahoe64.dll"},
-    {"Hybrid", "Hybrid.dll"}};
+    {"HybridPro", "HybridPro.dll"}};
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "libNorthstar64.dylib"}, {"Tahoe", "libTahoe64.dylib"}};
+    {"Northstar", "libNorthstar64.dylib"};
 #else
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "./libNorthstar64.so"},
-    {"Tahoe", "./libTahoe64.so"},
-    {"Hybrid", "./Hybrid.so"}};
+    {"HybridPro", "./HybridPro.so"}};
 #endif
 
 std::map<unsigned int, unsigned int> RPRDeviceMap = {
@@ -164,8 +163,8 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Array3D *),
     declare_param_setter_object(Frame *),
     declare_param_setter_object(Geometry *),
-    // declare_param_setter_object(Group *),
-    // declare_param_setter_object(Instance *),
+    declare_param_setter_object(Group *),
+    declare_param_setter_object(Instance *),
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
@@ -217,6 +216,8 @@ int RPRDevice::deviceImplements(const char *_extension)
         return 1;
     if (extension == ANARI_KHR_FRAME_COMPLETION_CALLBACK)
         return 1;
+    if (extension == ANARI_KHR_STOCHASTIC_RENDERING)
+      return 1;
     return 0;
 }
 
@@ -261,8 +262,6 @@ void RPRDevice::deviceCommit()
   CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_Y_FLIP, 0))
 
   CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
-
-  printf("...context initialized!\n");
 }
 
 void RPRDevice::deviceRetain()
@@ -393,12 +392,12 @@ ANARISampler RPRDevice::newSampler(const char *type)
 
 ANARIGroup RPRDevice::newGroup()
 {
-  return createPlaceholderObject<ANARIGroup>();
+  return createObjectForAPI<Group, ANARIGroup>();
 }
 
 ANARIInstance RPRDevice::newInstance()
 {
-  return createPlaceholderObject<ANARIInstance>();
+  return createObjectForAPI<Instance, ANARIInstance>();
 }
 
 // Top-level Worlds ///////////////////////////////////////////////////////////
@@ -443,9 +442,7 @@ void RPRDevice::setParameter(
   if (fcn)
     fcn(object, name, mem);
   else {
-    std::stringstream ss;
-    ss << "unknown handler to set parameter on object: " << type;
-    throw std::runtime_error(ss.str());
+    fprintf(stderr, "warning - no parameter setter for type '%i'\n", int(type));
   }
 }
 
@@ -506,13 +503,7 @@ const void *RPRDevice::frameBufferMap(ANARIFrame _fb, const char *channel)
 
 void RPRDevice::frameBufferUnmap(ANARIFrame _fb, const char *channel)
 {
-    auto &fb = referenceFromHandle<Frame>(_fb);
-
-    if (channel == std::string("color"))
-        fb.unmapColorBuffer();
-    else if (channel == std::string("depth"))
-        fb.unmapDepthBuffer();
-
+    // no-op
 }
 
 // Frame Rendering ////////////////////////////////////////////////////////////

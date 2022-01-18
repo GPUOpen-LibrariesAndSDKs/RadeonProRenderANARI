@@ -10,21 +10,19 @@ namespace rpr {
 
 struct Geometry : public SceneObject
 {
-  friend struct Surface;
-
   explicit Geometry(rpr_context &context);
 
   static Geometry *createInstance(rpr_context &context, const char *type);
 
-  void addToScene(rpr_scene scene) override;
+  virtual void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) {};
 
+  rpr_shape getBaseShape();
 
-  protected:
-    rpr_context m_context; // we need to store the context so we can create mesh at commit
-    std::vector<rpr_shape> m_shapes;
-    bool hasVertexColor = false;
+  bool hasVertexColor = false;
 
-    void applyMaterial(rpr_material_node material);
+protected:
+    rpr_context m_context; // we need to store the context, so we can create mesh at commit
+    rpr_shape m_base_shape{};
 };
 
 } // namespace reference

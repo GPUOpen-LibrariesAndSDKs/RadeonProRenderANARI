@@ -3,44 +3,34 @@
 
 namespace anari::rpr {
 
-Spheres::Spheres(rpr_context &context) : Geometry(context) {}
+Spheres::Spheres(rpr_context &context) : Geometry(context)
+{
+  createBaseSphere();
+}
 
 void Spheres::commit(){
 
-  if (!hasParam("sphere.position"))
-    throw std::runtime_error("missing 'sphere' data array 'sphere.position'!");
+  if (!hasParam("vertex.position"))
+    throw std::runtime_error("missing 'vertex.position' on sphere geometry");
 
-  auto vertexData = getParamObject<Array1D>("sphere.position");
-  auto radiusData = getParamObject<Array1D>("sphere.radius");
+  auto vertexData = getParamObject<Array1D>("vertex.position");
+  auto radiusData = getParamObject<Array1D>("vertex.radius");
   auto globalRadius = getParam<float>("radius", 1.f);
 
   if (radiusData && radiusData->size()!=vertexData->size()){
-    throw std::runtime_error("'sphere.position' and 'sphere.radius' sizes are incompatible");
+    throw std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible");
   }
 
-  for(rpr_shape shape : m_shapes){
-    CHECK(rprObjectDelete(shape))
-  }
-
-  m_shapes.clear();
-  m_shapes.resize(vertexData->size()+1);
-
-  if(!m_base_sphere){
-    createBaseSphere();
-  }
-
+  m_sphere_positions.clear();
+  m_sphere_radius.clear();
   resetBounds();
 
   for(int vertexNumber=0; vertexNumber < vertexData->size(); vertexNumber++){
     vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
     float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
-    rprContextCreateInstance(m_context, m_base_sphere, &(m_shapes[vertexNumber]));
 
-    //transform
-    RadeonProRender::matrix m = RadeonProRender::matrix(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1);
-
-    CHECK(rprShapeSetTransform(m_shapes[vertexNumber], RPR_TRUE, &m.m00))
-    CHECK(rprShapeSetObjectID(m_shapes[vertexNumber], vertexNumber))
+    m_sphere_positions.push_back(vertex);
+    m_sphere_radius.push_back(radius);
 
     //bounds
     m_bounds.upper.x = max(m_bounds.upper.x, vertex.x + radius);
@@ -50,8 +40,27 @@ void Spheres::commit(){
     m_bounds.lower.y = min(m_bounds.lower.y, vertex.y - radius);
     m_bounds.lower.z = min(m_bounds.lower.z, vertex.z - radius);
   }
-  m_shapes[vertexData->size()] = m_base_sphere; //attach invisible base sphere last
+
   markUpdated();
+}
+
+void Spheres::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
+{
+  for(int sphere_number = 0; sphere_number < m_sphere_positions.size(); sphere_number++)
+  {
+    vec3 vertex = m_sphere_positions[sphere_number];
+    float radius = m_sphere_radius[sphere_number];
+
+    //transform
+    mat4 sphere_transform = transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1)) * transform;
+
+    rpr_shape instance;
+    CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
+    CHECK(rprShapeSetTransform(instance, false, value_ptr(sphere_transform)))
+    CHECK(rprShapeSetObjectID(instance, sphere_number))
+
+    out_shapes.push_back(instance);
+  }
 }
 
 void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and radius 1
@@ -90,16 +99,13 @@ void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and r
 
   std::vector<rpr_int> faces(num_faces, 4);
 
-  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_sphere))
-  CHECK(rprShapeSetVisibility(m_base_sphere, false)) //this is invisible 'original' sphere. It's instances will be visible
+  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_shape))
+  CHECK(rprShapeSetVisibility(m_base_shape, false)) //this is invisible 'original' sphere. It's instances will be visible
 }
 
 Spheres::~Spheres(){
-  for(rpr_shape shape : m_shapes){
-    CHECK(rprObjectDelete(shape))
-  }
-  if(m_base_sphere){
-    CHECK(rprObjectDelete(m_base_sphere))
+  if(m_base_shape){
+    CHECK(rprObjectDelete(m_base_shape))
   }
 }
 

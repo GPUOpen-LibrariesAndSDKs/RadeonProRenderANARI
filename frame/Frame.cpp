@@ -144,7 +144,7 @@ float *Frame::mapDepthBuffer()
   return m_depthBuffer.data();
 }
 
-void Frame::unmapColorBuffer()
+void Frame::clearFramebuffers()
 {
     CHECK(rprFrameBufferClear(m_framebuffer))
 }
@@ -168,26 +168,40 @@ void Frame::renderFrame() {
     Camera &c = *m_camera;
     World &w = *m_world;
 
-    if(r.lastUpdated() > m_rendererLastChanged)
+    bool rendererChanged = r.lastUpdated() > m_rendererLastChanged;
+    bool cameraChanged = c.lastUpdated() > m_cameraLastChanged;
+    bool worldChanged = w.lastUpdated() > m_worldLastChanged;
+
+    if(rendererChanged)
     {
         r.addToScene(m_scene);
         m_rendererLastChanged = r.lastUpdated();
     }
-    if(c.lastUpdated() > m_cameraLastChanged)
+    if(cameraChanged)
     {
         c.addToScene(m_scene);
         m_cameraLastChanged = c.lastUpdated();
     }
-    if(w.lastUpdated() > m_worldLastChanged){
+    if(worldChanged)
+    {
         w.addToScene(m_scene);
         m_worldLastChanged = w.lastUpdated();
     }
-    if(m_frameChanged){
+    if(m_frameChanged)
+    {
         CHECK(rprContextSetAOV(m_context, RPR_AOV_COLOR, m_framebuffer))
         CHECK(rprContextSetScene(m_context, m_scene))
         m_frameChanged = false;
     }
+
+    if(cameraChanged | rendererChanged | worldChanged | m_frameChanged)
+    {
+        clearFramebuffers();
+    }
+
     CHECK(rprContextRender(m_context))
+
+
 }
 
 void Frame::invokeContinuation(ANARIDevice device) const
