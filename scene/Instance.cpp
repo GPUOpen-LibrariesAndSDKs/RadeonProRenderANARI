@@ -41,6 +41,8 @@ void Instance::addToScene(rpr_scene scene)
   {
     CHECK(rprSceneAttachShape(scene, base_shape))
   }
+
+  m_group->addLightsToScene(scene);
 }
 
 void Instance::clearInstances()

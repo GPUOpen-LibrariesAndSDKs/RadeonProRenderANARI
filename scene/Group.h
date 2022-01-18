@@ -7,6 +7,7 @@ namespace anari {
 namespace rpr {
 
 struct Surface;
+struct Light;
 
 struct Group : public SceneObject
 {
@@ -18,8 +19,11 @@ struct Group : public SceneObject
 
   void getBaseShapes(std::vector<rpr_shape> &outShapes);
 
+  void addLightsToScene(rpr_scene scene);
+
 private:
   std::vector<Surface *> m_surfaces;
+  std::vector<Light *>m_lights;
 };
 
 } // namespace rpr
