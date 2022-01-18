@@ -218,6 +218,8 @@ int RPRDevice::deviceImplements(const char *_extension)
         return 1;
     if (extension == ANARI_KHR_FRAME_COMPLETION_CALLBACK)
         return 1;
+    if (extension == ANARI_KHR_STOCHASTIC_RENDERING)
+      return 1;
     return 0;
 }
 
@@ -503,13 +505,7 @@ const void *RPRDevice::frameBufferMap(ANARIFrame _fb, const char *channel)
 
 void RPRDevice::frameBufferUnmap(ANARIFrame _fb, const char *channel)
 {
-    auto &fb = referenceFromHandle<Frame>(_fb);
-
-    if (channel == std::string("color"))
-        fb.unmapColorBuffer();
-    else if (channel == std::string("depth"))
-        fb.unmapDepthBuffer();
-
+    // no-op
 }
 
 // Frame Rendering ////////////////////////////////////////////////////////////

@@ -27,8 +27,6 @@ struct Frame : public Object
     void commit() override;
     void *mapColorBuffer();
     float *mapDepthBuffer();
-    void unmapColorBuffer();
-    void unmapDepthBuffer(){};
 
     void renderFrame();
     void invokeContinuation(ANARIDevice device) const;
@@ -41,11 +39,8 @@ struct Frame : public Object
     float duration() const;
 
 private:
-    int frameID() const;
-    void newFrame();
     void deleteFramebuffers();
-
-    vec2 screenFromPixel(const vec2 &p) const;
+    void clearFramebuffers();
 
     // Data //
     ANARIDataType m_format{ANARI_UNKNOWN};
