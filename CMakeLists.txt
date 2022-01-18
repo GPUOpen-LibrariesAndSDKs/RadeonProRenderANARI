@@ -79,11 +79,8 @@ find_library(RPR_LIB
 find_library(RPR_PLUGIN_NORTHSTAR
 	NAMES Northstar64 libNorthstar64
     HINTS "${RPR_LIB_DIR}")
-find_library(RPR_PLUGIN_TAHOE
-	NAMES Tahoe64 libTahoe64
-    HINTS "${RPR_LIB_DIR}")
-find_library(RPR_PLUGIN_HYBRID
-	NAMES Hybrid Hybrid${CMAKE_SHARED_LIBRARY_SUFFIX}
+find_library(RPR_PLUGIN_HYBRID_PRO
+	NAMES HybridPro HybridPro${CMAKE_SHARED_LIBRARY_SUFFIX}
     HINTS "${RPR_LIB_DIR}")
 
 add_library(${PROJECT_NAME} SHARED
@@ -149,19 +146,28 @@ else()
     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   file(COPY ${RPR_PLUGIN_NORTHSTAR}
     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  file(COPY ${RPR_PLUGIN_TAHOE}
-    DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  file(COPY ${RPR_PLUGIN_HYBRID}
-    DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  if (NOT APPLE)
+    file(COPY ${RPR_PLUGIN_HYBRID_PRO}
+        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  endif()
 
   # Install RPR libs in final destination
-  install(
-    FILES
-      ${RPR_LIB}
-      ${RPR_PLUGIN_NORTHSTAR}
-      ${RPR_PLUGIN_TAHOE}
-      ${RPR_PLUGIN_HYBRID}
-    DESTINATION
-      ${CMAKE_INSTALL_LIBDIR}
-  )
+  if(NOT APPLE)
+      install(
+        FILES
+          ${RPR_LIB}
+          ${RPR_PLUGIN_NORTHSTAR}
+          ${RPR_PLUGIN_HYBRID_PRO}
+        DESTINATION
+          ${CMAKE_INSTALL_LIBDIR}
+      )
+  else()
+      install(
+        FILES
+          ${RPR_LIB}
+          ${RPR_PLUGIN_NORTHSTAR}
+        DESTINATION
+          ${CMAKE_INSTALL_LIBDIR}
+      )
+  endif()
 endif()

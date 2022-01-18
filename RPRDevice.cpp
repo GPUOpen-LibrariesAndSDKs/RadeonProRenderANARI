@@ -22,16 +22,14 @@
 #if defined(WIN32)
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "Northstar64.dll"},
-    {"Tahoe", "Tahoe64.dll"},
-    {"Hybrid", "Hybrid.dll"}};
+    {"HybridPro", "HybridPro.dll"}};
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "libNorthstar64.dylib"}, {"Tahoe", "libTahoe64.dylib"}};
+    {"Northstar", "libNorthstar64.dylib"};
 #else
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "./libNorthstar64.so"},
-    {"Tahoe", "./libTahoe64.so"},
-    {"Hybrid", "./Hybrid.so"}};
+    {"HybridPro", "./HybridPro.so"}};
 #endif
 
 std::map<unsigned int, unsigned int> RPRDeviceMap = {
