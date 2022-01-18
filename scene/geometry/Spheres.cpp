@@ -21,14 +21,16 @@ void Spheres::commit(){
     throw std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible");
   }
 
-  m_sphere_data.clear();
+  m_sphere_positions.clear();
+  m_sphere_radius.clear();
   resetBounds();
 
   for(int vertexNumber=0; vertexNumber < vertexData->size(); vertexNumber++){
     vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
     float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
 
-    m_sphere_data.emplace_back(vertex, radius);
+    m_sphere_positions.push_back(vertex);
+    m_sphere_radius.push_back(radius);
 
     //bounds
     m_bounds.upper.x = max(m_bounds.upper.x, vertex.x + radius);
@@ -44,10 +46,10 @@ void Spheres::commit(){
 
 void Spheres::getInstances(std::vector<rpr_shape> &out_shapes)
 {
-  for(int sphere_number = 0; sphere_number < m_sphere_data.size(); sphere_number++)
+  for(int sphere_number = 0; sphere_number < m_sphere_positions.size(); sphere_number++)
   {
-    vec3 vertex =m_sphere_data[sphere_number].first;
-    float radius = m_sphere_data[sphere_number].second;
+    vec3 vertex = m_sphere_positions[sphere_number];
+    float radius = m_sphere_radius[sphere_number];
 
     //transform
     RadeonProRender::matrix m = RadeonProRender::matrix(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1);

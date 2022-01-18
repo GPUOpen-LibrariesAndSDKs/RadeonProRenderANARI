@@ -25,7 +25,8 @@ struct Spheres : public Geometry
   int sectors=16;
   int rings=16;
 
-  std::vector<std::pair<vec3, float>> m_sphere_data;
+  std::vector<vec3> m_sphere_positions;
+  std::vector<float> m_sphere_radius;
 
 };
 
