@@ -358,7 +358,7 @@ ANARICamera RPRDevice::newCamera(const char *type)
 
 ANARIGeometry RPRDevice::newGeometry(const char *type)
 {
-    return (ANARIGeometry)Geometry::createInstance(m_context, type);
+    return (ANARIGeometry)Geometry::createInstance(m_context, m_matsys, type);
 }
 
 ANARISpatialField RPRDevice::newSpatialField(const char *type)

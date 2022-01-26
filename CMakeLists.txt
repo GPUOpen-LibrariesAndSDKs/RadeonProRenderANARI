@@ -105,8 +105,10 @@ add_library(${PROJECT_NAME} SHARED
   scene/World.cpp
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
-  scene/geometry/Mesh.cpp
-  scene/geometry/Spheres.cpp
+  scene/geometry/mesh/Mesh.cpp
+  scene/geometry/mesh/Triangles.cpp
+  scene/geometry/primitives/Spheres.cpp
+  scene/geometry/primitives/Primitives.cpp
   scene/lights/Light.cpp
   scene/lights/AnalyticLight.cpp
   scene/lights/AreaLight.cpp

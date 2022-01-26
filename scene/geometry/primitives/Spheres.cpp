@@ -3,34 +3,52 @@
 
 namespace anari::rpr {
 
-Spheres::Spheres(rpr_context &context) : Geometry(context)
-{
-  createBaseSphere();
+Spheres::Spheres(rpr_context context, rpr_material_system materialSystem) : Primitives(context, materialSystem){
+  createBaseShape();
 }
 
 void Spheres::commit(){
 
-  if (!hasParam("vertex.position"))
-    throw std::runtime_error("missing 'vertex.position' on sphere geometry");
-
   auto vertexData = getParamObject<Array1D>("vertex.position");
   auto radiusData = getParamObject<Array1D>("vertex.radius");
+  auto indexData = getParamObject<Array1D>("primitive.index");
   auto globalRadius = getParam<float>("radius", 1.f);
+
+  if (!vertexData)
+    throw std::runtime_error("missing 'vertex.position' on sphere geometry");
 
   if (radiusData && radiusData->size()!=vertexData->size()){
     throw std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible");
   }
 
-  m_sphere_positions.clear();
-  m_sphere_radius.clear();
+  m_positions.clear();
+  m_indices.clear();
+  m_radius.clear();
+
+  if(indexData){
+    m_num_primitives = indexData->size();
+    for(int indexNumber = 0; indexNumber < m_num_primitives; indexNumber++)
+    {
+      m_indices.push_back(indexData->dataAs<int>()[indexNumber]);
+    }
+  }
+  else // index data is not provided, we should use [0,1,2,3,...]
+  {
+    m_num_primitives = vertexData->size();
+    for(int indexNumber = 0; indexNumber < m_num_primitives; indexNumber++)
+    {
+      m_indices.push_back(indexNumber);
+    }
+  }
+
   resetBounds();
 
   for(int vertexNumber=0; vertexNumber < vertexData->size(); vertexNumber++){
     vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
     float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
 
-    m_sphere_positions.push_back(vertex);
-    m_sphere_radius.push_back(radius);
+    m_positions.push_back(vertex);
+    m_radius.push_back(radius);
 
     //bounds
     m_bounds.upper.x = max(m_bounds.upper.x, vertex.x + radius);
@@ -40,30 +58,16 @@ void Spheres::commit(){
     m_bounds.lower.y = min(m_bounds.lower.y, vertex.y - radius);
     m_bounds.lower.z = min(m_bounds.lower.z, vertex.z - radius);
   }
-
-  markUpdated();
 }
 
-void Spheres::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
+mat4 Spheres::generatePrimitiveTransform(int primitive_number)
 {
-  for(int sphere_number = 0; sphere_number < m_sphere_positions.size(); sphere_number++)
-  {
-    vec3 vertex = m_sphere_positions[sphere_number];
-    float radius = m_sphere_radius[sphere_number];
-
-    //transform
-    mat4 sphere_transform = transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1)) * transform;
-
-    rpr_shape instance;
-    CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
-    CHECK(rprShapeSetTransform(instance, false, value_ptr(sphere_transform)))
-    CHECK(rprShapeSetObjectID(instance, sphere_number))
-
-    out_shapes.push_back(instance);
-  }
+  vec3 vertex = m_positions[m_indices[primitive_number]];
+  float radius = m_radius[m_indices[primitive_number]];
+  return transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1));
 }
 
-void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and radius 1
+void Spheres::createBaseShape(){  //creates base sphere with center 0,0,0 and radius 1
   float const R = 1.f/(float)(rings -1);
   float const S = 1.f/(float)(sectors -1);
 
@@ -86,7 +90,6 @@ void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and r
       *v++ = x;
       *v++ = y;
       *v++ = z;
-
   }
 
   for(int r=0; r<rings-1; r++) for(int s=0; s< sectors-1; s++){
@@ -103,10 +106,8 @@ void Spheres::createBaseSphere(){  //creates base sphere with center 0,0,0 and r
   CHECK(rprShapeSetVisibility(m_base_shape, false)) //this is invisible 'original' sphere. It's instances will be visible
 }
 
-Spheres::~Spheres(){
-  if(m_base_shape){
-    CHECK(rprObjectDelete(m_base_shape))
-  }
+void Spheres::generateDefaultIndex() {
+
 }
 
 }//anari
