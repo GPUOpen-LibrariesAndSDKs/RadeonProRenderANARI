@@ -4,6 +4,7 @@
 #pragma once
 #include "../SceneObject.h"
 #include "../../rpr_common.h"
+#include "attributes/Attribute.h"
 
 namespace anari {
 namespace rpr {
@@ -16,6 +17,8 @@ struct Geometry : public SceneObject
 
   virtual void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) {};
 
+  virtual Attribute *getAttribute(char *name);
+
   rpr_shape getBaseShape();
 
   bool hasVertexColor = false;
@@ -26,6 +29,10 @@ protected:
     rpr_context m_context;
     rpr_material_system m_matsys; // material system is using to create lookup nodes for attributes
     rpr_shape m_base_shape{};
+
+    std::vector<Attribute *> m_attributes;
+
+    void clearAttributes();
 };
 
 } // namespace reference

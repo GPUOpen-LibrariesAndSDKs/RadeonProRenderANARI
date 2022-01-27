@@ -16,7 +16,6 @@ struct Spheres : public Primitives
  private:
 
   void createBaseShape();
-  void generateDefaultIndex();
   mat4 generatePrimitiveTransform(int primitive_number) override;
 
   int sectors=16;

@@ -30,10 +30,38 @@ rpr_shape Geometry::getBaseShape()
   return m_base_shape;
 }
 
+Attribute *Geometry::getAttribute(char *name)
+{
+  if(std::strcmp(name, "worldPosition") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_P);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
+  if(std::strcmp(name, "worldNormal") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_N);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
+  return nullptr;
+}
+
+void Geometry::clearAttributes()
+{
+  for(Attribute * attribute : m_attributes)
+  {
+    delete attribute;
+  }
+  m_attributes.clear();
+}
+
 Geometry::~Geometry(){
-  if(m_base_shape){
+  if(m_base_shape)
+  {
     CHECK(rprObjectDelete(m_base_shape))
   }
+  clearAttributes();
 }
 
 } // namespace rpr

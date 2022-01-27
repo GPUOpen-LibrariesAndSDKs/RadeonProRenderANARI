@@ -1,4 +1,5 @@
 #include "Primitives.h"
+#include "../attributes/PrimitiveColor.h"
 
 namespace anari::rpr{
 
@@ -19,5 +20,20 @@ void Primitives::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform
 
     out_shapes.push_back(instance);
   }
+}
+
+Attribute *Primitives::getAttribute(char *name)
+{
+  if(std::strcmp(name, "color") == 0)
+  {
+    return new PrimitiveColor(m_context, m_matsys, m_num_primitives, (float*) m_colors.data());
+  }
+  if(std::strcmp(name, "primitiveId") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
+  return Geometry::getAttribute(name);
 }
 }
