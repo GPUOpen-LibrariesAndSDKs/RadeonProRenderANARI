@@ -94,8 +94,7 @@ add_library(${PROJECT_NAME} SHARED
   frame/Frame.cpp
 
   material/Material.cpp
-  material/OBJMaterial.cpp
-  material/SimpleMaterial.cpp
+  material/MatteMaterial.cpp
 
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp

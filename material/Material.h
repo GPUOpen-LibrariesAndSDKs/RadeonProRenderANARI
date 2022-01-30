@@ -5,6 +5,7 @@
 
 #include "../Object.h"
 #include "../rpr_common.h"
+#include "../scene/geometry/Geometry.h"
 
 namespace anari {
 namespace rpr {
@@ -19,7 +20,7 @@ struct Material : public Object
 
  protected:
   rpr_material_system m_matsys{};
-  virtual inline rpr_material_node generateMaterial(rpr_material_node vertex_color = nullptr){return nullptr;};
+  virtual inline rpr_material_node generateMaterial(Geometry *geometry){return nullptr;};
 };
 
 } // namespace reference

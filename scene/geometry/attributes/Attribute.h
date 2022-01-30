@@ -15,7 +15,7 @@ public:
 
   rpr_material_node getMaterial();
 
-  ~Attribute();
+  virtual ~Attribute();
 
 protected:
   rpr_material_node m_material{};

@@ -17,7 +17,9 @@ struct Geometry : public SceneObject
 
   virtual void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) {};
 
-  virtual Attribute *getAttribute(char *name);
+  virtual Attribute *getAttribute(const char *name);
+
+  virtual bool hasAttribute(const char *name);
 
   rpr_shape getBaseShape();
 

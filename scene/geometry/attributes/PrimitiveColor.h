@@ -8,7 +8,7 @@ struct PrimitiveColor : public Attribute
 public:
    PrimitiveColor(rpr_context context, rpr_material_system matsys, rpr_uint num_primitives, const float *colors);
 
-   ~PrimitiveColor();
+   ~PrimitiveColor() override;
 
 private:
   rpr_material_node m_lookupNode{};

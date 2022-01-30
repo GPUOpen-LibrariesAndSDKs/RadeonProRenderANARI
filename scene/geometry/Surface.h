@@ -32,21 +32,7 @@ struct Surface : public SceneObject
 
   rpr_material_system m_matsys;
   rpr_material_node m_material_instance{};
-  //vertex color
-  rpr_material_node m_vertex_color_lookup_r = nullptr;
-  rpr_material_node m_vertex_color_lookup_g = nullptr;
-  rpr_material_node m_vertex_color_lookup_b = nullptr;
-  rpr_material_node m_vertex_color_lookup_a = nullptr;
-  rpr_material_node m_vertex_color_r = nullptr;
-  rpr_material_node m_vertex_color_g = nullptr;
-  rpr_material_node m_vertex_color_b = nullptr;
-  rpr_material_node m_vertex_color_a = nullptr;
-  rpr_material_node m_vertex_color_rg = nullptr;
-  rpr_material_node m_vertex_color_rgb = nullptr;
-  rpr_material_node m_vertex_color = nullptr;
 
-  void clearMaterialNodesVertex();
-  void generateVertexColorNode();
   void clearInstances();
 };
 

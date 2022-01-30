@@ -22,11 +22,15 @@ void Primitives::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform
   }
 }
 
-Attribute *Primitives::getAttribute(char *name)
+Attribute *Primitives::getAttribute(const char *name)
 {
   if(std::strcmp(name, "color") == 0)
   {
-    return new PrimitiveColor(m_context, m_matsys, m_num_primitives, (float*) m_colors.data());
+    if(m_colors.empty()) return nullptr;
+
+    Attribute* attribute = new PrimitiveColor(m_context, m_matsys, m_num_primitives, (float*) m_colors.data());
+    m_attributes.push_back(attribute);
+    return attribute;
   }
   if(std::strcmp(name, "primitiveId") == 0)
   {
@@ -36,4 +40,14 @@ Attribute *Primitives::getAttribute(char *name)
   }
   return Geometry::getAttribute(name);
 }
+
+bool Primitives::hasAttribute(const char *name)
+{
+  if(std::strcmp(name, "color") == 0 || std::strcmp(name, "primitiveId") == 0)
+  {
+    return true;
+  }
+  return Geometry::hasAttribute(name);
+}
+
 }

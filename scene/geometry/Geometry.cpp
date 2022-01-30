@@ -30,7 +30,7 @@ rpr_shape Geometry::getBaseShape()
   return m_base_shape;
 }
 
-Attribute *Geometry::getAttribute(char *name)
+Attribute *Geometry::getAttribute(const char *name)
 {
   if(std::strcmp(name, "worldPosition") == 0)
   {
@@ -45,6 +45,11 @@ Attribute *Geometry::getAttribute(char *name)
     return attribute;
   }
   return nullptr;
+}
+
+bool Geometry::hasAttribute(const char *name)
+{
+  return std::strcmp(name, "worldPosition") == 0 || std::strcmp(name, "worldNormal") == 0;
 }
 
 void Geometry::clearAttributes()
