@@ -12,6 +12,27 @@ void Mesh::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
   out_shapes.push_back(instance);
 }
 
+Attribute *Mesh::getAttribute(const char *name)
+{
+  // mock while primvars is not supported in core
+  // TODO remove it after primvars will have been implemented
+  if(std::strcmp(name, "attribute0") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_UV);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
+  return Geometry::getAttribute(name);
+}
+
+bool Mesh::hasAttribute(const char *name) {
+  if (std::strcmp(name, "attribute0") == 0)
+  {
+    return true;
+  }
+  return Geometry::hasAttribute(name);
+}
+
 void Mesh::calculateBounds(Array1D *vertex)
 {
   resetBounds();

@@ -25,8 +25,8 @@ rpr_material_node Image::generateMaterial(Geometry *geometry)
   }
   rpr_material_node material;
   CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &material))
-  CHECK(rprMaterialNodeSetInputNByKey(material, RPR_MATERIAL_INPUT_UV, geometry->getAttribute(m_input_attribute.c_str())))
   CHECK(rprMaterialNodeSetInputImageDataByKey(material, RPR_MATERIAL_INPUT_DATA, m_image))
+  CHECK(rprMaterialNodeSetInputNByKey(material, RPR_MATERIAL_INPUT_UV, geometry->getAttribute(m_input_attribute.c_str())->getMaterial()))
 
   m_instances.push_back(material);
   return material;
