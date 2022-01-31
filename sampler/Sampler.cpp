@@ -1,15 +1,19 @@
 #include "Sampler.h"
 #include "image/Image1D.h"
+#include "image/Image2D.h"
 
 namespace anari{
 namespace rpr{
 
 Sampler::Sampler(rpr_context context, rpr_material_system matsys) : m_context(context), m_matsys(matsys) {}
 
-Sampler *Sampler::createInstance(char *type, rpr_context context, rpr_material_system matsys)
+Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_material_system matsys)
 {
   if(strcmp(type, "image1D") == 0){
     return new Image1D(context, matsys);
+  }
+  if(strcmp(type, "image2D") == 0){
+    return new Image2D(context, matsys);
   }
   throw std::runtime_error("cannot create sampler");
 }

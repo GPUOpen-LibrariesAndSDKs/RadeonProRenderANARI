@@ -6,6 +6,7 @@ Image::Image(rpr_context context, rpr_material_system matsys) : Sampler(context,
 
 void Image::commit()
 {
+  clearInstances();
   if(m_image)
   {
     CHECK(rprObjectDelete(m_image))
@@ -13,6 +14,7 @@ void Image::commit()
   }
 
   m_input_attribute = getParam<std::string>("inAttribute", "attribute0");
+  m_filter = processFilter(getParam<std::string>("filter", "nearest"));
   // TODO in and out transforms
 }
 

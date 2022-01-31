@@ -10,6 +10,7 @@
 #include "scene/World.h"
 #include "frame/Frame.h"
 #include "material/Material.h"
+#include "sampler/Sampler.h"
 
 // std
 #include <chrono>
@@ -167,7 +168,7 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
-    // declare_param_setter_object(Sampler *),
+    declare_param_setter_object(Sampler *),
     declare_param_setter_object(Surface *),
     // declare_param_setter_object(SpatialField *),
     // declare_param_setter_object(Volume *),
@@ -384,7 +385,7 @@ ANARIMaterial RPRDevice::newMaterial(const char *type)
 
 ANARISampler RPRDevice::newSampler(const char *type)
 {
-  return createPlaceholderObject<ANARISampler>();
+  return (ANARISampler)Sampler::createInstance(type, m_context, m_matsys);
 }
 
 // Instancing /////////////////////////////////////////////////////////////////

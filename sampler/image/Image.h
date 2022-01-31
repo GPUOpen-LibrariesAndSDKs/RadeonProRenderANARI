@@ -16,8 +16,8 @@ protected:
   static rpr_int processWrap(const std::string& name);
 
   std::string m_input_attribute;
-  rpr_image m_image;
-  rpr_int m_filter;
+  rpr_image m_image{};
+  rpr_image_filter_type m_filter{};
 };
 
 }
