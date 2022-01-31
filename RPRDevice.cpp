@@ -14,7 +14,6 @@
 // std
 #include <chrono>
 #include <exception>
-#include <functional>
 #include <limits>
 #include <map>
 

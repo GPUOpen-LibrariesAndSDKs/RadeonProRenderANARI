@@ -4,6 +4,7 @@
 
 namespace anari::rpr{
 
+// sphere, cone, cylinder geometries
 struct Primitives : public Geometry
 {
 public:

@@ -11,9 +11,9 @@ struct MatteMaterial : public Material{
 
     ~MatteMaterial() override;
 
-private:
     rpr_material_node generateMaterial(Geometry *geometry) override;
 
+private:
     vec3 m_diffuse_color;
     std::string m_diffuse_color_attribute;
 

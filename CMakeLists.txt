@@ -96,6 +96,10 @@ add_library(${PROJECT_NAME} SHARED
   material/Material.cpp
   material/MatteMaterial.cpp
 
+  sampler/Sampler.cpp
+  sampler/image/Image.cpp
+  sampler/image/Image1D.cpp
+
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp
 

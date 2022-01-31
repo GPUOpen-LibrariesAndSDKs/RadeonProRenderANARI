@@ -4,6 +4,7 @@
 
 namespace anari::rpr {
 
+// triangles and quad geometries
 struct Mesh : public Geometry
 {
 public:

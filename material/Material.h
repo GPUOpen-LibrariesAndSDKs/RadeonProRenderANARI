@@ -12,15 +12,14 @@ namespace rpr {
 
 struct Material : public Object
 {
-  friend struct Surface;
-
   Material() = default;
 
   static Material *createInstance(const char *type, rpr_material_system matsys);
 
+  virtual inline rpr_material_node generateMaterial(Geometry *geometry){return nullptr;};
+
  protected:
   rpr_material_system m_matsys{};
-  virtual inline rpr_material_node generateMaterial(Geometry *geometry){return nullptr;};
 };
 
 } // namespace reference
