@@ -1,6 +1,7 @@
 #include "Sampler.h"
 #include "image/Image1D.h"
 #include "image/Image2D.h"
+#include "image/Image3D.h"
 
 namespace anari{
 namespace rpr{
@@ -14,6 +15,9 @@ Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_mate
   }
   if(strcmp(type, "image2D") == 0){
     return new Image2D(context, matsys);
+  }
+  if(strcmp(type, "image3D") == 0){
+    return new Image3D(context, matsys);
   }
   throw std::runtime_error("cannot create sampler");
 }

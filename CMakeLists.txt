@@ -100,6 +100,7 @@ add_library(${PROJECT_NAME} SHARED
   sampler/image/Image.cpp
   sampler/image/Image1D.cpp
   sampler/image/Image2D.cpp
+  sampler/image/Image3D.cpp
 
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp
