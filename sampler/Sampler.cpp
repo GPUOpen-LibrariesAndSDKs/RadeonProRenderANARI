@@ -19,6 +19,7 @@ Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_mate
   if(strcmp(type, "image3D") == 0){
     return new Image3D(context, matsys);
   }
+  //TODO Transform and Primitive samplers
   throw std::runtime_error("cannot create sampler");
 }
 

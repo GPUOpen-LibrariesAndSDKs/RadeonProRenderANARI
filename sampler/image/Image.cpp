@@ -2,6 +2,15 @@
 
 namespace anari::rpr{
 
+const static std::map<std::string, rpr_image_filter_type> image_filter_types = {
+    {"nearest", RPR_IMAGE_FILTER_TYPE_NEAREST},
+    {"linear", RPR_IMAGE_FILTER_TYPE_LINEAR}};
+
+const static std::map<std::string, rpr_image_wrap_type> image_wrap_types = {
+    {"clampToEdge", RPR_IMAGE_WRAP_TYPE_CLAMP_TO_EDGE},
+    {"repeat", RPR_IMAGE_WRAP_TYPE_REPEAT},
+    {"mirrorRepeat", RPR_IMAGE_WRAP_TYPE_MIRRORED_REPEAT}};
+
 Image::Image(rpr_context context, rpr_material_system matsys) : Sampler(context, matsys){}
 
 void Image::commit()
@@ -32,27 +41,18 @@ rpr_material_node Image::generateMaterial(Geometry *geometry)
   return material;
 }
 
-rpr_int Image::processFilter(const std::string& name)
+rpr_image_filter_type Image::processFilter(const std::string& name)
 {
-  if(strcmp(name.c_str(), "nearest") == 0){
-    return RPR_IMAGE_FILTER_TYPE_NEAREST;
-  }
-  if(strcmp(name.c_str(), "linear") == 0){
-    return RPR_IMAGE_FILTER_TYPE_LINEAR;
+  if(image_filter_types.find(name) != image_filter_types.end()){
+    return image_filter_types.find(name)->second;
   }
   throw std::runtime_error("unknown filter type");
 }
 
-rpr_int Image::processWrap(const std::string& name)
+rpr_image_wrap_type Image::processWrap(const std::string& name)
 {
-  if(strcmp(name.c_str(), "clampToEdge") == 0){
-    return RPR_IMAGE_WRAP_TYPE_CLAMP_TO_EDGE;
-  }
-  if(strcmp(name.c_str(), "repeat") == 0){
-    return RPR_IMAGE_WRAP_TYPE_REPEAT;
-  }
-  if(strcmp(name.c_str(), "mirrorRepeat") == 0){
-    return RPR_IMAGE_WRAP_TYPE_MIRRORED_REPEAT;
+  if(image_wrap_types.find(name) != image_wrap_types.end()){
+    return image_wrap_types.find(name)->second;
   }
   throw std::runtime_error("unknown wrap type");
 }

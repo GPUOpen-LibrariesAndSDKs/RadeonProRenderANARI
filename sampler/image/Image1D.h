@@ -11,7 +11,7 @@ public:
   rpr_material_node generateMaterial(Geometry *geometry) override;
 
 private:
-  rpr_int m_wrap_mode{};
+  rpr_image_wrap_type m_wrap_mode{};
 };
 
 }
