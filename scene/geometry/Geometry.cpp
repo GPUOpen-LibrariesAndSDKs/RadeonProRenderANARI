@@ -38,7 +38,13 @@ Attribute *Geometry::getAttribute(const char *name)
     m_attributes.push_back(attribute);
     return attribute;
   }
-  if(std::strcmp(name, "worldNormal") == 0)
+  if(std::strcmp(name, "objectPosition") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_P_LOCAL);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
+  if(std::strcmp(name, "objectNormal") == 0 || std::strcmp(name, "worldNormal") == 0)
   {
     Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_N);
     m_attributes.push_back(attribute);
