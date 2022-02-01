@@ -55,7 +55,8 @@ Attribute *Geometry::getAttribute(const char *name)
 
 bool Geometry::hasAttribute(const char *name)
 {
-  return std::strcmp(name, "worldPosition") == 0 || std::strcmp(name, "worldNormal") == 0;
+  return std::strcmp(name, "worldPosition") == 0 || std::strcmp(name, "worldNormal") == 0
+      || std::strcmp(name, "objectPosition") == 0 || std::strcmp(name, "objectNormal") == 0;
 }
 
 void Geometry::clearAttributes()
