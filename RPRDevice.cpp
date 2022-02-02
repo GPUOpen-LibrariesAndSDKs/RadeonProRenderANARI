@@ -25,7 +25,7 @@ std::map<std::string, std::string> RPRPlugins = {
     {"HybridPro", "HybridPro.dll"}};
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "libNorthstar64.dylib"};
+    {"Northstar", "libNorthstar64.dylib"}};
 #else
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "./libNorthstar64.so"},
