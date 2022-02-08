@@ -10,11 +10,11 @@
 #include "scene/World.h"
 #include "frame/Frame.h"
 #include "material/Material.h"
+#include "sampler/Sampler.h"
 
 // std
 #include <chrono>
 #include <exception>
-#include <functional>
 #include <limits>
 #include <map>
 
@@ -25,7 +25,7 @@ std::map<std::string, std::string> RPRPlugins = {
     {"HybridPro", "HybridPro.dll"}};
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "libNorthstar64.dylib"};
+    {"Northstar", "libNorthstar64.dylib"}};
 #else
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "./libNorthstar64.so"},
@@ -168,7 +168,7 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Light *),
     declare_param_setter_object(Material *),
     declare_param_setter_object(Renderer *),
-    // declare_param_setter_object(Sampler *),
+    declare_param_setter_object(Sampler *),
     declare_param_setter_object(Surface *),
     // declare_param_setter_object(SpatialField *),
     // declare_param_setter_object(Volume *),
@@ -358,7 +358,7 @@ ANARICamera RPRDevice::newCamera(const char *type)
 
 ANARIGeometry RPRDevice::newGeometry(const char *type)
 {
-    return (ANARIGeometry)Geometry::createInstance(m_context, type);
+    return (ANARIGeometry)Geometry::createInstance(m_context, m_matsys, type);
 }
 
 ANARISpatialField RPRDevice::newSpatialField(const char *type)
@@ -385,7 +385,7 @@ ANARIMaterial RPRDevice::newMaterial(const char *type)
 
 ANARISampler RPRDevice::newSampler(const char *type)
 {
-  return createPlaceholderObject<ANARISampler>();
+  return (ANARISampler)Sampler::createInstance(type, m_context, m_matsys);
 }
 
 // Instancing /////////////////////////////////////////////////////////////////

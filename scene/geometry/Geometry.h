@@ -4,25 +4,37 @@
 #pragma once
 #include "../SceneObject.h"
 #include "../../rpr_common.h"
+#include "attributes/Attribute.h"
 
 namespace anari {
 namespace rpr {
 
 struct Geometry : public SceneObject
 {
-  explicit Geometry(rpr_context &context);
+  Geometry(rpr_context context, rpr_material_system  m_matsys);
 
-  static Geometry *createInstance(rpr_context &context, const char *type);
+  static Geometry *createInstance(rpr_context context, rpr_material_system  materialSystem, const char *type);
 
   virtual void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) {};
+
+  virtual Attribute *getAttribute(const char *name);
+
+  virtual bool hasAttribute(const char *name);
 
   rpr_shape getBaseShape();
 
   bool hasVertexColor = false;
 
+  ~Geometry() override;
+
 protected:
-    rpr_context m_context; // we need to store the context, so we can create mesh at commit
+    rpr_context m_context;
+    rpr_material_system m_matsys; // material system is using to create lookup nodes for attributes
     rpr_shape m_base_shape{};
+
+    std::vector<Attribute *> m_attributes;
+
+    void clearAttributes();
 };
 
 } // namespace reference

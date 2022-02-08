@@ -94,8 +94,13 @@ add_library(${PROJECT_NAME} SHARED
   frame/Frame.cpp
 
   material/Material.cpp
-  material/OBJMaterial.cpp
-  material/SimpleMaterial.cpp
+  material/MatteMaterial.cpp
+
+  sampler/Sampler.cpp
+  sampler/image/Image.cpp
+  sampler/image/Image1D.cpp
+  sampler/image/Image2D.cpp
+  sampler/image/Image3D.cpp
 
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp
@@ -103,10 +108,17 @@ add_library(${PROJECT_NAME} SHARED
   scene/Instance.cpp
   scene/Group.cpp
   scene/World.cpp
+
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
-  scene/geometry/Mesh.cpp
-  scene/geometry/Spheres.cpp
+  scene/geometry/mesh/Mesh.cpp
+  scene/geometry/mesh/Triangles.cpp
+  scene/geometry/primitives/Spheres.cpp
+  scene/geometry/primitives/Primitives.cpp
+
+  scene/geometry/attributes/Attribute.cpp
+  scene/geometry/attributes/PrimitiveColor.cpp
+
   scene/lights/Light.cpp
   scene/lights/AnalyticLight.cpp
   scene/lights/AreaLight.cpp
