@@ -1,5 +1,5 @@
 #include "Primitives.h"
-#include "../attributes/PrimitiveColor.h"
+#include "../attributes/PerShapeAttribute.h"
 
 namespace anari::rpr{
 
@@ -28,7 +28,7 @@ Attribute *Primitives::getAttribute(const char *name)
   {
     if(m_colors.empty()) return nullptr;
 
-    Attribute* attribute = new PrimitiveColor(m_context, m_matsys, m_num_primitives, (float*) m_colors.data());
+    Attribute* attribute = new PerShapeAttribute(m_context, m_matsys, m_num_primitives, (float*) m_colors.data());
     m_attributes.push_back(attribute);
     return attribute;
   }

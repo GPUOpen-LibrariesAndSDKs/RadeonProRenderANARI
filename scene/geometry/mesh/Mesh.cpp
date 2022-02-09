@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "../attributes/PrimVarAttribute.h"
 
 namespace anari::rpr{
 
@@ -16,6 +17,12 @@ Attribute *Mesh::getAttribute(const char *name)
 {
   // mock while primvars is not supported in core
   // TODO remove it after primvars will have been implemented
+  if(std::strcmp(name, "color") == 0)
+  {
+    Attribute* attribute = new PrimVarAttribute(m_matsys, 4);
+    m_attributes.push_back(attribute);
+    return attribute;
+  }
   if(std::strcmp(name, "attribute0") == 0)
   {
     Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_UV);
@@ -26,7 +33,7 @@ Attribute *Mesh::getAttribute(const char *name)
 }
 
 bool Mesh::hasAttribute(const char *name) {
-  if (std::strcmp(name, "attribute0") == 0)
+  if (std::strcmp(name, "attribute0") == 0 || std::strcmp(name, "color") == 0)
   {
     return true;
   }
@@ -57,30 +64,7 @@ void Mesh::calculateBounds(Array1D *vertex)
 void Mesh::applyColor(Array1D *color)
 {
   if(color){
-    rpr_int num_color_vertex = color->size();
-    std::vector<rpr_float> r;
-    std::vector<rpr_float> g;
-    std::vector<rpr_float> b;
-    std::vector<rpr_float> a;
-    std::vector<rpr_int> color_index;
-    vec4 *colorData = color->dataAs<vec4>();
-    for(int i=0; i<num_color_vertex; i++){
-      r.push_back(colorData[i].r);
-      g.push_back(colorData[i].g);
-      b.push_back(colorData[i].b);
-      a.push_back(colorData[i].a);
-      color_index.push_back(i);
-    }
-    CHECK(rprShapeSetVertexValue(m_base_shape, 0, color_index.data(), r.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_base_shape, 1, color_index.data(), g.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_base_shape, 2, color_index.data(), b.data(), num_color_vertex))
-    CHECK(rprShapeSetVertexValue(m_base_shape, 3, color_index.data(), a.data(), num_color_vertex))
-
-    hasVertexColor = true;
-  }
-  else
-  {
-    hasVertexColor = false;
+    CHECK(rprShapeSetPrimvar(m_base_shape, 4, (rpr_float *)color->dataAs<vec4>(), color->size() * 4, 4, RPR_PRIMVAR_INTERPOLATION_VERTEX))
   }
 }
 

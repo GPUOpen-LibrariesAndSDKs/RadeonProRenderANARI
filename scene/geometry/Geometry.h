@@ -23,8 +23,6 @@ struct Geometry : public SceneObject
 
   rpr_shape getBaseShape();
 
-  bool hasVertexColor = false;
-
   ~Geometry() override;
 
 protected:
