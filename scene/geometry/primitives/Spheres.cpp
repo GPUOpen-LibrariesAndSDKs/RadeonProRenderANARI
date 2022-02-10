@@ -12,51 +12,39 @@ void Spheres::commit(){
   auto vertexData = getParamObject<Array1D>("vertex.position");
   auto radiusData = getParamObject<Array1D>("vertex.radius");
   auto indexData = getParamObject<Array1D>("primitive.index");
-  auto colorData = getParamObject<Array1D>("vertex.color");
   auto globalRadius = getParam<float>("radius", 1.f);
 
-  if (!vertexData)
-    throw std::runtime_error("missing 'vertex.position' on sphere geometry");
+  if (!vertexData) throw std::runtime_error("missing 'vertex.position' on sphere geometry");
+  checkArraySizes(radiusData, vertexData->size(), std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible"));
 
   m_positions.clear();
   m_indices.clear();
   m_radius.clear();
-  m_colors.clear();
   clearAttributes();
 
 
   if(indexData){
-    m_num_primitives = indexData->size();
-    for(int indexNumber = 0; indexNumber < m_num_primitives; indexNumber++)
+    for(int indexNumber = 0; indexNumber < indexData->size(); indexNumber++)
     {
       m_indices.push_back(indexData->dataAs<int>()[indexNumber]);
     }
   }
   else // index data is not provided, we should use [0,1,2,3,...]
   {
-    m_num_primitives = vertexData->size();
-    for(int indexNumber = 0; indexNumber < m_num_primitives; indexNumber++)
+    for(int indexNumber = 0; indexNumber < vertexData->size(); indexNumber++)
     {
       m_indices.push_back(indexNumber);
     }
   }
 
-  checkArraySizes(radiusData, m_num_primitives, std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible"));
-  checkArraySizes(colorData, m_num_primitives, std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible"));
-
   resetBounds();
 
-  for(int primitive_number =0; primitive_number < m_num_primitives; primitive_number++){
-    vec3 vertex = vertexData->dataAs<vec3>()[m_indices[primitive_number]];
-    float radius = radiusData ? radiusData->dataAs<float>()[m_indices[primitive_number]] : globalRadius;
+  for(int vertexNumber : m_indices){
+    vec3 vertex = vertexData->dataAs<vec3>()[vertexNumber];
+    float radius = radiusData ? radiusData->dataAs<float>()[vertexNumber] : globalRadius;
 
     m_positions.push_back(vertex);
     m_radius.push_back(radius);
-
-    if(colorData)
-    {
-      m_colors.push_back(colorData->dataAs<vec4>()[m_indices[primitive_number]]);
-    }
 
     //bounds
     m_bounds.upper.x = max(m_bounds.upper.x, vertex.x + radius);
@@ -66,6 +54,9 @@ void Spheres::commit(){
     m_bounds.lower.y = min(m_bounds.lower.y, vertex.y - radius);
     m_bounds.lower.z = min(m_bounds.lower.z, vertex.z - radius);
   }
+
+  processAttributeParameters(m_indices);
+  m_num_primitives = m_indices.size();
 }
 
 mat4 Spheres::generatePrimitiveTransform(int primitive_number)

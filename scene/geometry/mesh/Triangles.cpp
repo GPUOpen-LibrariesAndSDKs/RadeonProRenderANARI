@@ -51,11 +51,11 @@ void Triangles::commit()
                              index, sizeof(rpr_int), nullptr, 0, nullptr, 0,
                              faces.data(), num_faces, &m_base_shape))
 
-  applyAttribute(attribute0_data, 0);
-  applyAttribute(attribute1_data, 1);
-  applyAttribute(attribute2_data, 2);
-  applyAttribute(attribute3_data, 3);
-  applyAttribute(color_data, 4);
+  processAttributeArray(attribute0_data, 0);
+  processAttributeArray(attribute1_data, 1);
+  processAttributeArray(attribute2_data, 2);
+  processAttributeArray(attribute3_data, 3);
+  processAttributeArray(color_data, 4);
 
   CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
 }

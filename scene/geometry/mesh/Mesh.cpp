@@ -15,12 +15,14 @@ void Mesh::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 
 Attribute *Mesh::getAttribute(const char *name)
 {
-  if(std::strcmp(name, "attribute0") == 0) return createPrimVarAttribute(0);
-  if(std::strcmp(name, "attribute1") == 0) return createPrimVarAttribute(1);
-  if(std::strcmp(name, "attribute2") == 0) return createPrimVarAttribute(2);
-  if(std::strcmp(name, "attribute3") == 0) return createPrimVarAttribute(3);
-  if(std::strcmp(name, "color") == 0) return createPrimVarAttribute(4);
-  return Geometry::getAttribute(name);
+  Attribute *attribute = Geometry::getAttribute(name);
+  if(attribute) return attribute;
+  if(std::strcmp(name, "attribute0") == 0) return createPrimVarAttribute(0, name);
+  if(std::strcmp(name, "attribute1") == 0) return createPrimVarAttribute(1, name);
+  if(std::strcmp(name, "attribute2") == 0) return createPrimVarAttribute(2, name);
+  if(std::strcmp(name, "attribute3") == 0) return createPrimVarAttribute(3, name);
+  if(std::strcmp(name, "color") == 0) return createPrimVarAttribute(4, name);
+  return nullptr;
 }
 
 bool Mesh::hasAttribute(const char *name) {
@@ -33,9 +35,9 @@ bool Mesh::hasAttribute(const char *name) {
   return Geometry::hasAttribute(name);
 }
 
-Attribute *Mesh::createPrimVarAttribute(int key) {
+Attribute *Mesh::createPrimVarAttribute(int key, const char *name) {
   Attribute* attribute = new PrimVarAttribute(m_matsys, key);
-  m_attributes.push_back(attribute);
+  m_attribute_map.emplace(name, attribute);
   return attribute;
 }
 
@@ -60,7 +62,7 @@ void Mesh::calculateBounds(Array1D *vertex)
   }
 }
 
-void Mesh::applyAttribute(Array1D *data, int key)
+void Mesh::processAttributeArray(Array1D *data, int key)
 {
   if(!data){
     return;

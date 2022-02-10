@@ -15,9 +15,9 @@ public:
 
 protected:
   void calculateBounds(Array1D *vertex);
-  void applyAttribute(Array1D *data, int key);
+  void processAttributeArray(Array1D *data, int key);
 
 private:
-  Attribute *createPrimVarAttribute(int key);
+  Attribute *createPrimVarAttribute(int key, const char *name);
 };
 }
