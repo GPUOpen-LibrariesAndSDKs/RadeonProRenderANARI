@@ -17,6 +17,12 @@ void Triangles::commit()
   if (!vertex_data)
     throw std::runtime_error("required 'vertex.position' data array is missed or have incorrect type!");
 
+  checkArraySizes(color_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible"));
+  checkArraySizes(attribute0_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute0' sizes are incompatible"));
+  checkArraySizes(attribute1_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute1' sizes are incompatible"));
+  checkArraySizes(attribute2_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute2' sizes are incompatible"));
+  checkArraySizes(attribute3_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute3' sizes are incompatible"));
+
   calculateBounds(vertex_data);
 
   rpr_int *index;

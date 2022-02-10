@@ -68,6 +68,13 @@ void Geometry::clearAttributes()
   m_attributes.clear();
 }
 
+void Geometry::checkArraySizes(Array1D *array, size_t size, std::runtime_error exception)
+{
+  if(array && array->size() != size){
+    throw exception;
+  }
+}
+
 Geometry::~Geometry(){
   if(m_base_shape)
   {

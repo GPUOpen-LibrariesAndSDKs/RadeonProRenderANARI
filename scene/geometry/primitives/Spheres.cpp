@@ -41,13 +41,8 @@ void Spheres::commit(){
     }
   }
 
-  if (radiusData && radiusData->size()!=m_num_primitives){
-    throw std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible");
-  }
-
-  if (colorData&& colorData->size()!=m_num_primitives){
-    throw std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible");
-  }
+  checkArraySizes(radiusData, m_num_primitives, std::runtime_error("'vertex.position' and 'vertex.radius' sizes are incompatible"));
+  checkArraySizes(colorData, m_num_primitives, std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible"));
 
   resetBounds();
 

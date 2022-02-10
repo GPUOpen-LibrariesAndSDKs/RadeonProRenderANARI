@@ -33,6 +33,7 @@ protected:
     std::vector<Attribute *> m_attributes;
 
     void clearAttributes();
+    static void checkArraySizes(Array1D *array, size_t size, std::runtime_error exception);
 };
 
 } // namespace reference
