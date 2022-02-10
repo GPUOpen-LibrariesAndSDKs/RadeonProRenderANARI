@@ -9,6 +9,10 @@ void Triangles::commit()
   auto index_data = getParamObject<Array1D>("primitive.index");
   auto vertex_data = getParamObject<Array1D>("vertex.position");
   auto color_data = getParamObject<Array1D>("vertex.color");
+  auto attribute0_data = getParamObject<Array1D>("vertex.attribute0");
+  auto attribute1_data = getParamObject<Array1D>("vertex.attribute1");
+  auto attribute2_data = getParamObject<Array1D>("vertex.attribute2");
+  auto attribute3_data = getParamObject<Array1D>("vertex.attribute3");
 
   if (!vertex_data)
     throw std::runtime_error("required 'vertex.position' data array is missed or have incorrect type!");
@@ -40,7 +44,13 @@ void Triangles::commit()
                              nullptr, 0, 0, nullptr, 0, 0,
                              index, sizeof(rpr_int), nullptr, 0, nullptr, 0,
                              faces.data(), num_faces, &m_base_shape))
-  applyColor(color_data);
+
+  applyAttribute(attribute0_data, 0);
+  applyAttribute(attribute1_data, 1);
+  applyAttribute(attribute2_data, 2);
+  applyAttribute(attribute3_data, 3);
+  applyAttribute(color_data, 4);
+
   CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
 }
 

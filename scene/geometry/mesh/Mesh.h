@@ -15,6 +15,9 @@ public:
 
 protected:
   void calculateBounds(Array1D *vertex);
-  void applyColor(Array1D *color);
+  void applyAttribute(Array1D *data, int key);
+
+private:
+  Attribute *createPrimVarAttribute(int key);
 };
 }

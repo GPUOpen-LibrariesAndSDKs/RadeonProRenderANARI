@@ -15,29 +15,28 @@ void Mesh::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 
 Attribute *Mesh::getAttribute(const char *name)
 {
-  // mock while primvars is not supported in core
-  // TODO remove it after primvars will have been implemented
-  if(std::strcmp(name, "color") == 0)
-  {
-    Attribute* attribute = new PrimVarAttribute(m_matsys, 4);
-    m_attributes.push_back(attribute);
-    return attribute;
-  }
-  if(std::strcmp(name, "attribute0") == 0)
-  {
-    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_UV);
-    m_attributes.push_back(attribute);
-    return attribute;
-  }
+  if(std::strcmp(name, "attribute0") == 0) return createPrimVarAttribute(0);
+  if(std::strcmp(name, "attribute1") == 0) return createPrimVarAttribute(1);
+  if(std::strcmp(name, "attribute2") == 0) return createPrimVarAttribute(2);
+  if(std::strcmp(name, "attribute3") == 0) return createPrimVarAttribute(3);
+  if(std::strcmp(name, "color") == 0) return createPrimVarAttribute(4);
   return Geometry::getAttribute(name);
 }
 
 bool Mesh::hasAttribute(const char *name) {
-  if (std::strcmp(name, "attribute0") == 0 || std::strcmp(name, "color") == 0)
+  if (std::strcmp(name, "color") == 0 || std::strcmp(name, "attribute0") == 0 ||
+      std::strcmp(name, "attribute1") == 0 || std::strcmp(name, "attribute2") == 0 ||
+      std::strcmp(name, "attribute3") == 0)
   {
     return true;
   }
   return Geometry::hasAttribute(name);
+}
+
+Attribute *Mesh::createPrimVarAttribute(int key) {
+  Attribute* attribute = new PrimVarAttribute(m_matsys, key);
+  m_attributes.push_back(attribute);
+  return attribute;
 }
 
 void Mesh::calculateBounds(Array1D *vertex)
@@ -61,10 +60,30 @@ void Mesh::calculateBounds(Array1D *vertex)
   }
 }
 
-void Mesh::applyColor(Array1D *color)
+void Mesh::applyAttribute(Array1D *data, int key)
 {
-  if(color){
-    CHECK(rprShapeSetPrimvar(m_base_shape, 4, (rpr_float *)color->dataAs<vec4>(), color->size() * 4, 4, RPR_PRIMVAR_INTERPOLATION_VERTEX))
+  if(!data){
+    return;
+  }
+
+  switch (data->elementType()) {
+  case ANARI_FLOAT32:{
+    CHECK(rprShapeSetPrimvar(m_base_shape, key, data->dataAs<float>(), data->size(), 1, RPR_PRIMVAR_INTERPOLATION_VERTEX))
+    return;
+  }
+  case ANARI_FLOAT32_VEC2:{
+    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec2>(), data->size() * 2, 2, RPR_PRIMVAR_INTERPOLATION_VERTEX))
+    return;
+  }
+  case ANARI_FLOAT32_VEC3:{
+    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec3>(), data->size() * 3, 3, RPR_PRIMVAR_INTERPOLATION_VERTEX))
+    return;
+  }
+  case ANARI_FLOAT32_VEC4:{
+    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec4>(), data->size() * 4, 4, RPR_PRIMVAR_INTERPOLATION_VERTEX))
+    return;
+  }
+
   }
 }
 
