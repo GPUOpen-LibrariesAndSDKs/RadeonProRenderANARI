@@ -1,6 +1,7 @@
 #pragma once
 #include "../Object.h"
 #include "../../scene/geometry/Geometry.h"
+#include "util/TransformNode.h"
 
 namespace anari{
 namespace rpr{
