@@ -19,7 +19,7 @@ protected:
   rpr_material_system m_matsys;
   std::vector<rpr_material_node> m_instances;
 
-  void clearInstances();
+  virtual void clearInstances();
 };
 
 } // namespace rpr

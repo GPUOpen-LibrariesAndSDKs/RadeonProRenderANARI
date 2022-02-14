@@ -23,8 +23,19 @@ void Image::commit()
   }
 
   m_input_attribute = getParam<std::string>("inAttribute", "attribute0");
+  m_output_transform = getParam<mat4x4>("outTransform", mat4(1));
   m_filter = processFilter(getParam<std::string>("filter", "nearest"));
   // TODO in and out transforms
+}
+
+void Image::clearInstances()
+{
+  for(TransformNode *transformNode : m_transform_nodes)
+  {
+    delete transformNode;
+  }
+  m_transform_nodes.clear();
+  Sampler::clearInstances();
 }
 
 rpr_material_node Image::generateMaterial(Geometry *geometry)
@@ -39,6 +50,17 @@ rpr_material_node Image::generateMaterial(Geometry *geometry)
 
   m_instances.push_back(material);
   return material;
+}
+
+rpr_material_node Image::applyTransformNode(mat4 transform, rpr_material_node input)
+{
+  if(transform == mat4(1))  // skip default transform
+  {
+    return input;
+  }
+  auto *transformNode = new TransformNode(m_matsys, transform, input);
+  m_transform_nodes.push_back(transformNode);
+  return transformNode->getTransform();
 }
 
 rpr_image_filter_type Image::processFilter(const std::string& name)
