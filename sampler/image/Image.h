@@ -20,6 +20,7 @@ protected:
   rpr_material_node applyTransformNode(mat4 transform, rpr_material_node input);
 
   std::string m_input_attribute;
+  mat4 m_input_transform;
   mat4 m_output_transform;
   rpr_image m_image{};
   rpr_image_filter_type m_filter{};

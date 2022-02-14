@@ -23,6 +23,7 @@ void Image::commit()
   }
 
   m_input_attribute = getParam<std::string>("inAttribute", "attribute0");
+  m_input_transform = getParam<mat4x4>("inTransform", mat4(1));
   m_output_transform = getParam<mat4x4>("outTransform", mat4(1));
   m_filter = processFilter(getParam<std::string>("filter", "nearest"));
   // TODO in and out transforms
@@ -46,7 +47,8 @@ rpr_material_node Image::generateMaterial(Geometry *geometry)
   rpr_material_node material;
   CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &material))
   CHECK(rprMaterialNodeSetInputImageDataByKey(material, RPR_MATERIAL_INPUT_DATA, m_image))
-  CHECK(rprMaterialNodeSetInputNByKey(material, RPR_MATERIAL_INPUT_UV, geometry->getAttribute(m_input_attribute.c_str())->getMaterial()))
+  rpr_material_node transformed_input = applyTransformNode(m_input_transform, geometry->getAttribute(m_input_attribute.c_str())->getMaterial());
+  CHECK(rprMaterialNodeSetInputNByKey(material, RPR_MATERIAL_INPUT_UV, transformed_input))
 
   m_instances.push_back(material);
   return material;
