@@ -10,6 +10,16 @@ TransformNode::TransformNode(rpr_material_system matsys, mat4 transform_matrix, 
   CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_dot3))
   CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_transform))
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO remove it after combine operation fix
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_r))
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_g))
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_b))
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_a))
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_rg))
+  CHECK(rprMaterialSystemCreateNode(matsys, RPR_MATERIAL_NODE_ARITHMETIC, &m_rgb))
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+
   CHECK(rprMaterialNodeSetInputNByKey(m_dot0, RPR_MATERIAL_INPUT_COLOR0, input))
   CHECK(rprMaterialNodeSetInputNByKey(m_dot1, RPR_MATERIAL_INPUT_COLOR0, input))
   CHECK(rprMaterialNodeSetInputNByKey(m_dot2, RPR_MATERIAL_INPUT_COLOR0, input))
@@ -25,11 +35,41 @@ TransformNode::TransformNode(rpr_material_system matsys, mat4 transform_matrix, 
   CHECK(rprMaterialNodeSetInputUByKey(m_dot2, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_DOT4))
   CHECK(rprMaterialNodeSetInputUByKey(m_dot3, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_DOT4))
 
-  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR0,m_dot0))
-  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR1,m_dot1))
-  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR2,m_dot2))
-  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR3,m_dot3))
-  CHECK(rprMaterialNodeSetInputUByKey(m_transform, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_COMBINE))
+//  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR0,m_dot0))
+//  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR1,m_dot1))
+//  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR2,m_dot2))
+//  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR3,m_dot3))
+//  CHECK(rprMaterialNodeSetInputUByKey(m_transform, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_COMBINE))
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO remove it after combine operation fix
+  CHECK(rprMaterialNodeSetInputNByKey(m_r, RPR_MATERIAL_INPUT_COLOR0, m_dot0))
+  CHECK(rprMaterialNodeSetInputNByKey(m_g, RPR_MATERIAL_INPUT_COLOR0, m_dot1))
+  CHECK(rprMaterialNodeSetInputNByKey(m_b, RPR_MATERIAL_INPUT_COLOR0, m_dot2))
+  CHECK(rprMaterialNodeSetInputNByKey(m_a, RPR_MATERIAL_INPUT_COLOR0, m_dot3))
+
+  CHECK(rprMaterialNodeSetInputFByKey(m_r, RPR_MATERIAL_INPUT_COLOR1, 1,0,0,0))
+  CHECK(rprMaterialNodeSetInputFByKey(m_g, RPR_MATERIAL_INPUT_COLOR1, 0,1,0,0))
+  CHECK(rprMaterialNodeSetInputFByKey(m_b, RPR_MATERIAL_INPUT_COLOR1, 0,0,1,0))
+  CHECK(rprMaterialNodeSetInputFByKey(m_a, RPR_MATERIAL_INPUT_COLOR1, 0,0,0,1))
+
+  CHECK(rprMaterialNodeSetInputUByKey(m_r, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL))
+  CHECK(rprMaterialNodeSetInputUByKey(m_g, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL))
+  CHECK(rprMaterialNodeSetInputUByKey(m_b, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL))
+  CHECK(rprMaterialNodeSetInputUByKey(m_a, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_MUL))
+
+  CHECK(rprMaterialNodeSetInputNByKey(m_rg, RPR_MATERIAL_INPUT_COLOR0,m_r))
+  CHECK(rprMaterialNodeSetInputNByKey(m_rg, RPR_MATERIAL_INPUT_COLOR1,m_g))
+  CHECK(rprMaterialNodeSetInputUByKey(m_rg, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_ADD))
+
+  CHECK(rprMaterialNodeSetInputNByKey(m_rgb, RPR_MATERIAL_INPUT_COLOR0,m_rg))
+  CHECK(rprMaterialNodeSetInputNByKey(m_rgb, RPR_MATERIAL_INPUT_COLOR1,m_b))
+  CHECK(rprMaterialNodeSetInputUByKey(m_rgb, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_ADD))
+
+  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR0,m_rgb))
+  CHECK(rprMaterialNodeSetInputNByKey(m_transform, RPR_MATERIAL_INPUT_COLOR1,m_a))
+  CHECK(rprMaterialNodeSetInputUByKey(m_transform, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_ADD))
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 rpr_material_node TransformNode::getMaterial()
@@ -44,6 +84,14 @@ TransformNode::~TransformNode()
   CHECK(rprObjectDelete(m_dot2))
   CHECK(rprObjectDelete(m_dot3))
   CHECK(rprObjectDelete(m_transform))
+
+  // TODO remove it after combine operation fix
+  CHECK(rprObjectDelete(m_r))
+  CHECK(rprObjectDelete(m_g))
+  CHECK(rprObjectDelete(m_b))
+  CHECK(rprObjectDelete(m_a))
+  CHECK(rprObjectDelete(m_rg))
+  CHECK(rprObjectDelete(m_rgb))
 }
 
 }
