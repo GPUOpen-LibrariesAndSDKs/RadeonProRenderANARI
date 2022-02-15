@@ -12,6 +12,7 @@ public:
   void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) override;
   Attribute *getAttribute(const char* name) override;
   bool hasAttribute(const char *name) override;
+  static void processAttributeArray(Array1D *data, const std::vector<int>& index, std::vector<vec4> &outVector);
 
 protected:
   virtual mat4 generatePrimitiveTransform(int primitive_number){ return {}; };
@@ -26,7 +27,6 @@ protected:
   std::vector<vec4> m_attribute3;
 
 private:
-  static void processAttributeArray(Array1D *data, const std::vector<int>& index, std::vector<vec4> &outVector);
   Attribute *createPerShapeAttribute(const std::vector<vec4> &data, const char *name);
 };
 
