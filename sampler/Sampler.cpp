@@ -27,19 +27,6 @@ Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_mate
   throw std::runtime_error("cannot create sampler");
 }
 
-void Sampler::clearInstances()
-{
-  for(rpr_material_node node : m_instances){
-    CHECK(rprObjectDelete(node))
-  }
-  m_instances.clear();
-}
-
-Sampler::~Sampler()
-{
-  clearInstances();
-}
-
 }
 
 ANARI_TYPEFOR_DEFINITION(rpr::Sampler *);

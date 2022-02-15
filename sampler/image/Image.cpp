@@ -31,12 +31,17 @@ void Image::commit()
 
 void Image::clearInstances()
 {
+  for(rpr_material_node materialNode : m_instances)
+  {
+    CHECK(rprObjectDelete(materialNode))
+  }
+  m_instances.clear();
+
   for(TransformNode *transformNode : m_transform_nodes)
   {
     delete transformNode;
   }
   m_transform_nodes.clear();
-  Sampler::clearInstances();
 }
 
 rpr_material_node Image::generateMaterial(Geometry *geometry)
@@ -83,6 +88,7 @@ rpr_image_wrap_type Image::processWrap(const std::string& name)
 
 Image::~Image()
 {
+  clearInstances();
   if(m_image)
   {
     CHECK(rprObjectDelete(m_image))
