@@ -32,7 +32,7 @@ TransformNode::TransformNode(rpr_material_system matsys, mat4 transform_matrix, 
   CHECK(rprMaterialNodeSetInputUByKey(m_transform, RPR_MATERIAL_INPUT_OP, RPR_MATERIAL_NODE_OP_COMBINE))
 }
 
-rpr_material_node TransformNode::getTransform()
+rpr_material_node TransformNode::getMaterial()
 {
   return m_transform;
 }

@@ -11,7 +11,7 @@ public:
   TransformNode(rpr_material_system matsys, mat4 transform_matrix, rpr_material_node input);
   ~TransformNode();
 
-  rpr_material_node getTransform();
+  rpr_material_node getMaterial();
 
 
 private:

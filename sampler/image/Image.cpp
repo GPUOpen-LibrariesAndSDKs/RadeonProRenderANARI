@@ -62,7 +62,7 @@ rpr_material_node Image::applyTransformNode(mat4 transform, rpr_material_node in
   }
   auto *transformNode = new TransformNode(m_matsys, transform, input);
   m_transform_nodes.push_back(transformNode);
-  return transformNode->getTransform();
+  return transformNode->getMaterial();
 }
 
 rpr_image_filter_type Image::processFilter(const std::string& name)

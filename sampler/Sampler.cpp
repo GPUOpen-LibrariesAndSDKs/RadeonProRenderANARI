@@ -2,6 +2,7 @@
 #include "image/Image1D.h"
 #include "image/Image2D.h"
 #include "image/Image3D.h"
+#include "TransformSampler.h"
 
 namespace anari{
 namespace rpr{
@@ -19,7 +20,10 @@ Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_mate
   if(strcmp(type, "image3D") == 0){
     return new Image3D(context, matsys);
   }
-  //TODO Transform and Primitive samplers
+  if(strcmp(type, "transform") == 0){
+    return new TransformSampler(context, matsys);
+  }
+  //TODO Primitive sampler
   throw std::runtime_error("cannot create sampler");
 }
 
