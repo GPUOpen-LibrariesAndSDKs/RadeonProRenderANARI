@@ -32,22 +32,25 @@ rpr_shape Geometry::getBaseShape()
 
 Attribute *Geometry::getAttribute(const char *name)
 {
+  if(m_attribute_map.find(name) != m_attribute_map.end()){
+    return m_attribute_map[name];
+  }
   if(std::strcmp(name, "worldPosition") == 0)
   {
     Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_P);
-    m_attributes.push_back(attribute);
+    m_attribute_map.emplace(name, attribute);
     return attribute;
   }
   if(std::strcmp(name, "objectPosition") == 0)
   {
     Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_P_LOCAL);
-    m_attributes.push_back(attribute);
+    m_attribute_map.emplace(name, attribute);
     return attribute;
   }
   if(std::strcmp(name, "objectNormal") == 0 || std::strcmp(name, "worldNormal") == 0)
   {
     Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_N);
-    m_attributes.push_back(attribute);
+    m_attribute_map.emplace(name, attribute);
     return attribute;
   }
   return nullptr;
@@ -61,11 +64,18 @@ bool Geometry::hasAttribute(const char *name)
 
 void Geometry::clearAttributes()
 {
-  for(Attribute * attribute : m_attributes)
+  for(std::pair<std::string, Attribute*> p : m_attribute_map)
   {
-    delete attribute;
+    delete p.second;
   }
-  m_attributes.clear();
+  m_attribute_map.clear();
+}
+
+void Geometry::checkArraySizes(Array1D *array, size_t size, std::runtime_error exception)
+{
+  if(array && array->size() != size){
+    throw exception;
+  }
 }
 
 Geometry::~Geometry(){

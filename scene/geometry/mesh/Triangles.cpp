@@ -9,9 +9,19 @@ void Triangles::commit()
   auto index_data = getParamObject<Array1D>("primitive.index");
   auto vertex_data = getParamObject<Array1D>("vertex.position");
   auto color_data = getParamObject<Array1D>("vertex.color");
+  auto attribute0_data = getParamObject<Array1D>("vertex.attribute0");
+  auto attribute1_data = getParamObject<Array1D>("vertex.attribute1");
+  auto attribute2_data = getParamObject<Array1D>("vertex.attribute2");
+  auto attribute3_data = getParamObject<Array1D>("vertex.attribute3");
 
   if (!vertex_data)
     throw std::runtime_error("required 'vertex.position' data array is missed or have incorrect type!");
+
+  checkArraySizes(color_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible"));
+  checkArraySizes(attribute0_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute0' sizes are incompatible"));
+  checkArraySizes(attribute1_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute1' sizes are incompatible"));
+  checkArraySizes(attribute2_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute2' sizes are incompatible"));
+  checkArraySizes(attribute3_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute3' sizes are incompatible"));
 
   calculateBounds(vertex_data);
 
@@ -40,7 +50,13 @@ void Triangles::commit()
                              nullptr, 0, 0, nullptr, 0, 0,
                              index, sizeof(rpr_int), nullptr, 0, nullptr, 0,
                              faces.data(), num_faces, &m_base_shape))
-  applyColor(color_data);
+
+  processAttributeArray(attribute0_data, 0);
+  processAttributeArray(attribute1_data, 1);
+  processAttributeArray(attribute2_data, 2);
+  processAttributeArray(attribute3_data, 3);
+  processAttributeArray(color_data, 4);
+
   CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
 }
 

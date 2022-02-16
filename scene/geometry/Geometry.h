@@ -5,6 +5,7 @@
 #include "../SceneObject.h"
 #include "../../rpr_common.h"
 #include "attributes/Attribute.h"
+#include <map>
 
 namespace anari {
 namespace rpr {
@@ -23,8 +24,6 @@ struct Geometry : public SceneObject
 
   rpr_shape getBaseShape();
 
-  bool hasVertexColor = false;
-
   ~Geometry() override;
 
 protected:
@@ -32,9 +31,10 @@ protected:
     rpr_material_system m_matsys; // material system is using to create lookup nodes for attributes
     rpr_shape m_base_shape{};
 
-    std::vector<Attribute *> m_attributes;
+    std::map<std::string, Attribute *> m_attribute_map;
 
     void clearAttributes();
+    static void checkArraySizes(Array1D *array, size_t size, std::runtime_error exception);
 };
 
 } // namespace reference
