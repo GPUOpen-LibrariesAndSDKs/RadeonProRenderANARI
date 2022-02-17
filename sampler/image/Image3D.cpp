@@ -32,7 +32,7 @@ rpr_material_node Image3D::generateMaterial(Geometry *geometry)
   CHECK(rprMaterialNodeSetInputUByKey(material, RPR_MATERIAL_INPUT_WRAP_U,m_wrap_mode_u))
   CHECK(rprMaterialNodeSetInputUByKey(material, RPR_MATERIAL_INPUT_WRAP_V,m_wrap_mode_v))
   CHECK(rprMaterialNodeSetInputUByKey(material, RPR_MATERIAL_INPUT_WRAP_W,m_wrap_mode_w))
-  return material;
+  return applyTransformNode(m_output_transform, material);
 }
 
 }
