@@ -123,7 +123,12 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/Light.cpp
   scene/lights/AnalyticLight.cpp
   scene/lights/AreaLight.cpp
-  scene/lights/EnvironmentLight.cpp)
+  scene/lights/EnvironmentLight.cpp
+
+  scene/volume/SpatialField.cpp
+  scene/volume/StucturedRegularSpatialField.cpp
+  scene/volume/Volume.cpp
+  scene/volume/ScivisVolume.cpp)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -Drpr_device_EXPORTS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${RPR_DIR}/inc)
