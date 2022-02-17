@@ -21,4 +21,5 @@ protected:
 } // namespace rpr
 
 ANARI_TYPEFOR_SPECIALIZATION(rpr::Sampler *, ANARI_SAMPLER);
+ANARI_TYPEFOR_SPECIALIZATION(glm::mat4, ANARI_FLOAT32_MAT4)
 }
