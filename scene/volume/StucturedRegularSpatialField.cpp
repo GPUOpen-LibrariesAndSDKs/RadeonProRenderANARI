@@ -32,15 +32,17 @@ void StructuredRegularSpatialField::commit()
 
 void StructuredRegularSpatialField::processValue(uvec3 position, Array3D *data)
 {
-  m_indices.emplace_back(position);
+  m_indices.push_back(position.x);
+  m_indices.push_back(position.y);
+  m_indices.push_back(position.z);
   size_t element_number = position.x * m_size.y * m_size.z + position.y * m_size.z + position.z;
   switch(data->elementType())
   { 
-  case ANARI_UINT8: m_grid.emplace_back((rpr_float) data->dataAs<uint8_t>()[element_number]); break;
-  case ANARI_INT16: m_grid.emplace_back((rpr_float) data->dataAs<int16_t>()[element_number]); break;
-  case ANARI_UINT16: m_grid.emplace_back((rpr_float) data->dataAs<uint16_t>()[element_number]); break;
-  case ANARI_FLOAT32: m_grid.emplace_back((rpr_float) data->dataAs<float32_t>()[element_number]); break;
-  case ANARI_FLOAT64: m_grid.emplace_back((rpr_float) data->dataAs<float64_t>()[element_number]); break;
+  case ANARI_UINT8: m_grid.push_back((rpr_float) data->dataAs<uint8_t>()[element_number]); break;
+  case ANARI_INT16: m_grid.push_back((rpr_float) data->dataAs<int16_t>()[element_number]); break;
+  case ANARI_UINT16: m_grid.push_back((rpr_float) data->dataAs<uint16_t>()[element_number]); break;
+  case ANARI_FLOAT32: m_grid.push_back((rpr_float) data->dataAs<float32_t>()[element_number]); break;
+  case ANARI_FLOAT64: m_grid.push_back((rpr_float) data->dataAs<float64_t>()[element_number]); break;
   }
 }
 

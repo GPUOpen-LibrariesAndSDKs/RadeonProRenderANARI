@@ -6,7 +6,7 @@ namespace rpr{
 
 struct SpatialField : public SceneObject{
 
-  friend struct Volume;
+  friend struct ScivisVolume;
 
   SpatialField() = default;
   static SpatialField *createInstance(const char* type);
@@ -15,7 +15,7 @@ protected:
   static rpr_image_filter_type processFilter(const std::string &name);
 
   std::vector<rpr_float> m_grid;
-  std::vector<uvec3> m_indices;
+  std::vector<rpr_uint> m_indices;
   uvec3 m_size{};
   vec3 m_position{};
   vec3 m_voxelSize{};
@@ -24,5 +24,5 @@ protected:
 };
 
 }
-ANARI_TYPEFOR_SPECIALIZATION(rpr::SpatialField, ANARI_SPATIAL_FIELD)
+ANARI_TYPEFOR_SPECIALIZATION(rpr::SpatialField *, ANARI_SPATIAL_FIELD)
 }

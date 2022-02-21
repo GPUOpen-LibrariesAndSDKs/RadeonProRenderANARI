@@ -30,6 +30,6 @@ rpr_image_filter_type SpatialField::processFilter(const std::string &name)
 
 }
 
-ANARI_TYPEFOR_DEFINITION(rpr::SpatialField);
+ANARI_TYPEFOR_DEFINITION(rpr::SpatialField *);
 
 }

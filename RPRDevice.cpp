@@ -7,6 +7,7 @@
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
 #include "scene/volume/Volume.h"
+#include "scene/volume/SpatialField.h"
 #include "scene/Instance.h"
 #include "scene/World.h"
 #include "frame/Frame.h"
@@ -372,9 +373,9 @@ ANARISurface RPRDevice::newSurface()
   return createObjectForAPI<Surface, ANARISurface>(m_matsys);
 }
 
-ANARIVolume RPRDevice::newVolume(const char *_type)
+ANARIVolume RPRDevice::newVolume(const char *type)
 {
-    return createPlaceholderObject<ANARIVolume>();
+    return (ANARIVolume)Volume::createInstance(type, m_context, m_matsys);
 }
 
 // Model Meta-Data ////////////////////////////////////////////////////////////
