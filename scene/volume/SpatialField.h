@@ -14,8 +14,8 @@ struct SpatialField : public SceneObject{
 protected:
   static rpr_image_filter_type processFilter(const std::string &name);
 
-  std::vector<rpr_float> m_grid;
-  std::vector<rpr_uint> m_indices;
+  std::vector<float32> m_grid;
+  std::vector<uint32> m_indices;
   uvec3 m_size{};
   vec3 m_position{};
   vec3 m_voxelSize{};

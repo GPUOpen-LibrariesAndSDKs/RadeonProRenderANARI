@@ -12,17 +12,30 @@ void ScivisVolume::commit()
   m_field = getParamObject<SpatialField>("field");
   if(!m_field) throw std::runtime_error("'field' is a required parameter");
 
+  auto valueRange = getParam<vec2>("valueRange", vec2(0,1));
+
   extendBounds(m_field->bounds());
+
+  // normalize values of grid
+  std::vector<float32> normalizedGridData;
+  normalizedGridData.reserve(m_field->m_grid.size());
+  float32 normalizedValue;
+
+  for(float32 voxelNum : m_field->m_grid)
+  {
+    normalizedValue = (voxelNum - valueRange.x) / (valueRange.y - valueRange.x);
+    normalizedGridData.push_back(normalizedValue);
+  }
 
   CHECK(rprContextCreateGrid(m_context, &m_grid, m_field->m_size.x, m_field->m_size.y, m_field->m_size.z,
                                  (rpr_int *)m_field->m_indices.data(), m_field->m_indices.size() / 3, RPR_GRID_INDICES_TOPOLOGY_XYZ_U32,
-                                 (rpr_float *)m_field->m_grid.data(), sizeof(m_field->m_grid[0]) * m_field->m_grid.size(), 0))
+                                 normalizedGridData.data(), sizeof(normalizedGridData[0]) * normalizedGridData.size(), 0))
 
   CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_VOLUME, &m_volume_material))
   CHECK(rprMaterialSystemCreateNode(m_matsys, RPR_MATERIAL_NODE_GRID_SAMPLER, &m_density_material))
   CHECK(rprMaterialNodeSetInputGridDataByKey(m_density_material, RPR_MATERIAL_INPUT_DATA, m_grid))
   CHECK(rprMaterialNodeSetInputNByKey(m_volume_material, RPR_MATERIAL_INPUT_DENSITYGRID, m_density_material))
-  CHECK(rprMaterialNodeSetInputFByKey(m_volume_material, RPR_MATERIAL_INPUT_DENSITY, 0.03, 0.03, 0.03, 1))
+  CHECK(rprMaterialNodeSetInputFByKey(m_volume_material, RPR_MATERIAL_INPUT_DENSITY, 0.1, 0.1, 0.1, 1))
   CHECK(rprMaterialNodeSetInputFByKey(m_volume_material, RPR_MATERIAL_INPUT_COLOR, 1.f, 1.f, 1.f, 1))
 }
 
