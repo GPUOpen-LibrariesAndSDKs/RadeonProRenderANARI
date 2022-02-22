@@ -1,6 +1,7 @@
 #include "Group.h"
 #include "geometry/Surface.h"
 #include "lights/Light.h"
+#include "volume/Volume.h"
 
 namespace anari {
 namespace rpr {
@@ -11,7 +12,9 @@ void Group::commit()
 {
   auto surfaces = getParamObject<ObjectArray>("surface");
   auto lights = getParamObject<ObjectArray>("light");
+  auto volumes = getParamObject<ObjectArray>("volume");
   m_surfaces.clear();
+  m_volumes.clear();
   m_lights.clear();
 
   resetBounds();
@@ -34,12 +37,25 @@ void Group::commit()
       m_lights.push_back(light);
     }
   }
+
+  if(volumes)
+  {
+    for (int volume_number = 0; volume_number < volumes->size(); volume_number++)
+    {
+      Volume *volume = ((Volume **)volumes->handles())[volume_number];
+      extendBounds(volume->bounds());
+      m_volumes.push_back(volume);
+    }
+  }
 }
 
 void Group::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
 {
   for(Surface* surface : m_surfaces){
     surface->getInstances(out_shapes, transform);
+  }
+  for(Volume* volume : m_volumes){
+    volume->getInstances(out_shapes, transform);
   }
 }
 
