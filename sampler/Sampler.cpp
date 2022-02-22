@@ -2,6 +2,8 @@
 #include "image/Image1D.h"
 #include "image/Image2D.h"
 #include "image/Image3D.h"
+#include "TransformSampler.h"
+#include "PrimitiveSampler.h"
 
 namespace anari{
 namespace rpr{
@@ -19,21 +21,13 @@ Sampler *Sampler::createInstance(const char *type, rpr_context context, rpr_mate
   if(strcmp(type, "image3D") == 0){
     return new Image3D(context, matsys);
   }
-  //TODO Transform and Primitive samplers
-  throw std::runtime_error("cannot create sampler");
-}
-
-void Sampler::clearInstances()
-{
-  for(rpr_material_node node : m_instances){
-    CHECK(rprObjectDelete(node))
+  if(strcmp(type, "transform") == 0){
+    return new TransformSampler(context, matsys);
   }
-  m_instances.clear();
-}
-
-Sampler::~Sampler()
-{
-  clearInstances();
+  if(strcmp(type, "primitive") == 0){
+    return new PrimitiveSampler(context, matsys);
+  }
+  throw std::runtime_error("cannot create sampler");
 }
 
 }

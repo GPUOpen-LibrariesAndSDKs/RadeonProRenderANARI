@@ -97,10 +97,13 @@ add_library(${PROJECT_NAME} SHARED
   material/MatteMaterial.cpp
 
   sampler/Sampler.cpp
+  sampler/TransformSampler.cpp
+  sampler/PrimitiveSampler.cpp
   sampler/image/Image.cpp
   sampler/image/Image1D.cpp
   sampler/image/Image2D.cpp
   sampler/image/Image3D.cpp
+  sampler/util/TransformNode.cpp
 
   renderer/Renderer.cpp
   renderer/PathTracerRenderer.cpp

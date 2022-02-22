@@ -30,7 +30,7 @@ rpr_material_node Image2D::generateMaterial(Geometry *geometry)
   rpr_material_node material = Image::generateMaterial(geometry);
   CHECK(rprMaterialNodeSetInputUByKey(material, RPR_MATERIAL_INPUT_WRAP_U,m_wrap_mode_u))
   CHECK(rprMaterialNodeSetInputUByKey(material, RPR_MATERIAL_INPUT_WRAP_V,m_wrap_mode_v))
-  return material;
+  return applyTransformNode(m_output_transform, material);
 }
 
 }
