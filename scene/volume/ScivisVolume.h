@@ -1,6 +1,7 @@
 #pragma once
 #include "Volume.h"
 #include "SpatialField.h"
+#include "../../sampler/image/Image1D.h"
 
 namespace anari::rpr{
 
@@ -15,9 +16,11 @@ private:
   void clear();
   mat4 getVolumeTransform() override;
 
-  SpatialField *m_field{};
+  rpr_image m_color_map{};
+  rpr_material_node m_color_material{};
   rpr_material_node m_density_material{};
   rpr_grid m_grid{};
+  mat4 m_transform;
 };
 
 }
