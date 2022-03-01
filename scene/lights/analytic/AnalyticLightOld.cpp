@@ -1,7 +1,7 @@
 // Copyright 2020 The Khronos Triangles
 // SPDX-License-Identifier: Apache-2.0
 
-#include "AnalyticLight.h"
+#include "AnalyticLightOld.h"
 #include "Math/mathutils.h"
 
 namespace anari::rpr {
@@ -12,11 +12,11 @@ RadeonProRender::matrix calculateRotation(vec3 direction, vec3 startDirection=ve
   return RadeonProRender::rotation(RadeonProRender::float3(axis.x, axis.y, axis.z), angle);
 }
 
-AnalyticLight::AnalyticLight(rpr_context &context, const char *type) : Light(context) {
+AnalyticLightOld::AnalyticLightOld(rpr_context &context, const char *type) : Light(context) {
   m_type = type;
 }
 
-void AnalyticLight::commit()
+void AnalyticLightOld::commit()
 {
   if(m_light){
     CHECK(rprObjectDelete(m_light))
@@ -86,7 +86,7 @@ void AnalyticLight::commit()
 
 }
 
-void AnalyticLight::addToScene(rpr_scene scene){
+void AnalyticLightOld::addToScene(rpr_scene scene){
   CHECK(rprSceneAttachLight(scene, m_light))
 }
 

@@ -3,9 +3,9 @@
 
 #include "Light.h"
 // specific types
-#include "AreaLight.h"
-#include "AnalyticLight.h"
-#include "EnvironmentLight.h"
+#include "area/AreaLight.h"
+#include "analytic/AnalyticLightOld.h"
+#include "analytic/EnvironmentLight.h"
 
 namespace anari {
 namespace rpr {
@@ -22,7 +22,7 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
     return new EnvironmentLight(context, type);
   }
   else {
-    return new AnalyticLight(context, type);
+    return new AnalyticLightOld(context, type);
   }
 
 }

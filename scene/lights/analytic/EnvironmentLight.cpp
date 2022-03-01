@@ -5,7 +5,7 @@
 
 namespace anari::rpr {
 
-EnvironmentLight::EnvironmentLight(rpr_context &context, const char *type)  : AnalyticLight(context, type){}
+EnvironmentLight::EnvironmentLight(rpr_context &context, const char *type)  : AnalyticLightOld(context, type){}
 
 void EnvironmentLight::commit(){
 

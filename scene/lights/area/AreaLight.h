@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Light.h"
+#include "../Light.h"
 
 namespace anari::rpr {
 

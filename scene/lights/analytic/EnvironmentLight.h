@@ -3,12 +3,11 @@
 
 #pragma once
 
-#include "AnalyticLight.h"
+#include "AnalyticLightOld.h"
 
 namespace anari::rpr {
 
-struct EnvironmentLight : public AnalyticLight
-{
+struct EnvironmentLight : public AnalyticLightOld {
   EnvironmentLight(rpr_context &context, const char *type);
 
   void commit() override;

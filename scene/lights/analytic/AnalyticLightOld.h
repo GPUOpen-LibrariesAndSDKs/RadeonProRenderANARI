@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Light.h"
+#include "../Light.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -11,9 +11,9 @@
 
 namespace anari::rpr {
 
-struct AnalyticLight : public Light
+struct AnalyticLightOld : public Light
 {
-  AnalyticLight(rpr_context & context, const char *type);
+  AnalyticLightOld(rpr_context & context, const char *type);
 
   void commit() override;
 
