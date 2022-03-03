@@ -6,6 +6,7 @@
 #include "area/AreaLight.h"
 #include "analytic/AnalyticLightOld.h"
 #include "analytic/EnvironmentLight.h"
+#include "analytic/DirectionalLight.h"
 
 namespace anari {
 namespace rpr {
@@ -18,6 +19,9 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
   if(std::strcmp(type, "quad")==0){
     return new AreaLight(context, matsys);
   }
+  if(std::strcmp(type, "directional")==0){
+    return new DirectionalLight(context);
+  }
   if(std::strcmp(type, "hdri")==0){
     return new EnvironmentLight(context, type);
   }
@@ -27,7 +31,24 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
 
 }
 
+void Light::commit()
+{
+  clear();
+  m_visible = getParam<bool>("visible", true);
+  m_color = getParam<vec3>("color", vec3(1.f));
+}
+
+void Light::clear()
+{
+  for(void *light : m_instances)
+  {
+    CHECK(rprObjectDelete(light))
+  }
+  m_instances.clear();
+}
+
 Light::~Light(){
+  clear();
   if(m_light){
     CHECK(rprObjectDelete(m_light))
   }
