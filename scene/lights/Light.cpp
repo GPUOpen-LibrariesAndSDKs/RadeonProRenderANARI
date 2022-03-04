@@ -7,6 +7,7 @@
 #include "analytic/AnalyticLightOld.h"
 #include "analytic/EnvironmentLight.h"
 #include "analytic/DirectionalLight.h"
+#include "analytic/PointLight.h"
 
 namespace anari {
 namespace rpr {
@@ -21,6 +22,9 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
   }
   if(std::strcmp(type, "directional")==0){
     return new DirectionalLight(context);
+  }
+  if(std::strcmp(type, "point")==0){
+    return new PointLight(context);
   }
   if(std::strcmp(type, "hdri")==0){
     return new EnvironmentLight(context, type);

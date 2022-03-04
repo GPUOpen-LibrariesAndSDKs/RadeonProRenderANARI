@@ -127,6 +127,7 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/analytic/AnalyticLightOld.cpp
   scene/lights/analytic/AnalyticLight.cpp
   scene/lights/analytic/DirectionalLight.cpp
+  scene/lights/analytic/PointLight.cpp
   scene/lights/area/AreaLight.cpp
   scene/lights/analytic/EnvironmentLight.cpp)
 
