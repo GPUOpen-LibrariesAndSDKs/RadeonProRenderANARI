@@ -4,10 +4,10 @@
 #include "Light.h"
 // specific types
 #include "area/AreaLight.h"
-#include "analytic/AnalyticLightOld.h"
 #include "analytic/EnvironmentLight.h"
 #include "analytic/DirectionalLight.h"
 #include "analytic/PointLight.h"
+#include "analytic/SpotLight.h"
 
 namespace anari {
 namespace rpr {
@@ -26,11 +26,14 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
   if(std::strcmp(type, "point")==0){
     return new PointLight(context);
   }
+  if(std::strcmp(type, "spot")==0){
+    return new SpotLight(context);
+  }
   if(std::strcmp(type, "hdri")==0){
     return new EnvironmentLight(context, type);
   }
   else {
-    return new AnalyticLightOld(context, type);
+    throw std::runtime_error("could not create light");
   }
 
 }
