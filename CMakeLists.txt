@@ -124,13 +124,12 @@ add_library(${PROJECT_NAME} SHARED
   scene/geometry/attributes/PrimVarAttribute.cpp
 
   scene/lights/Light.cpp
-  scene/lights/analytic/AnalyticLightOld.cpp
   scene/lights/analytic/AnalyticLight.cpp
   scene/lights/analytic/DirectionalLight.cpp
   scene/lights/analytic/PointLight.cpp
   scene/lights/analytic/SpotLight.cpp
-  scene/lights/area/AreaLight.cpp
-  scene/lights/analytic/EnvironmentLight.cpp)
+  scene/lights/analytic/HdriLight.cpp
+  scene/lights/area/AreaLight.cpp)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -Drpr_device_EXPORTS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${RPR_DIR}/inc)

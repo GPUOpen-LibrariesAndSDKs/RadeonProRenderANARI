@@ -25,11 +25,11 @@ void DirectionalLight::commit()
 void DirectionalLight::getInstances(std::vector<void *> &outInstances, mat4 transform)
 {
   rpr_light light;
-  CHECK(rprContextCreateDirectionalLight(m_context, &light));
+  CHECK(rprContextCreateDirectionalLight(m_context, &light))
   CHECK(rprDirectionalLightSetRadiantPower3f(light, m_color.r * m_power, m_color.g * m_power, m_color.b * m_power))
   CHECK(rprDirectionalLightSetShadowSoftnessAngle(light, m_angularDiameter));
   mat4 transformResult = calculateRotation(m_direction) * transform;
-  CHECK(rprLightSetTransform(light, false, value_ptr(transformResult)));
+  CHECK(rprLightSetTransform(light, false, value_ptr(transformResult)))
   outInstances.push_back(light);
 }
 
