@@ -3,7 +3,7 @@
 
 #include "Light.h"
 // specific types
-#include "area/AreaLight.h"
+#include "area/QuadLight.h"
 #include "analytic/HdriLight.h"
 #include "analytic/DirectionalLight.h"
 #include "analytic/PointLight.h"
@@ -18,7 +18,7 @@ Light::Light(rpr_context &context)  : m_context(context) {}
 Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, const char *type)
 {
   if(std::strcmp(type, "quad")==0){
-    return new AreaLight(context, matsys);
+    return new QuadLight(context, matsys);
   }
   if(std::strcmp(type, "directional")==0){
     return new DirectionalLight(context);
@@ -36,6 +36,11 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
     throw std::runtime_error("could not create light");
   }
 
+}
+
+void Light::addToScene(rpr_scene scene)
+{
+  addToScene(scene, mat4(1));
 }
 
 void Light::commit()
@@ -56,9 +61,6 @@ void Light::clear()
 
 Light::~Light(){
   clear();
-  if(m_light){
-    CHECK(rprObjectDelete(m_light))
-  }
 }
 
 } // namespace rpr

@@ -4,10 +4,10 @@ namespace anari::rpr{
 
 AnalyticLight::AnalyticLight(rpr_context &context) : Light(context){}
 
-void AnalyticLight::addToScene(rpr_scene scene)
+void AnalyticLight::addToScene(rpr_scene scene, mat4 transform)
 {
   std::vector<void *> instances;
-  getInstances(instances, mat4(1));
+  getInstances(instances, transform);
   for(void *instance : instances)
   {
     CHECK(rprSceneAttachLight(scene, instance));

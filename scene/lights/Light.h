@@ -18,7 +18,8 @@ public:
 
   void commit() override;
 
-  inline void addToScene(rpr_scene scene) override{};
+  virtual inline void addToScene(rpr_scene scene, mat4 transform){};
+  void addToScene(rpr_scene scene) override;
 
   virtual inline void getInstances(std::vector<void *> &outInstances, mat4 transform){};
 
@@ -27,7 +28,6 @@ public:
   protected:
     rpr_context m_context;
     std::vector<void *> m_instances; // this could be rpr_light or rpr_shape
-    void * m_light = nullptr;
 
     vec3 m_color{};
     bool m_visible{};
