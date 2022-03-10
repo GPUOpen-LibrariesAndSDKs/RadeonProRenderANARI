@@ -129,6 +129,7 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/analytic/PointLight.cpp
   scene/lights/analytic/SpotLight.cpp
   scene/lights/analytic/HdriLight.cpp
+  scene/lights/analytic/RingLight.cpp
   scene/lights/area/QuadLight.cpp
 
   scene/volume/SpatialField.cpp

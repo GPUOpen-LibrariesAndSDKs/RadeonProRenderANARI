@@ -13,7 +13,7 @@ void PointLight::commit()
   auto power = getParam<float32>("power", 1.f);
   auto radiance = getParam<float32>("radiance", 1.f);
 
-  if(hasParam("intensity") || !(hasParam("power") || hasParam("radiance")))
+  if(hasParam("intensity") || !(hasParam("power") || !hasParam("radiance")))
   {
     m_power = intensity * pi<float32>() * 4.f;
   }
