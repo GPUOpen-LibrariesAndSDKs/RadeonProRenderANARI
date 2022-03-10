@@ -23,7 +23,7 @@ void QuadLight::commit(){
 
   float32 resultPower;
   float32 area = length(cross(edge1, edge2));
-  if(hasParam("intensity") || !(hasParam("power") || hasParam("radiance")))
+  if(hasParam("intensity") || !(hasParam("power") || !hasParam("radiance")))
   {
     resultPower = intensity / area;
   }

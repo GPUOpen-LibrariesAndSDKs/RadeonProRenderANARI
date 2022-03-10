@@ -8,6 +8,7 @@
 #include "analytic/DirectionalLight.h"
 #include "analytic/PointLight.h"
 #include "analytic/SpotLight.h"
+#include "analytic/RingLight.h"
 
 namespace anari {
 namespace rpr {
@@ -31,6 +32,9 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
   }
   if(std::strcmp(type, "hdri")==0){
     return new HdriLight(context);
+  }
+  if(std::strcmp(type, "ring")==0){
+    return new RingLight(context);
   }
   else {
     throw std::runtime_error("could not create light");
