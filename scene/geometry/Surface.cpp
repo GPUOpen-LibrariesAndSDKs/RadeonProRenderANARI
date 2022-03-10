@@ -34,10 +34,15 @@ void Surface::commit()
   m_material_instance = material->generateMaterial(m_geometry.ptr);
 }
 
-void Surface::addToScene(rpr_scene scene) {
+void Surface::addToScene(rpr_scene scene)
+{
+  addToScene(scene, mat4(1));
+}
 
+void Surface::addToScene(rpr_scene scene, mat4 transform)
+{
   std::vector<rpr_shape> instances;
-  getInstances(instances, mat4x3(1));
+  getInstances(instances, transform);
 
   // attach instances to scene
   for(rpr_shape instance : instances){

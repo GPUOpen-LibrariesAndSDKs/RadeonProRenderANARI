@@ -49,27 +49,16 @@ void Group::commit()
   }
 }
 
-void Group::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
-{
-  for(Surface* surface : m_surfaces){
-    surface->getInstances(out_shapes, transform);
-  }
-  for(Volume* volume : m_volumes){
-    volume->getInstances(out_shapes, transform);
-  }
-}
-
-void Group::getBaseShapes(std::vector<rpr_shape> &outShapes)
-{
-  for(Surface* surface : m_surfaces){
-    outShapes.push_back(surface->getBaseShape());
-  }
-}
-
-void Group::addLightsToScene(rpr_scene scene)
+void Group::addToScene(rpr_scene scene, mat4 transform)
 {
   for(Light *light : m_lights){
-    light->addToScene(scene);
+    light->addToScene(scene, transform);
+  }
+  for(Surface *surface : m_surfaces){
+    surface->addToScene(scene, transform);
+  }
+  for(Volume *volume : m_volumes){
+    volume->addToScene(scene, transform);
   }
 }
 

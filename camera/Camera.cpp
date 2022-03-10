@@ -31,7 +31,7 @@ void Camera::commit()
   markUpdated();
 }
 
-void Camera::addToScene(rpr_scene scene){
+void Camera::attachToScene(rpr_scene scene){
     CHECK(rprSceneSetCamera(scene, m_camera))
 }
 

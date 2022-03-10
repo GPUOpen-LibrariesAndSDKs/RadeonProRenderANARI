@@ -9,9 +9,9 @@ struct Volume : public SceneObject{
 public:
   Volume(rpr_context context, rpr_material_system matsys);
   static Volume *createInstance(const char *type, rpr_context context, rpr_material_system matsys);
-  void getInstances(std::vector<rpr_shape> &out_shapes, mat4 externalTransform);
   void commit() override;
   void addToScene(rpr_scene scene) override;
+  void addToScene(rpr_scene scene, mat4 transform);
   ~Volume() override;
 
 protected:
@@ -22,7 +22,6 @@ protected:
   rpr_material_node m_volume_material{};
 
 private:
-  void clearInstances();
   void clear();
 
   std::vector<rpr_shape> m_instances;
