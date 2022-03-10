@@ -3,6 +3,7 @@
 
 #include "World.h"
 #include "geometry/Surface.h"
+#include "volume/Volume.h"
 #include "lights/Light.h"
 #include "Instance.h"
 
@@ -19,9 +20,11 @@ void World::commit(){
   auto surfaces = getParamObject<ObjectArray>("surface");
   auto lights = getParamObject<ObjectArray>("light");
   auto instances = getParamObject<ObjectArray>("instance");
+  auto volumes = getParamObject<ObjectArray>("volume");
   m_surfaces.clear();
   m_lights.clear();
   m_instances.clear();
+  m_volumes.clear();
 
   resetBounds();
 
@@ -31,6 +34,15 @@ void World::commit(){
       Surface *surface = ((Surface**) surfaces->handles())[surface_number];
       extendBounds(surface->bounds());
       m_surfaces.push_back(surface);
+    }
+  }
+
+  if(volumes)
+  {
+    for(int volume_number=0; volume_number < volumes->size(); volume_number++){
+      Volume *volume = ((Volume**) volumes->handles())[volume_number];
+      extendBounds(volume->bounds());
+      m_volumes.push_back(volume);
     }
   }
 
@@ -86,6 +98,10 @@ void World::addToScene(rpr_scene scene){
 
     for(Surface* surface : m_surfaces){
       surface->addToScene(scene);
+    }
+
+    for(Volume* volume : m_volumes){
+      volume->addToScene(scene);
     }
 
     for(Light* light : m_lights){

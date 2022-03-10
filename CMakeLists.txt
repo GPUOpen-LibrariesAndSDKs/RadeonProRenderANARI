@@ -129,7 +129,12 @@ add_library(${PROJECT_NAME} SHARED
   scene/lights/analytic/PointLight.cpp
   scene/lights/analytic/SpotLight.cpp
   scene/lights/analytic/HdriLight.cpp
-  scene/lights/area/QuadLight.cpp)
+  scene/lights/area/QuadLight.cpp
+
+  scene/volume/SpatialField.cpp
+  scene/volume/StucturedRegularSpatialField.cpp
+  scene/volume/Volume.cpp
+  scene/volume/ScivisVolume.cpp)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -Drpr_device_EXPORTS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${RPR_DIR}/inc)

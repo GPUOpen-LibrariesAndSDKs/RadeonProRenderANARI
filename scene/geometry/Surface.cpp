@@ -21,6 +21,7 @@ void Surface::commit()
   if(!material) throw std::runtime_error("'material' is a required attribute");
 
   // cleanup before new commit
+  clearInstances();
   if(m_material_instance)
   {
     CHECK(rprObjectDelete(m_material_instance));
@@ -35,15 +36,16 @@ void Surface::commit()
 
 void Surface::addToScene(rpr_scene scene) {
 
-    clearInstances();
-    getInstances(m_instances, mat4x3(1));
+  std::vector<rpr_shape> instances;
+  getInstances(instances, mat4x3(1));
 
-    // attach instances to scene
-    for(rpr_shape instance : m_instances){
-      CHECK(rprSceneAttachShape(scene, instance));
-    }
-    // attach base invisible shape
-    CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
+  // attach instances to scene
+  for(rpr_shape instance : instances){
+    CHECK(rprSceneAttachShape(scene, instance))
+    m_instances.push_back(instance);
+  }
+  // attach base invisible shape
+  CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
 }
 
 void Surface::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)

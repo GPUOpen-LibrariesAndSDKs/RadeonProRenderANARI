@@ -6,6 +6,8 @@
 #include "scene/lights/Light.h"
 #include "scene/geometry/Geometry.h"
 #include "scene/geometry/Surface.h"
+#include "scene/volume/Volume.h"
+#include "scene/volume/SpatialField.h"
 #include "scene/Instance.h"
 #include "scene/World.h"
 #include "frame/Frame.h"
@@ -170,8 +172,8 @@ static std::map<int, SetParamFcn *> setParamFcns = {
     declare_param_setter_object(Renderer *),
     declare_param_setter_object(Sampler *),
     declare_param_setter_object(Surface *),
-    // declare_param_setter_object(SpatialField *),
-    // declare_param_setter_object(Volume *),
+    declare_param_setter_object(SpatialField *),
+    declare_param_setter_object(Volume *),
     declare_param_setter_object(World *),
     declare_param_setter_string(const char *),
     declare_param_setter(char),
@@ -363,7 +365,7 @@ ANARIGeometry RPRDevice::newGeometry(const char *type)
 
 ANARISpatialField RPRDevice::newSpatialField(const char *type)
 {
-    return createPlaceholderObject<ANARISpatialField>();
+    return (ANARISpatialField)SpatialField::createInstance(type);
 }
 
 ANARISurface RPRDevice::newSurface()
@@ -371,9 +373,9 @@ ANARISurface RPRDevice::newSurface()
   return createObjectForAPI<Surface, ANARISurface>(m_matsys);
 }
 
-ANARIVolume RPRDevice::newVolume(const char *_type)
+ANARIVolume RPRDevice::newVolume(const char *type)
 {
-    return createPlaceholderObject<ANARIVolume>();
+    return (ANARIVolume)Volume::createInstance(type, m_context, m_matsys);
 }
 
 // Model Meta-Data ////////////////////////////////////////////////////////////

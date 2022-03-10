@@ -8,6 +8,7 @@ namespace rpr {
 
 struct Surface;
 struct Light;
+struct Volume;
 
 struct Group : public SceneObject
 {
@@ -23,6 +24,7 @@ struct Group : public SceneObject
 
 private:
   std::vector<Surface *> m_surfaces;
+  std::vector<Volume *> m_volumes;
   std::vector<Light *>m_lights;
 };
 
