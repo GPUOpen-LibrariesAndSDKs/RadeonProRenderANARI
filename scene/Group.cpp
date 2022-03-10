@@ -52,13 +52,13 @@ void Group::commit()
 void Group::addToScene(rpr_scene scene, mat4 transform)
 {
   for(Light *light : m_lights){
-    light->addToScene(scene, transform);
+    light->attachToScene(scene, transform);
   }
   for(Surface *surface : m_surfaces){
-    surface->addToScene(scene, transform);
+    surface->attachToScene(scene, transform);
   }
   for(Volume *volume : m_volumes){
-    volume->addToScene(scene, transform);
+    volume->attachToScene(scene, transform);
   }
 }
 

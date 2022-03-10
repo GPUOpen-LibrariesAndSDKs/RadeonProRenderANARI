@@ -20,12 +20,7 @@ Volume *Volume::createInstance(const char *type, rpr_context context, rpr_materi
   throw std::runtime_error("cannot create volume");
 }
 
-void Volume::addToScene(rpr_scene scene)
-{
-  addToScene(scene, mat4(1));
-}
-
-void Volume::addToScene(rpr_scene scene, mat4 transform)
+void Volume::attachToScene(rpr_scene scene, mat4 transform)
 {
   rpr_shape shape;
   rpr_mesh_info mesh_properties[16];

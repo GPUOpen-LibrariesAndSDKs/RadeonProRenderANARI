@@ -10,8 +10,7 @@ public:
   Volume(rpr_context context, rpr_material_system matsys);
   static Volume *createInstance(const char *type, rpr_context context, rpr_material_system matsys);
   void commit() override;
-  void addToScene(rpr_scene scene) override;
-  void addToScene(rpr_scene scene, mat4 transform);
+  void attachToScene(rpr_scene scene, mat4 transform = mat4(1));
   ~Volume() override;
 
 protected:

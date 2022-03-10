@@ -27,7 +27,7 @@ protected:
   rpr_image m_background_image = nullptr;
   int m_pixel_samples = 1;
 
-  void addToScene(rpr_scene scene) override;
+  void attachToScene(rpr_scene scene);
 };
 
 } // namespace reference

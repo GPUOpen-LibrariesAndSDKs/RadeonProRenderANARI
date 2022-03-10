@@ -25,7 +25,7 @@ void Instance::commit()
   extendBounds(xfmBox(m_transform, m_group->bounds()));
 }
 
-void Instance::addToScene(rpr_scene scene)
+void Instance::attachToScene(rpr_scene scene)
 {
   m_group->addToScene(scene, m_transform);
 }

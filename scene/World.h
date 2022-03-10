@@ -25,7 +25,7 @@ struct World : public SceneObject
   std::vector<Instance*> m_instances;
   std::vector<Volume*> m_volumes;
 
-  void addToScene(rpr_scene scene) override;
+  void attachToScene(rpr_scene scene);
 };
 
 } // namespace rpr

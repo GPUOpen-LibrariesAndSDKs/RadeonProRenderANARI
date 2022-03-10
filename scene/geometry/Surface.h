@@ -17,9 +17,7 @@ struct Surface : public SceneObject
 
   void commit() override;
 
-  void addToScene(rpr_scene scene) override;
-
-  void addToScene(rpr_scene scene, mat4 transform);
+  void attachToScene(rpr_scene scene, mat4 transform = mat4(1));
 
   void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform);
 

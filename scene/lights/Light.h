@@ -18,8 +18,8 @@ public:
 
   void commit() override;
 
-  virtual inline void addToScene(rpr_scene scene, mat4 transform){};
-  void addToScene(rpr_scene scene) override;
+  virtual inline void attachToScene(rpr_scene scene, mat4 transform){};
+  void attachToScene(rpr_scene scene);
 
   virtual inline void getInstances(std::vector<void *> &outInstances, mat4 transform){};
 

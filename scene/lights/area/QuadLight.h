@@ -11,7 +11,7 @@ struct QuadLight : public Light
 {
   QuadLight(rpr_context & context, rpr_material_system & matsys);
   void commit() override;
-  void addToScene(rpr_scene scene, mat4 transform) override;
+  void attachToScene(rpr_scene scene, mat4 transform) override;
   ~QuadLight() override;
 
  private:

@@ -174,7 +174,7 @@ void Frame::renderFrame() {
 
     if(rendererChanged)
     {
-        r.addToScene(m_scene);
+        r.attachToScene(m_scene);
         m_rendererLastChanged = r.lastUpdated();
     }
     if(cameraChanged)
@@ -184,7 +184,7 @@ void Frame::renderFrame() {
     }
     if(worldChanged)
     {
-        w.addToScene(m_scene);
+        w.attachToScene(m_scene);
         m_worldLastChanged = w.lastUpdated();
     }
     if(m_frameChanged)

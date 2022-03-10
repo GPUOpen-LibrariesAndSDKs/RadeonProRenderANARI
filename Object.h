@@ -56,7 +56,6 @@ struct Object : public RefCounted, public ParameterizedObject
 
   protected:
     void setCommitPriority(int p);
-    virtual void addToScene(rpr_scene scene) {};
 
   private:
     ANARIDataType m_type{ANARI_OBJECT};

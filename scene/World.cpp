@@ -66,7 +66,7 @@ void World::commit(){
   markUpdated();
 }
 
-void World::addToScene(rpr_scene scene){
+void World::attachToScene(rpr_scene scene){
 
     size_t prev_shapes_count;
     size_t prev_lights_count;
@@ -97,19 +97,19 @@ void World::addToScene(rpr_scene scene){
     }
 
     for(Surface* surface : m_surfaces){
-      surface->addToScene(scene);
+      surface->attachToScene(scene);
     }
 
     for(Volume* volume : m_volumes){
-      volume->addToScene(scene);
+      volume->attachToScene(scene);
     }
 
     for(Light* light : m_lights){
-      light->addToScene(scene);
+      light->attachToScene(scene);
     }
 
     for(Instance* instance : m_instances){
-      instance->addToScene(scene);
+      instance->attachToScene(scene);
     }
 }
 

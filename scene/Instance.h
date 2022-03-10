@@ -14,7 +14,7 @@ struct Instance : public SceneObject
 public:
   Instance();
   void commit() override;
-  void addToScene(rpr_scene scene) override;
+  void attachToScene(rpr_scene scene);
 
 private:
   IntrusivePtr<Group> m_group;
