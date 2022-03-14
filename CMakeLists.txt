@@ -90,6 +90,7 @@ add_library(${PROJECT_NAME} SHARED
 
   camera/Camera.cpp
   camera/Perspective.cpp
+  camera/Orthographic.cpp
 
   frame/Frame.cpp
 
