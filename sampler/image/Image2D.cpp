@@ -21,7 +21,7 @@ void Image2D::commit()
   imageDesc.image_depth = 0;
   imageDesc.image_row_pitch = image_data->size(0) * 3 * sizeof(rpr_float);
   imageDesc.image_slice_pitch = 0;
-  CHECK(rprContextCreateImage(m_context, {3, RPR_COMPONENT_TYPE_FLOAT32}, &imageDesc, image_data->dataAs<vec3>(), &m_image))
+  CHECK(rprContextCreateImage(m_context, {3, RPR_COMPONENT_TYPE_FLOAT32}, &imageDesc, (float32 *) image_data->dataAs<vec3>(), &m_image))
   CHECK(rprImageSetFilter(m_image, m_filter))
 }
 
