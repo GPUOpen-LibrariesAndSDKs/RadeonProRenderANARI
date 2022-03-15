@@ -41,12 +41,12 @@ Attribute *Mesh::createPrimVarAttribute(int key, const char *name) {
   return attribute;
 }
 
-void Mesh::calculateBounds(Array1D *vertex)
+void Mesh::calculateBounds(Array1D *vertex_data)
 {
   resetBounds();
 
-  for(int i=0; i<vertex->size()*3; i++){
-    float coordinate = ((float*) vertex->dataAs<vec3>())[i];
+  for(int i=0; i< vertex_data->size()*3; i++){
+    float coordinate = ((float*)vertex_data->dataAs<vec3>())[i];
     if(i%3==0){  //x coordinate
       m_bounds.upper.x = max(m_bounds.upper.x, coordinate);
       m_bounds.lower.x = min(m_bounds.lower.x, coordinate);
@@ -87,6 +87,27 @@ void Mesh::processAttributeArray(Array1D *data, int key)
   }
 
   }
+}
+
+void Mesh::processAttributes(Array1D *vertex_data)
+{
+  auto color_data = getParamObject<Array1D>("vertex.color");
+  auto attribute0_data = getParamObject<Array1D>("vertex.attribute0");
+  auto attribute1_data = getParamObject<Array1D>("vertex.attribute1");
+  auto attribute2_data = getParamObject<Array1D>("vertex.attribute2");
+  auto attribute3_data = getParamObject<Array1D>("vertex.attribute3");
+
+  checkArraySizes(color_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.color' sizes are incompatible"));
+  checkArraySizes(attribute0_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute0' sizes are incompatible"));
+  checkArraySizes(attribute1_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute1' sizes are incompatible"));
+  checkArraySizes(attribute2_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute2' sizes are incompatible"));
+  checkArraySizes(attribute3_data, vertex_data->size(), std::runtime_error("'vertex.position' and 'vertex.attribute3' sizes are incompatible"));
+
+  processAttributeArray(attribute0_data, 0);
+  processAttributeArray(attribute1_data, 1);
+  processAttributeArray(attribute2_data, 2);
+  processAttributeArray(attribute3_data, 3);
+  processAttributeArray(color_data, 4);
 }
 
 } //namespace anari::rpr

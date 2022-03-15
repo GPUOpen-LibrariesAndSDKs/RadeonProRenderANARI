@@ -14,10 +14,11 @@ public:
   bool hasAttribute(const char *name) override;
 
 protected:
-  void calculateBounds(Array1D *vertex);
-  void processAttributeArray(Array1D *data, int key);
+  void calculateBounds(Array1D *vertex_data);
+  void processAttributes(Array1D *vertex_data);
 
 private:
+  void processAttributeArray(Array1D *data, int key);
   Attribute *createPrimVarAttribute(int key, const char *name);
 };
 }
