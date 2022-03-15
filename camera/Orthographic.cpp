@@ -11,7 +11,7 @@ void Orthographic::commit()
   Camera::commit();
 
   auto sensorHeight = getParam<float>("sensorHeight", 24.f); // additional parameter
-  auto orthoHeight = getParam<float>("orthoHeight", 5.f); // additional parameter
+  auto orthoHeight = getParam<float>("orthoHeight", 1.f); // additional parameter
   auto aspect = getParam<float>("aspect", 1.f);
 
   float sensorWidth = sensorHeight * aspect;
