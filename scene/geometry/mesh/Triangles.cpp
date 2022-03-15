@@ -7,6 +7,7 @@ Triangles::Triangles(rpr_context context, rpr_material_system materialSystem) : 
 void Triangles::commit()
 {
   auto index_data = getParamObject<Array1D>("primitive.index");
+  auto normal_data = getParamObject<Array1D>("vertex.normal");
   auto vertex_data = getParamObject<Array1D>("vertex.position");
 
   if (!vertex_data)
@@ -14,11 +15,11 @@ void Triangles::commit()
 
   calculateBounds(vertex_data);
 
+  // process indices
   rpr_int *index;
   std::size_t num_faces;
   std::vector<uvec3> default_index;
 
-  // process indices
   if(index_data)
   {
     num_faces = index_data->size();
@@ -34,10 +35,18 @@ void Triangles::commit()
     index = (rpr_int *)default_index.data();
   }
 
+  //process normals
+  rpr_float *normal = normal_data ? (rpr_float *) normal_data->dataAs<vec3>() : nullptr;
+  size_t num_normals = normal_data ? normal_data->size() : 0;
+  size_t normal_stride = normal_data ? sizeof(rpr_float) * 3 : 0;
+  rpr_int *normal_indices = normal_data ? index : nullptr;
+  size_t nidx_stride = normal_data ? sizeof(rpr_int) : 0;
+
+
   std::vector<rpr_int> faces(num_faces, 3);
   CHECK(rprContextCreateMesh(m_context, (rpr_float*)vertex_data->dataAs<vec3>(), vertex_data->size(), sizeof(rpr_float) * 3,
-                             nullptr, 0, 0, nullptr, 0, 0,
-                             index, sizeof(rpr_int), nullptr, 0, nullptr, 0,
+                             normal, num_normals, normal_stride, nullptr, 0, 0,
+                             index, sizeof(rpr_int), normal_indices, nidx_stride, nullptr, 0,
                              faces.data(), num_faces, &m_base_shape))
 
   processAttributes(vertex_data);
