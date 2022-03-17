@@ -16,7 +16,7 @@ void Perspective::commit()
   auto sensorHeight = getParam<float>("sensorHeight", 24.f); // additional parameter
   auto fovy = getParam<float>("fovy", radians(60.f));
   auto focusDistance = getParam<float>("focusDistance", 1.f);
-  auto apertureRadius = getParam<float>("apertureRadius", 0.1f);
+  auto apertureRadius = getParam<float>("apertureRadius", 0.f);
   auto aspect = getParam<float>("aspect", 1.f);
 
   if(apertureRadius > 0){
