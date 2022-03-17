@@ -101,7 +101,8 @@ void Spheres::createBaseShape(){  //creates base sphere with center 0,0,0 and ra
 
   std::vector<rpr_int> faces(num_faces, 4);
 
-  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), num_faces, &m_base_shape))
+  // normal coordinates are same with vertex coordinates because center of sphere is (0,0,0)
+  CHECK(rprContextCreateMesh(m_context, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, (rpr_float *) vertices.data(), vertices.size() / 3, sizeof(rpr_float) * 3, nullptr, 0, 0, (rpr_int * ) indices.data(), sizeof(rpr_int), (rpr_int * ) indices.data(), sizeof(rpr_int), nullptr, 0, faces.data(), num_faces, &m_base_shape))
   CHECK(rprShapeSetVisibility(m_base_shape, false)) //this is invisible 'original' sphere. It's instances will be visible
 }
 

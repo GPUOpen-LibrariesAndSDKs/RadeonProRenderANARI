@@ -18,8 +18,8 @@ struct Spheres : public Primitives
   void createBaseShape();
   mat4 generatePrimitiveTransform(int primitive_number) override;
 
-  int sectors=16;
-  int rings=16;
+  int sectors=32;
+  int rings=32;
 
   std::vector<float> m_radius;
   std::vector<vec3> m_positions;
