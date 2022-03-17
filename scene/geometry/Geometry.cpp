@@ -4,6 +4,7 @@
 #include "Geometry.h"
 // specific types
 #include "mesh/Triangles.h"
+#include "mesh/Quad.h"
 #include "primitives/Spheres.h"
 
 namespace anari {
@@ -17,6 +18,9 @@ Geometry *Geometry::createInstance(rpr_context context, rpr_material_system mate
 {
   if(std::strcmp(type, "triangle")==0){
     return new Triangles(context, materialSystem);
+  }
+  if(std::strcmp(type, "quad")==0){
+    return new Quad(context, materialSystem);
   }
   if(std::strcmp(type, "sphere")==0){
     return new Spheres(context, materialSystem);

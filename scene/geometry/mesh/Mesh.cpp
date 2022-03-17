@@ -1,4 +1,5 @@
-#include "Mesh.h"
+#include "Triangles.h"
+#include "Quad.h"
 #include "../attributes/PrimVarAttribute.h"
 
 namespace anari::rpr{
@@ -11,6 +12,57 @@ void Mesh::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
   CHECK(rprContextCreateInstance(m_context, m_base_shape, &instance))
   CHECK(rprShapeSetTransform(instance, false, value_ptr(transform)))
   out_shapes.push_back(instance);
+}
+
+template <typename vecType, int polySize>
+void Mesh::meshCommit(vecType defaultVector){
+  auto index_data = getParamObject<Array1D>("primitive.index");
+  auto normal_data = getParamObject<Array1D>("vertex.normal");
+  auto vertex_data = getParamObject<Array1D>("vertex.position");
+
+  if (!vertex_data)
+    throw std::runtime_error("required 'vertex.position' data array is missed or have incorrect type!");
+
+  calculateBounds(vertex_data);
+
+  // process indices
+  rpr_int *index;
+  std::size_t num_faces;
+  std::vector<vecType> default_index;
+
+  if(index_data)
+  {
+    num_faces = index_data->size();
+    index = (rpr_int *) index_data->dataAs<vecType>();
+  }
+  else  // 'index_data' array is missed. We should use default indices
+  {
+    default_index.reserve(vertex_data->size() / polySize);
+    for (uint32_t i = 0; i < vertex_data->size(); i += polySize)
+    {
+      default_index.push_back(defaultVector + i);
+    }
+    num_faces = default_index.size();
+    index = (rpr_int *)default_index.data();
+  }
+  std::vector<rpr_int> faces(num_faces, polySize);
+
+  //process normals
+  rpr_float *normal = normal_data ? (rpr_float *) normal_data->dataAs<vec3>() : nullptr;
+  size_t num_normals = normal_data ? normal_data->size() : 0;
+  size_t normal_stride = normal_data ? sizeof(rpr_float) * 3 : 0;
+  rpr_int *normal_indices = normal_data ? index : nullptr;
+  size_t nidx_stride = normal_data ? sizeof(rpr_int) : 0;
+
+
+  CHECK(rprContextCreateMesh(m_context, (rpr_float*)vertex_data->dataAs<vec3>(), vertex_data->size(), sizeof(rpr_float) * 3,
+                             normal, num_normals, normal_stride, nullptr, 0, 0,
+                             index, sizeof(rpr_int), normal_indices, nidx_stride, nullptr, 0,
+                             faces.data(), num_faces, &m_base_shape))
+
+  processAttributes(vertex_data);
+
+  CHECK(rprShapeSetVisibility(m_base_shape, false))  // base shape is always invisible
 }
 
 Attribute *Mesh::getAttribute(const char *name)
@@ -108,6 +160,14 @@ void Mesh::processAttributes(Array1D *vertex_data)
   processAttributeArray(attribute2_data, 2);
   processAttributeArray(attribute3_data, 3);
   processAttributeArray(color_data, 4);
+}
+
+void Triangles::commit() {
+  Mesh::meshCommit<uvec3, 3>(uvec3(0,1,2));
+}
+
+void Quad::commit() {
+  Mesh::meshCommit<uvec4, 4>(uvec4(0,1,2,3));
 }
 
 } //namespace anari::rpr
