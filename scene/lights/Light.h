@@ -11,20 +11,29 @@ namespace rpr {
 
 struct Light : public SceneObject
 {
-  friend struct Instance;
-
+public:
   explicit Light(rpr_context &context);
 
   static Light *createInstance(rpr_context &context, rpr_material_system matsys, const char *type);
 
-  inline void addToScene(rpr_scene) override{};
+  void commit() override;
+
+  virtual inline void addToScene(rpr_scene scene, mat4 transform){};
+  void addToScene(rpr_scene scene) override;
+
+  virtual inline void getInstances(std::vector<void *> &outInstances, mat4 transform){};
 
   ~Light() override;
 
   protected:
-    rpr_context m_context; // we need to store the context so we can create at commit
-    void * m_light = nullptr;  // this could be rpr_light or rpr_shape
+    rpr_context m_context;
+    std::vector<void *> m_instances; // this could be rpr_light or rpr_shape
 
+    vec3 m_color{};
+    bool m_visible{};
+
+  private:
+    void clear();
 };
 
 } // namespace reference

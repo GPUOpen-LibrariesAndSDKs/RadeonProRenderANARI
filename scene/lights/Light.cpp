@@ -3,9 +3,12 @@
 
 #include "Light.h"
 // specific types
-#include "AreaLight.h"
-#include "AnalyticLight.h"
-#include "EnvironmentLight.h"
+#include "area/QuadLight.h"
+#include "analytic/HdriLight.h"
+#include "analytic/DirectionalLight.h"
+#include "analytic/PointLight.h"
+#include "analytic/SpotLight.h"
+#include "analytic/RingLight.h"
 
 namespace anari {
 namespace rpr {
@@ -16,21 +19,52 @@ Light::Light(rpr_context &context)  : m_context(context) {}
 Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, const char *type)
 {
   if(std::strcmp(type, "quad")==0){
-    return new AreaLight(context, matsys);
+    return new QuadLight(context, matsys);
+  }
+  if(std::strcmp(type, "directional")==0){
+    return new DirectionalLight(context);
+  }
+  if(std::strcmp(type, "point")==0){
+    return new PointLight(context);
+  }
+  if(std::strcmp(type, "spot")==0){
+    return new SpotLight(context);
   }
   if(std::strcmp(type, "hdri")==0){
-    return new EnvironmentLight(context, type);
+    return new HdriLight(context);
+  }
+  if(std::strcmp(type, "ring")==0){
+    return new RingLight(context);
   }
   else {
-    return new AnalyticLight(context, type);
+    throw std::runtime_error("could not create light");
   }
 
 }
 
-Light::~Light(){
-  if(m_light){
-    CHECK(rprObjectDelete(m_light))
+void Light::addToScene(rpr_scene scene)
+{
+  addToScene(scene, mat4(1));
+}
+
+void Light::commit()
+{
+  clear();
+  m_visible = getParam<bool>("visible", true);
+  m_color = getParam<vec3>("color", vec3(1.f));
+}
+
+void Light::clear()
+{
+  for(void *light : m_instances)
+  {
+    CHECK(rprObjectDelete(light))
   }
+  m_instances.clear();
+}
+
+Light::~Light(){
+  clear();
 }
 
 } // namespace rpr

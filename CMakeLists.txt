@@ -124,9 +124,13 @@ add_library(${PROJECT_NAME} SHARED
   scene/geometry/attributes/PrimVarAttribute.cpp
 
   scene/lights/Light.cpp
-  scene/lights/AnalyticLight.cpp
-  scene/lights/AreaLight.cpp
-  scene/lights/EnvironmentLight.cpp
+  scene/lights/analytic/AnalyticLight.cpp
+  scene/lights/analytic/DirectionalLight.cpp
+  scene/lights/analytic/PointLight.cpp
+  scene/lights/analytic/SpotLight.cpp
+  scene/lights/analytic/HdriLight.cpp
+  scene/lights/analytic/RingLight.cpp
+  scene/lights/area/QuadLight.cpp
 
   scene/volume/SpatialField.cpp
   scene/volume/StucturedRegularSpatialField.cpp
