@@ -59,44 +59,50 @@ void Spheres::commit(){
   m_num_primitives = m_indices.size();
 }
 
-mat4 Spheres::generatePrimitiveTransform(int primitive_number)
+rpr_shape Spheres::getPrimitive(int primitive_number, mat4 externalTransform)
 {
+  rpr_shape primitive;
   vec3 vertex = m_positions[primitive_number];
   float radius = m_radius[primitive_number];
-  return transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1));
+  mat4 transform = transpose(mat4(radius,0,0,vertex.x,0,radius,0,vertex.y,0,0,radius,vertex.z,0,0,0,1));
+  transform *= externalTransform;
+  CHECK(rprContextCreateInstance(m_context, m_base_shape, &primitive))
+  CHECK(rprShapeSetTransform(primitive, false, value_ptr(transform)))
+  return primitive;
 }
 
 void Spheres::createBaseShape(){  //creates base sphere with center 0,0,0 and radius 1
-  float const R = 1.f/(float)(rings -1);
-  float const S = 1.f/(float)(sectors -1);
+  float const R = 1.f/(float)(m_rings -1);
+  float const S = 1.f/(float)(m_sectors -1);
+  auto const m_pi = pi<float>();
 
   std::vector<rpr_float> vertices;
   std::vector<rpr_int> indices;
 
-  int num_faces = (rings-1) * (sectors-1);
+  int num_faces = (m_rings -1) * (m_sectors -1);
 
-  vertices.resize(rings * sectors * 3);
+  vertices.resize(m_rings * m_sectors * 3);
   indices.resize(num_faces * 4);
 
   auto v = vertices.begin();
   auto i = indices.begin();
 
-  for(int r=0; r< rings; r++) for(int s=0; s< sectors; s++){
-      float const y = sin((M_PI / 2.f) + M_PI * R * r);
-      float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-      float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+  for(int r=0; r< m_rings; r++) for(int s=0; s< m_sectors; s++){
+      float const y = sin((m_pi / 2.f) + m_pi * R * r);
+      float const x = cos(2 * m_pi * s * S) * sin( m_pi * r * R );
+      float const z = sin(2 * m_pi * s * S) * sin( m_pi * r * R );
 
       *v++ = x;
       *v++ = y;
       *v++ = z;
   }
 
-  for(int r=0; r<rings-1; r++) for(int s=0; s< sectors-1; s++){
+  for(int r=0; r< m_rings -1; r++) for(int s=0; s< m_sectors -1; s++){
 
-      *i++ = r * sectors + s;
-      *i++ = r * sectors + (s+1);
-      *i++ = (r+1) * sectors + (s+1);
-      *i++ = (r+1) * sectors + s;
+      *i++ = r * m_sectors + s;
+      *i++ = r * m_sectors + (s+1);
+      *i++ = (r+1) * m_sectors + (s+1);
+      *i++ = (r+1) * m_sectors + s;
   }
 
   std::vector<rpr_int> faces(num_faces, 4);

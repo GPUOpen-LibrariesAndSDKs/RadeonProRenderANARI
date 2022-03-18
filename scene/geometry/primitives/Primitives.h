@@ -15,7 +15,7 @@ public:
   static void processAttributeArray(Array1D *data, const std::vector<int>& index, std::vector<vec4> &outVector);
 
 protected:
-  virtual mat4 generatePrimitiveTransform(int primitive_number){ return {}; };
+  virtual rpr_shape getPrimitive(int primitive_number, mat4 externalTransform){return nullptr;};
   void processAttributeParameters(const std::vector<int> &index);
 
   size_t m_num_primitives{};
