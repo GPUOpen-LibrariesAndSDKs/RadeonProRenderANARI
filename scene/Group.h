@@ -15,7 +15,7 @@ struct Group : public SceneObject
 public:
   Group();
   void commit() override;
-  void addToScene(rpr_scene scene, mat4 transform);
+  void attachToScene(rpr_scene scene, mat4 transform);
 
 private:
   std::vector<Surface *> m_surfaces;

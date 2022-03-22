@@ -27,7 +27,7 @@ void Instance::commit()
 
 void Instance::attachToScene(rpr_scene scene)
 {
-  m_group->addToScene(scene, m_transform);
+  m_group->attachToScene(scene, m_transform);
 }
 
 

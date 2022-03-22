@@ -49,7 +49,7 @@ void Group::commit()
   }
 }
 
-void Group::addToScene(rpr_scene scene, mat4 transform)
+void Group::attachToScene(rpr_scene scene, mat4 transform)
 {
   for(Light *light : m_lights){
     light->attachToScene(scene, transform);
