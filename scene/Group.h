@@ -12,15 +12,10 @@ struct Volume;
 
 struct Group : public SceneObject
 {
+public:
   Group();
-
   void commit() override;
-
-  void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform);
-
-  void getBaseShapes(std::vector<rpr_shape> &outShapes);
-
-  void addLightsToScene(rpr_scene scene);
+  void attachToScene(rpr_scene scene, mat4 transform);
 
 private:
   std::vector<Surface *> m_surfaces;

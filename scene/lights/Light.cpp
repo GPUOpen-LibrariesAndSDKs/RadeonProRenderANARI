@@ -42,9 +42,9 @@ Light *Light::createInstance(rpr_context &context, rpr_material_system matsys, c
 
 }
 
-void Light::addToScene(rpr_scene scene)
+void Light::attachToScene(rpr_scene scene)
 {
-  addToScene(scene, mat4(1));
+  attachToScene(scene, mat4(1));
 }
 
 void Light::commit()

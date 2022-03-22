@@ -4,7 +4,7 @@ namespace anari::rpr{
 
 AnalyticLight::AnalyticLight(rpr_context &context) : Light(context){}
 
-void AnalyticLight::addToScene(rpr_scene scene, mat4 transform)
+void AnalyticLight::attachToScene(rpr_scene scene, mat4 transform)
 {
   std::vector<void *> instances;
   getInstances(instances, transform);

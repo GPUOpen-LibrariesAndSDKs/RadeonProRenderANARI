@@ -11,20 +11,15 @@ namespace rpr {
 
 struct Camera : public Object
 {
-  friend struct Frame;
-
+public:
   explicit Camera(rpr_camera &camera);
-
   void commit() override;
-
   static Camera *createInstance(rpr_context &context, const char *type);
-
+  void attachToScene(rpr_scene scene);
   ~Camera() override;
 
   protected:
   rpr_camera m_camera;
-
-  void addToScene(rpr_scene scene) override;
 
 };
 

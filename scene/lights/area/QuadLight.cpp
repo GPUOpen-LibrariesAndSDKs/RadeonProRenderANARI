@@ -62,7 +62,7 @@ void QuadLight::commit(){
 
 }
 
-void QuadLight::addToScene(rpr_scene scene, mat4 transform){
+void QuadLight::attachToScene(rpr_scene scene, mat4 transform){
   rpr_shape instance;
   // create new mesh per instance because emissive material assigned to rpr instance produces core crash
   CHECK(rprContextCreateMesh(m_context, (rpr_float*) m_vertex.data(), 4, sizeof(rpr_float)*3, (rpr_float*)m_normal.data(), 4, sizeof(rpr_float)*3, nullptr, 0, 0, m_index, sizeof(rpr_int), m_index, sizeof(rpr_int), nullptr, 0, m_faces, 1, &instance))

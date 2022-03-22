@@ -16,7 +16,7 @@ Renderer *Renderer::createInstance(rpr_context context, const char *type)
 }
 
 
-void Renderer::addToScene(rpr_scene scene)
+void Renderer::attachToScene(rpr_scene scene)
 {
     CHECK(rprSceneSetBackgroundImage(scene, m_background_image))
     CHECK(rprContextSetParameterByKey1u(m_context, RPR_CONTEXT_ITERATIONS, m_pixel_samples))

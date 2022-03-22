@@ -20,7 +20,7 @@ Volume *Volume::createInstance(const char *type, rpr_context context, rpr_materi
   throw std::runtime_error("cannot create volume");
 }
 
-void Volume::getInstances(std::vector<rpr_shape> &out_shapes, mat4 externalTransform)
+void Volume::attachToScene(rpr_scene scene, mat4 transform)
 {
   rpr_shape shape;
   rpr_mesh_info mesh_properties[16];
@@ -31,33 +31,22 @@ void Volume::getInstances(std::vector<rpr_shape> &out_shapes, mat4 externalTrans
                           nullptr, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr, 0, mesh_properties, &shape);
   CHECK(rprShapeSetVolumeMaterial(shape, m_volume_material))
 
-  mat4 transform = getVolumeTransform() * externalTransform;
-  CHECK(rprShapeSetTransform(shape, false, value_ptr(transform)))
-
-  out_shapes.push_back(shape);
+  mat4 transformResult = getVolumeTransform() * transform;
+  CHECK(rprShapeSetTransform(shape, false, value_ptr(transformResult)))
+  m_instances.push_back(shape);
+  CHECK(rprSceneAttachShape(scene, shape))
 }
 
-void Volume::addToScene(rpr_scene scene)
+void Volume::clear()
 {
-  getInstances(m_instances, mat4(1));
-  CHECK(rprSceneAttachShape(scene, m_instances[m_instances.size() - 1]))
-}
-
-void Volume::clear() {
-  clearInstances();
-  if(m_volume_material)
-  {
-    CHECK(rprObjectDelete(m_volume_material))
-  }
-}
-
-void Volume::clearInstances()
-{
-  for(rpr_shape shape : m_instances)
-  {
+  for(rpr_shape shape : m_instances)  {
     CHECK(rprObjectDelete(shape))
   }
   m_instances.clear();
+
+  if(m_volume_material)  {
+    CHECK(rprObjectDelete(m_volume_material))
+  }
 }
 
 Volume::~Volume()

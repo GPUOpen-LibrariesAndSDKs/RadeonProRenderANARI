@@ -1,6 +1,15 @@
 # RadeonProRender ANARI device
 ## Description
 This is implementation of ANARI device based on RadeonProRender engine
+## Implementation details
+### Camera
+* supported types: perspective and orthographic
+* `transform` parameter overrides `position`, `direction` and `up` parameters
+* `imageRegion` parameter is not supported now
+* `focusDistance` and `apertureRadius` parameters are only supported by perspective camera
+* both cameras have an additional parameter `sensorHeight`. Sensor width will be calculated using `aspect` parameter. Default sensor height is 24 mm
+* orthographic camera has an additional parameter `orthoHeight`. It determines the area which the Orthographic camera projection will cover. Width will be calculated using `aspect` parameter. Default value is 1
+* stereo mode is not implemented now
 ## Dependencies
 [ANARI SDK](https://github.com/KhronosGroup/ANARI-SDK) must be installed on computer before RPR device building.
 ## Building the device
