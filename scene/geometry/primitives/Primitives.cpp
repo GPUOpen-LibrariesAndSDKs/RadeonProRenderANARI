@@ -101,4 +101,42 @@ void Primitives::processAttributeArray(Array1D *data, const std::vector<int>& in
   }
 }
 
+rpr_shape Primitives::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius, bool upCap, bool downCap, mat4 externalTransform, int numSegments)
+{
+  vec3 direction = normalize(upVertex - downVertex);
+  mat4 transform = translate(mat4(1), (upVertex + downVertex) * 0.5f); // middle point between vertices
+  transform *= calculateRotation(direction, vec3(0,1,0));
+  transform *= externalTransform;
+  const float height = length(upVertex - downVertex);
+
+  std::vector<vec3> vertices;
+  std::vector<rpr_int> indices;
+  std::vector<rpr_int> faces(numSegments, 4);
+  vertices.resize(numSegments * 2);
+  indices.resize(numSegments * 4);
+
+  float angle = 0;
+  const float sectorSize = pi<float>() * 2.f / (float)numSegments;
+  for(int segmentNumber = 0; segmentNumber < numSegments; segmentNumber++)
+  {
+    vertices[segmentNumber] = vec3(downRadius * sin(angle), -height * 0.5f, downRadius * cos(angle));
+    vertices[segmentNumber + numSegments] = vec3(upRadius * sin(angle), height * 0.5f, upRadius * cos(angle));
+    indices[segmentNumber * 4] = segmentNumber;
+    indices[segmentNumber * 4 + 1] = segmentNumber + 1;
+    indices[segmentNumber * 4 + 2] = segmentNumber + numSegments + 1;
+    indices[segmentNumber * 4 + 3] = segmentNumber + numSegments;
+
+    angle += sectorSize;
+  }
+  indices[numSegments * 4 - 2] = numSegments;
+  indices[numSegments * 4 - 3] = 0;
+
+  rpr_shape shape;
+  CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertices.data(), vertices.size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), faces.size(), &shape))
+  CHECK(rprShapeSetTransform(shape, false, value_ptr(transform)))
+
+  return shape;
+
+}
+
 }

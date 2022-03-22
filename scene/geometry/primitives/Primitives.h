@@ -18,6 +18,10 @@ protected:
   virtual rpr_shape getPrimitive(int primitive_number, mat4 externalTransform){return nullptr;};
   void processAttributeParameters(const std::vector<int> &index);
 
+  // can be used to create cylinder shape if up and down radius are same
+  rpr_shape createConeShape(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius, bool upCap, bool downCap, mat4 externalTransform, int numSegments);
+
+
   size_t m_num_primitives{};
 
   std::vector<vec4> m_colors;
