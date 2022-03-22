@@ -104,6 +104,10 @@ void World::attachToScene(rpr_scene scene){
       volume->attachToScene(scene);
     }
 
+    for(Volume* volume : m_volumes){
+      volume->attachToScene(scene);
+    }
+
     for(Light* light : m_lights){
       light->attachToScene(scene);
     }
