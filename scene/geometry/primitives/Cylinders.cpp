@@ -12,7 +12,7 @@ void Cylinders::commit()
   m_caps = getParamObject<Array1D>("vertex.cap");
   m_globalRadius = getParam<float32>("radius", 1.f);
 
-  if (!m_vertices) throw std::runtime_error("missing 'vertex.position' on sphere geometry");
+  if (!m_vertices) throw std::runtime_error("missing 'vertex.position' on cylinder geometry");
 
   clearAttributes();
   resetBounds();
