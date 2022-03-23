@@ -136,7 +136,21 @@ rpr_shape Primitives::createConeShape(vec3 upVertex, vec3 downVertex, float upRa
   CHECK(rprShapeSetTransform(shape, false, value_ptr(transform)))
 
   return shape;
+}
 
+box3 Primitives::calculateConeBorders(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius)
+{
+  vec3 direction = normalize(upVertex - downVertex);
+  mat4 transform = translate(mat4(1), (upVertex + downVertex) * 0.5f); // middle point between vertices
+  transform *= calculateRotation(direction, vec3(0,1,0));
+  const float height = length(upVertex - downVertex);
+  const float maxRadius = max(upRadius, downRadius);
+
+  box3 coneBounds;
+  coneBounds.upper = vec3(maxRadius, height / 2, maxRadius);
+  coneBounds.lower = -coneBounds.upper;
+
+  return xfmBox(transform, coneBounds);
 }
 
 }

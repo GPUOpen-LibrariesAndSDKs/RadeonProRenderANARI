@@ -46,7 +46,9 @@ void Surface::attachToScene(rpr_scene scene, mat4 transform)
     m_instances.push_back(instance);
   }
   // attach base invisible shape
-  CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
+  if(m_geometry->getBaseShape()){
+    CHECK(rprSceneAttachShape(scene, m_geometry->getBaseShape()))
+  }
 }
 
 void Surface::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
@@ -59,11 +61,6 @@ void Surface::getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform)
     CHECK(rprShapeSetMaterial(instance, m_material_instance))
     out_shapes.push_back(instance);
   }
-}
-
-rpr_shape Surface::getBaseShape()
-{
-  return m_geometry->getBaseShape();
 }
 
 void Surface::clearInstances()

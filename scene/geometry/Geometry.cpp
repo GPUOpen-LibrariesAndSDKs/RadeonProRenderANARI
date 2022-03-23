@@ -6,6 +6,7 @@
 #include "mesh/Triangles.h"
 #include "mesh/Quad.h"
 #include "primitives/Spheres.h"
+#include "primitives/Cylinders.h"
 
 namespace anari {
 namespace rpr {
@@ -24,6 +25,9 @@ Geometry *Geometry::createInstance(rpr_context context, rpr_material_system mate
   }
   if(std::strcmp(type, "sphere")==0){
     return new Spheres(context, materialSystem);
+  }
+  if(std::strcmp(type, "cylinder")==0){
+    return new Cylinders(context, materialSystem);
   }
   throw std::runtime_error("could not create geometry");
 

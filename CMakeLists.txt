@@ -116,8 +116,9 @@ add_library(${PROJECT_NAME} SHARED
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
   scene/geometry/mesh/Mesh.cpp
-  scene/geometry/primitives/Spheres.cpp
   scene/geometry/primitives/Primitives.cpp
+  scene/geometry/primitives/Spheres.cpp
+  scene/geometry/primitives/Cylinders.cpp
 
   scene/geometry/attributes/Attribute.cpp
   scene/geometry/attributes/PerShapeAttribute.cpp
