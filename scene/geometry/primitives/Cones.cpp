@@ -26,7 +26,8 @@ void Cones::commit()
     vec3 upVertex = m_vertices->dataAs<vec3>()[index.y];
     float32 downRadius = m_radius->dataAs<float32>()[index.x];
     float32 upRadius = m_radius->dataAs<float32>()[index.y];
-    extendBounds(calculateConeBorders(upVertex, downVertex, upRadius, downRadius));
+    extendBounds(
+        calculateConeBounds(upVertex, downVertex, upRadius, downRadius));
   }
 }
 

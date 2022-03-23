@@ -20,7 +20,7 @@ protected:
 
   // can be used to create cylinder shape if up and down radius are same
   rpr_shape createConeShape(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius, bool upCap, bool downCap, mat4 externalTransform, int numSegments);
-  box3 calculateConeBorders(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius);
+  static box3 calculateConeBounds(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius);
 
 
   size_t m_num_primitives{};

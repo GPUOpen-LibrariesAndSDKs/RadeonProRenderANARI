@@ -24,7 +24,7 @@ void Cylinders::commit()
     vec3 downVertex = m_vertices->dataAs<vec3>()[index.x];
     vec3 upVertex = m_vertices->dataAs<vec3>()[index.y];
     float32 radius = m_radius ? m_radius->dataAs<float32>()[primitiveNumber] : m_globalRadius;
-    extendBounds(calculateConeBorders(upVertex, downVertex, radius, radius));
+    extendBounds(calculateConeBounds(upVertex, downVertex, radius, radius));
   }
 }
 

@@ -131,6 +131,30 @@ rpr_shape Primitives::createConeShape(vec3 upVertex, vec3 downVertex, float upRa
   indices[numSegments * 4 - 2] = numSegments;
   indices[numSegments * 4 - 3] = 0;
 
+  // central points for caps
+  vertices.emplace_back(0, -height * 0.5f, 0);
+  vertices.emplace_back(0, height * 0.5f, 0);
+
+  if(downCap && downRadius > 0)
+  {
+    for(int i=0; i<numSegments; i++){
+      indices.push_back(i);
+      indices.push_back(i == numSegments - 1 ? 0 : i + 1);
+      indices.push_back(numSegments * 2);
+      faces.push_back(3);
+    }
+  }
+
+  if(upCap && upRadius > 0)
+  {
+    for(int i=0; i<numSegments; i++){
+      indices.push_back(i + numSegments);
+      indices.push_back(i == numSegments - 1 ? numSegments : i + 1 + numSegments);
+      indices.push_back(numSegments * 2 + 1);
+      faces.push_back(3);
+    }
+  }
+
   rpr_shape shape;
   CHECK(rprContextCreateMesh(m_context, (rpr_float*) vertices.data(), vertices.size(), sizeof(rpr_float) * 3, nullptr, 0, 0, nullptr, 0, 0, indices.data(), sizeof(rpr_int), nullptr, 0, nullptr, 0, faces.data(), faces.size(), &shape))
   CHECK(rprShapeSetTransform(shape, false, value_ptr(transform)))
@@ -138,7 +162,7 @@ rpr_shape Primitives::createConeShape(vec3 upVertex, vec3 downVertex, float upRa
   return shape;
 }
 
-box3 Primitives::calculateConeBorders(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius)
+box3 Primitives::calculateConeBounds(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius)
 {
   vec3 direction = normalize(upVertex - downVertex);
   mat4 transform = translate(mat4(1), (upVertex + downVertex) * 0.5f); // middle point between vertices
