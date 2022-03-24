@@ -114,42 +114,4 @@ Attribute *Spheres::getAttribute(const char *name)
   return nullptr;
 }
 
-bool Spheres::hasAttribute(const char *name)
-{
-  if((std::strcmp(name, "color") == 0 && !m_colors.empty()) ||
-      (std::strcmp(name, "attribute0") == 0 && !m_attribute0.empty()) ||
-      (std::strcmp(name, "attribute1") == 0 && !m_attribute1.empty()) ||
-      (std::strcmp(name, "attribute2") == 0 && !m_attribute2.empty()) ||
-      (std::strcmp(name, "attribute3") == 0 && !m_attribute3.empty()) ||
-      std::strcmp(name, "primitiveId") == 0)
-  {
-    return true;
-  }
-  return Geometry::hasAttribute(name);
-}
-
-void Spheres::processAttributeArray(Array1D *data, Array1D *index, std::vector<vec4> &outVector) const
-{
-  if(!data) return;
-
-  for(int primitiveNumber=0; primitiveNumber<m_num_primitives; primitiveNumber++){
-    uint32 primitiveIndex = index ? index->dataAs<uint32>()[primitiveNumber] : primitiveNumber;
-    outVector.emplace_back(Attribute::processColor(data, primitiveIndex));
-  }
-}
-
-void Spheres::processAttributeParameters(Array1D *index)
-{
-  m_colors.clear();
-  m_attribute0.clear();
-  m_attribute1.clear();
-  m_attribute2.clear();
-  m_attribute3.clear();
-  processAttributeArray(getParamObject<Array1D>("vertex.color"), index, m_colors);
-  processAttributeArray(getParamObject<Array1D>("vertex.attribute0"), index, m_attribute0);
-  processAttributeArray(getParamObject<Array1D>("vertex.attribute1"), index, m_attribute1);
-  processAttributeArray(getParamObject<Array1D>("vertex.attribute2"), index, m_attribute2);
-  processAttributeArray(getParamObject<Array1D>("vertex.attribute3"), index, m_attribute3);
-}
-
 }//anari

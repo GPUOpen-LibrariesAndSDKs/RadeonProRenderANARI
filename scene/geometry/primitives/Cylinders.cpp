@@ -2,7 +2,7 @@
 
 namespace anari::rpr{
 
-Cylinders::Cylinders(rpr_context context, rpr_material_system materialSystem) : Primitives(context, materialSystem){}
+Cylinders::Cylinders(rpr_context context, rpr_material_system materialSystem) : Cones(context, materialSystem){}
 
 void Cylinders::commit()
 {
@@ -26,6 +26,7 @@ void Cylinders::commit()
     float32 radius = m_radius ? m_radius->dataAs<float32>()[primitiveNumber] : m_globalRadius;
     extendBounds(calculateConeBounds(upVertex, downVertex, radius, radius));
   }
+  processAttributeParameters(nullptr);
 }
 
 rpr_shape Cylinders::getPrimitive(int primitiveNumber, mat4 externalTransform)
@@ -36,7 +37,9 @@ rpr_shape Cylinders::getPrimitive(int primitiveNumber, mat4 externalTransform)
     float32 radius = m_radius ? m_radius->dataAs<float32>()[primitiveNumber] : m_globalRadius;
     uint8 downCap = m_caps ? m_caps->dataAs<uint8>()[index.x] : 0;
     uint8 upCap = m_caps ? m_caps->dataAs<uint8>()[index.y] : 0;
-    return createConeShape(upVertex, downVertex, radius, radius, upCap, downCap, externalTransform, 32);
+    rpr_shape cylinder = createConeShape(upVertex, downVertex, radius, radius, upCap, downCap, externalTransform, m_numSegments);
+    processConeAttributes(cylinder, index);
+    return cylinder;
 }
 
 }

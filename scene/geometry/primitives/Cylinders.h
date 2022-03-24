@@ -1,14 +1,13 @@
 #pragma once
-#include "Primitives.h"
+#include "Cones.h"
 
 namespace anari::rpr{
 
-struct Cylinders : public Primitives
+struct Cylinders : public Cones
 {
 public:
   Cylinders(rpr_context context, rpr_material_system materialSystem);
   void commit() override;
-  inline bool hasAttribute(const char *name) override {return false;};
 
 private:
   rpr_shape getPrimitive(int primitive_number, mat4 externalTransform) override;
@@ -18,6 +17,8 @@ private:
   Array1D *m_vertices{};
   Array1D *m_caps{};
   float32 m_globalRadius{};
+
+  int m_numSegments = 32;
 };
 
 }
