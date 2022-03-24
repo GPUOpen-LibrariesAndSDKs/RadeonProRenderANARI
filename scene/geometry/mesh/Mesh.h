@@ -21,6 +21,5 @@ private:
   void calculateBounds(Array1D *vertex_data);
   void processAttributes(Array1D *vertex_data);
   void processAttributeArray(Array1D *data, int key);
-  Attribute *createPrimVarAttribute(int key, const char *name);
 };
 }

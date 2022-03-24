@@ -1,6 +1,5 @@
 #include "Triangles.h"
 #include "Quad.h"
-#include "../attributes/PrimVarAttribute.h"
 
 namespace anari::rpr{
 
@@ -87,12 +86,6 @@ bool Mesh::hasAttribute(const char *name) {
   return Geometry::hasAttribute(name);
 }
 
-Attribute *Mesh::createPrimVarAttribute(int key, const char *name) {
-  Attribute* attribute = new PrimVarAttribute(m_matsys, key);
-  m_attribute_map.emplace(name, attribute);
-  return attribute;
-}
-
 void Mesh::calculateBounds(Array1D *vertex_data)
 {
   resetBounds();
@@ -119,26 +112,13 @@ void Mesh::processAttributeArray(Array1D *data, int key)
   if(!data){
     return;
   }
-
-  switch (data->elementType()) {
-  case ANARI_FLOAT32:{
-    CHECK(rprShapeSetPrimvar(m_base_shape, key, data->dataAs<float>(), data->size(), 1, RPR_PRIMVAR_INTERPOLATION_VERTEX))
-    return;
+  std::vector<vec4> attributeData;
+  attributeData.reserve(data->size());
+  for(int i=0; i<data->size(); i++)
+  {
+    attributeData.emplace_back(Attribute::processColor(data, i));
   }
-  case ANARI_FLOAT32_VEC2:{
-    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec2>(), data->size() * 2, 2, RPR_PRIMVAR_INTERPOLATION_VERTEX))
-    return;
-  }
-  case ANARI_FLOAT32_VEC3:{
-    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec3>(), data->size() * 3, 3, RPR_PRIMVAR_INTERPOLATION_VERTEX))
-    return;
-  }
-  case ANARI_FLOAT32_VEC4:{
-    CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)data->dataAs<vec4>(), data->size() * 4, 4, RPR_PRIMVAR_INTERPOLATION_VERTEX))
-    return;
-  }
-
-  }
+  CHECK(rprShapeSetPrimvar(m_base_shape, key, (rpr_float *)attributeData.data(), attributeData.size() * 4, 4, RPR_PRIMVAR_INTERPOLATION_VERTEX))
 }
 
 void Mesh::processAttributes(Array1D *vertex_data)

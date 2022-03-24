@@ -8,6 +8,8 @@
 #include "primitives/Spheres.h"
 #include "primitives/Cylinders.h"
 #include "primitives/Cones.h"
+#include "attributes/PerShapeAttribute.h"
+#include "attributes/PrimVarAttribute.h"
 
 namespace anari {
 namespace rpr {
@@ -81,6 +83,24 @@ void Geometry::clearAttributes()
     delete p.second;
   }
   m_attribute_map.clear();
+}
+
+Attribute *Geometry::createPerShapeAttribute(const std::vector<vec4> &data, const char *name)
+{
+  if(data.empty())
+  {
+    return nullptr;
+  }
+  Attribute *attribute = new PerShapeAttribute(m_context, m_matsys, data.size(), (float*) data.data());
+  m_attribute_map.emplace(name, attribute);
+  return attribute;
+}
+
+Attribute *Geometry::createPrimVarAttribute(int key, const char *name)
+{
+  Attribute* attribute = new PrimVarAttribute(m_matsys, key);
+  m_attribute_map.emplace(name, attribute);
+  return attribute;
 }
 
 void Geometry::checkArraySizes(Array1D *array, size_t size, std::runtime_error exception)
