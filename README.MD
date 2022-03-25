@@ -10,6 +10,16 @@ This is implementation of ANARI device based on RadeonProRender engine
 * both cameras have an additional parameter `sensorHeight`. Sensor width will be calculated using `aspect` parameter. Default sensor height is 24 mm
 * orthographic camera has an additional parameter `orthoHeight`. It determines the area which the Orthographic camera projection will cover. Width will be calculated using `aspect` parameter. Default value is 1
 * stereo mode is not implemented now
+### Geometry
+* curve geometry type is not supported now
+* general parameters (`primitive.color`, `primitive.attribute`, `primitive.id`) are not supported
+* `vertex.color` can only accept float32 types (`FLOAT32`, `FLOAT32_VEC2`, `FLOAT32_VEC3`, `FLOAT32_VEC4`)
+* `vertex.normal` can only accept `FLOAT32` values
+* `primitive.index` can only accept uint32 values and vectors
+### Volumes
+* data in spatial fields can be only in float32 format (`ARRAY3D` of `FLOAT32`)
+* `color` can only accept float32 types (`FLOAT32`, `FLOAT32_VEC2`, `FLOAT32_VEC3`, `FLOAT32_VEC4`)
+* `color.position` and `opacity.position` parameters are not supported
 ## Dependencies
 [ANARI SDK](https://github.com/KhronosGroup/ANARI-SDK) must be installed on computer before RPR device building.
 ## Building the device
