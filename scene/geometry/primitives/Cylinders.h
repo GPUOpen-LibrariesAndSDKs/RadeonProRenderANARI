@@ -12,13 +12,7 @@ public:
 private:
   rpr_shape getPrimitive(int primitive_number, mat4 externalTransform) override;
 
-  Array1D *m_indices{};
-  Array1D *m_radius{};
-  Array1D *m_vertices{};
-  Array1D *m_caps{};
   float32 m_globalRadius{};
-
-  int m_numSegments = 32;
 };
 
 }

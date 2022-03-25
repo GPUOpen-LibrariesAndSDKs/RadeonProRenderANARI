@@ -2,6 +2,13 @@
 
 namespace anari::rpr{
 
+const static std::map<std::string, uvec2> cone_cap_types = {
+    {"none", {0, 0}},
+    {"first", {1, 0}},
+    {"second", {0, 1}},
+    {"both", {1, 1}}
+};
+
 Cones::Cones(rpr_context context, rpr_material_system materialSystem) : Primitives(context, materialSystem){}
 
 void Cones::commit()
@@ -10,6 +17,7 @@ void Cones::commit()
   m_radius = getParamObject<Array1D>("vertex.radius");
   m_indices = getParamObject<Array1D>("primitive.index");
   m_caps = getParamObject<Array1D>("vertex.cap");
+  m_globalCaps = processConeCaps(getParam<std::string>("caps", "none"));
 
   if (!m_vertices) throw std::runtime_error("missing 'vertex.position' on cone geometry");
   if (!m_radius) throw std::runtime_error("missing 'vertex.radius' on cone geometry");
@@ -22,23 +30,24 @@ void Cones::commit()
   for (int primitiveNumber = 0; primitiveNumber < m_num_primitives; primitiveNumber++)
   {
     uvec2 index = m_indices ? m_indices->dataAs<uvec2>()[primitiveNumber] : uvec2(primitiveNumber * 2, primitiveNumber * 2 + 1);
-    vec3 downVertex = m_vertices->dataAs<vec3>()[index.x];
-    vec3 upVertex = m_vertices->dataAs<vec3>()[index.y];
-    float32 downRadius = m_radius->dataAs<float32>()[index.x];
-    float32 upRadius = m_radius->dataAs<float32>()[index.y];
-    extendBounds(
-        calculateConeBounds(upVertex, downVertex, upRadius, downRadius));
+    vec3 firstVertex = m_vertices->dataAs<vec3>()[index.x];
+    vec3 secondVertex = m_vertices->dataAs<vec3>()[index.y];
+    float32 firstRadius = m_radius->dataAs<float32>()[index.x];
+    float32 secondRadius = m_radius->dataAs<float32>()[index.y];
+    extendBounds(calculateConeBounds(firstVertex, secondVertex, firstRadius, secondRadius));
   }
   processAttributeParameters(nullptr);
 }
 
-rpr_shape Cones::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius, bool upCap, bool downCap, mat4 externalTransform, int numSegments)
-{
-  vec3 direction = normalize(upVertex - downVertex);
-  mat4 transform = translate(mat4(1), (upVertex + downVertex) * 0.5f); // middle point between vertices
+rpr_shape Cones::createConeShape(vec3 firstVertex, vec3 secondVertex,
+                                 float firstRadius, float secondRadius,
+                                 bool firstCap, bool secondCap,
+                                 mat4 externalTransform, int numSegments) {
+  vec3 direction = normalize(secondVertex - firstVertex);
+  mat4 transform = translate(mat4(1), (secondVertex + firstVertex) * 0.5f); // middle point between vertices
   transform *= calculateRotation(direction, vec3(0,1,0));
   transform *= externalTransform;
-  const float height = length(upVertex - downVertex);
+  const float height = length(secondVertex - firstVertex);
 
   std::vector<vec3> vertices;
   std::vector<vec3> normals;
@@ -54,11 +63,14 @@ rpr_shape Cones::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius,
   const float sectorSize = pi<float>() * 2.f / (float)numSegments;
   for(int segmentNumber = 0; segmentNumber < numSegments; segmentNumber++)
   {
-    vertices[segmentNumber] = vec3(downRadius * sin(angle), -height * 0.5f, downRadius * cos(angle));
-    vertices[segmentNumber + numSegments] = vec3(upRadius * sin(angle), height * 0.5f, upRadius * cos(angle));
+    vertices[segmentNumber] = vec3(firstRadius * sin(angle), -height * 0.5f,
+                                   firstRadius * cos(angle));
+    vertices[segmentNumber + numSegments] = vec3(
+        secondRadius * sin(angle), height * 0.5f, secondRadius * cos(angle));
 
     normals[segmentNumber] = vertices[segmentNumber];
-    normals[segmentNumber].y = downRadius * (downRadius - upRadius) / height;
+    normals[segmentNumber].y =
+        firstRadius * (firstRadius - secondRadius) / height;
     normals[segmentNumber + numSegments] = normals[segmentNumber];
 
     indices[segmentNumber * 4] = segmentNumber;
@@ -84,7 +96,7 @@ rpr_shape Cones::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius,
   normals.emplace_back(0, -1, 0);
   normals.emplace_back(0, 1, 0);
 
-  if(downCap && downRadius > 0)
+  if(firstCap && firstRadius > 0)
   {
     for(int i=0; i<numSegments; i++){
       indices.push_back(i);
@@ -97,7 +109,7 @@ rpr_shape Cones::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius,
     }
   }
 
-  if(upCap && upRadius > 0)
+  if(secondCap && secondRadius > 0)
   {
     for(int i=0; i<numSegments; i++){
       indices.push_back(i + numSegments);
@@ -117,13 +129,13 @@ rpr_shape Cones::createConeShape(vec3 upVertex, vec3 downVertex, float upRadius,
   return shape;
 }
 
-box3 Cones::calculateConeBounds(vec3 upVertex, vec3 downVertex, float upRadius, float downRadius)
-{
-  vec3 direction = normalize(upVertex - downVertex);
-  mat4 transform = translate(mat4(1), (upVertex + downVertex) * 0.5f); // middle point between vertices
+box3 Cones::calculateConeBounds(vec3 firstVertex, vec3 secondVertex,
+                                float firstRadius, float secondRadius) {
+  vec3 direction = normalize(secondVertex - firstVertex);
+  mat4 transform = translate(mat4(1), (secondVertex + firstVertex) * 0.5f); // middle point between vertices
   transform *= calculateRotation(direction, vec3(0,1,0));
-  const float height = length(upVertex - downVertex);
-  const float maxRadius = max(upRadius, downRadius);
+  const float height = length(secondVertex - firstVertex);
+  const float maxRadius = max(secondRadius, firstRadius);
 
   box3 coneBounds;
   coneBounds.upper = vec3(maxRadius, height / 2, maxRadius);
@@ -135,13 +147,13 @@ box3 Cones::calculateConeBounds(vec3 upVertex, vec3 downVertex, float upRadius, 
 rpr_shape Cones::getPrimitive(int primitiveNumber, mat4 externalTransform)
 {
   uvec2 index = m_indices ? m_indices->dataAs<uvec2>()[primitiveNumber] : uvec2(primitiveNumber * 2, primitiveNumber * 2 + 1);
-  vec3 downVertex = m_vertices->dataAs<vec3>()[index.x];
-  vec3 upVertex = m_vertices->dataAs<vec3>()[index.y];
-  float32 downRadius = m_radius->dataAs<float32>()[index.x];
-  float32 upRadius = m_radius->dataAs<float32>()[index.y];
-  uint8 downCap = m_caps ? m_caps->dataAs<uint8>()[index.x] : 0;
-  uint8 upCap = m_caps ? m_caps->dataAs<uint8>()[index.y] : 0;
-  rpr_shape cone = createConeShape(upVertex, downVertex, upRadius, downRadius, upCap, downCap, externalTransform, m_numSegments);
+  vec3 firstVertex = m_vertices->dataAs<vec3>()[index.x];
+  vec3 secondVertex = m_vertices->dataAs<vec3>()[index.y];
+  float32 firstRadius = m_radius->dataAs<float32>()[index.x];
+  float32 secondRadius = m_radius->dataAs<float32>()[index.y];
+  uint8 firstCap = m_caps ? m_caps->dataAs<uint8>()[index.x] : m_globalCaps.x;
+  uint8 secondCap = m_caps ? m_caps->dataAs<uint8>()[index.y] : m_globalCaps.y;
+  rpr_shape cone = createConeShape(firstVertex, secondVertex, firstRadius, secondRadius, firstCap, secondCap, externalTransform, m_numSegments);
   processConeAttributes(cone, index);
   return cone;
 }
@@ -184,6 +196,14 @@ void Cones::processConeAttributes(rpr_shape cone, uvec2 index)
     processConeAttribute(cone, m_attribute3, index, 3, m_numSegments);
   if(!m_colors.empty())
     processConeAttribute(cone, m_colors, index, 4, m_numSegments);
+}
+
+uvec2 Cones::processConeCaps(const std::string& name)
+{
+  if(cone_cap_types.find(name) != cone_cap_types.end()){
+    return cone_cap_types.find(name)->second;
+  }
+  throw std::runtime_error("unknown cap type");
 }
 
 }
