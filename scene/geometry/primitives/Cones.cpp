@@ -154,19 +154,28 @@ rpr_shape Cones::getPrimitive(int primitiveNumber, mat4 externalTransform)
   uint8 firstCap = m_caps ? m_caps->dataAs<uint8>()[index.x] : m_globalCaps.x;
   uint8 secondCap = m_caps ? m_caps->dataAs<uint8>()[index.y] : m_globalCaps.y;
   rpr_shape cone = createConeShape(firstVertex, secondVertex, firstRadius, secondRadius, firstCap, secondCap, externalTransform, m_numSegments);
+  CHECK(rprShapeSetObjectID(cone, primitiveNumber))
   processConeAttributes(cone, index);
   return cone;
 }
 
 Attribute *Cones::getAttribute(const char *name)
 {
-  Attribute *attribute = Geometry::getAttribute(name);
-  if(attribute) return attribute;
+  Attribute *geometryAttribute = Geometry::getAttribute(name);
+  if(geometryAttribute) return geometryAttribute;
   if(std::strcmp(name, "attribute0") == 0) return createPrimVarAttribute(0, name);
   if(std::strcmp(name, "attribute1") == 0) return createPrimVarAttribute(1, name);
   if(std::strcmp(name, "attribute2") == 0) return createPrimVarAttribute(2, name);
   if(std::strcmp(name, "attribute3") == 0) return createPrimVarAttribute(3, name);
   if(std::strcmp(name, "color") == 0) return createPrimVarAttribute(4, name);
+
+  if(std::strcmp(name, "primitiveId") == 0)
+  {
+    Attribute* attribute = Attribute::fromType(m_matsys, RPR_MATERIAL_NODE_LOOKUP_OBJECT_ID);
+    m_attribute_map.emplace(name, attribute);
+    return attribute;
+  }
+
   return nullptr;
 }
 
