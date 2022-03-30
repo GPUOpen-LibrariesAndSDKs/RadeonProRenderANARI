@@ -424,7 +424,7 @@ int RPRDevice::getProperty(ANARIObject object,
     if ((void *)object == (void *)this) {
         std::string_view prop = name;
         if (prop == "version" && type == ANARI_INT32) {
-			int version = RPR_ANARI_VERSION_MAJOR * 10000 + RPR_ANARI_VERSION_MINOR * 100 + RPR_ANARI_VERSION_PATCH;
+		    int version = RPR_ANARI_VERSION_MAJOR * 10000 + RPR_ANARI_VERSION_MINOR * 100 + RPR_ANARI_VERSION_PATCH;
             writeToVoidP(mem, version);
             return 1;
         }
