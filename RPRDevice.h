@@ -8,8 +8,6 @@
 #include "anari/detail/IntrusivePtr.h"
 #include "interface.h"
 
-#define DEVICE_VERSION 1
-
 namespace anari::rpr {
 
 struct Object;

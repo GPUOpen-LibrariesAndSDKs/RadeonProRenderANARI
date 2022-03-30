@@ -14,6 +14,8 @@
 #include "material/Material.h"
 #include "sampler/Sampler.h"
 
+#include "version.h"
+
 // std
 #include <chrono>
 #include <exception>
@@ -23,15 +25,15 @@
 // Define list of available render plugins
 #if defined(WIN32)
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "Northstar64.dll"},
-    {"HybridPro", "HybridPro.dll"}};
+    {"Northstar", "Northstar64.dll"}};
+    //{"HybridPro", "HybridPro.dll"}}; // hybrid support will be added later
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {
     {"Northstar", "libNorthstar64.dylib"}};
 #else
 std::map<std::string, std::string> RPRPlugins = {
-    {"Northstar", "./libNorthstar64.so"},
-    {"HybridPro", "./HybridPro.so"}};
+    {"Northstar", "./libNorthstar64.so"}};
+    //{"HybridPro", "./HybridPro.so"}}; // hybrid support will be added later
 #endif
 
 std::map<unsigned int, unsigned int> RPRDeviceMap = {
@@ -422,9 +424,25 @@ int RPRDevice::getProperty(ANARIObject object,
     if ((void *)object == (void *)this) {
         std::string_view prop = name;
         if (prop == "version" && type == ANARI_INT32) {
-            writeToVoidP(mem, DEVICE_VERSION);
+		    int version = RPR_ANARI_VERSION_MAJOR * 10000 + RPR_ANARI_VERSION_MINOR * 100 + RPR_ANARI_VERSION_PATCH;
+            writeToVoidP(mem, version);
             return 1;
         }
+	    if (prop == "version.major" && type == ANARI_INT32) {
+		    int version = RPR_ANARI_VERSION_MAJOR;
+		    writeToVoidP(mem, version);
+		    return 1;
+	    }
+	    if (prop == "version.minor" && type == ANARI_INT32) {
+		    int version = RPR_ANARI_VERSION_MINOR;
+		    writeToVoidP(mem, version);
+		    return 1;
+	    }
+	    if (prop == "version.patch" && type == ANARI_INT32) {
+		    int version = RPR_ANARI_VERSION_PATCH;
+		    writeToVoidP(mem, version);
+		    return 1;
+	    }
     } else
         return referenceFromHandle(object).getProperty(name, type, mem, mask);
 

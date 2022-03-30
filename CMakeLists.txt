@@ -53,7 +53,7 @@ target_link_libraries(glm INTERFACE glm::glm)
 ## RPR ##
 fetch_project(
   NAME rpr_sdk
-	URL https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/archive/refs/tags/v2.2.11.zip
+	URL https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRenderSDK/archive/refs/tags/v2.2.12.zip
   DESTINATION rpr
 )
 
@@ -116,9 +116,10 @@ add_library(${PROJECT_NAME} SHARED
   scene/geometry/Surface.cpp
   scene/geometry/Geometry.cpp
   scene/geometry/mesh/Mesh.cpp
-  scene/geometry/mesh/Triangles.cpp
-  scene/geometry/primitives/Spheres.cpp
   scene/geometry/primitives/Primitives.cpp
+  scene/geometry/primitives/Spheres.cpp
+  scene/geometry/primitives/Cylinders.cpp
+  scene/geometry/primitives/Cones.cpp
 
   scene/geometry/attributes/Attribute.cpp
   scene/geometry/attributes/PerShapeAttribute.cpp

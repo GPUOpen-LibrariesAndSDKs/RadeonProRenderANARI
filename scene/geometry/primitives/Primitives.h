@@ -10,24 +10,19 @@ struct Primitives : public Geometry
 public:
   Primitives(rpr_context context, rpr_material_system materialSystem);
   void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform) override;
-  Attribute *getAttribute(const char* name) override;
   bool hasAttribute(const char *name) override;
-  static void processAttributeArray(Array1D *data, const std::vector<int>& index, std::vector<vec4> &outVector);
 
 protected:
-  virtual mat4 generatePrimitiveTransform(int primitive_number){ return {}; };
-  void processAttributeParameters(const std::vector<int> &index);
+  virtual rpr_shape getPrimitive(int primitive_number, mat4 externalTransform){return nullptr;};
+  static void processAttributeArray(Array1D *data, Array1D *index, std::vector<vec4> &outVector) ;
+  void processAttributeParameters(Array1D *index);
 
   size_t m_num_primitives{};
-
   std::vector<vec4> m_colors;
   std::vector<vec4> m_attribute0;
   std::vector<vec4> m_attribute1;
   std::vector<vec4> m_attribute2;
   std::vector<vec4> m_attribute3;
-
-private:
-  Attribute *createPerShapeAttribute(const std::vector<vec4> &data, const char *name);
 };
 
 }

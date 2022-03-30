@@ -25,4 +25,15 @@ Attribute *Attribute::fromType(rpr_material_system matsys, rpr_material_node_loo
   return new Attribute(materialNode);
 }
 
+vec4 Attribute::processColor(Array1D *array, size_t index)
+{
+  switch (array->elementType()){
+  case ANARI_FLOAT32: return {array->dataAs<float32>()[index], 0, 0, 1};
+  case ANARI_FLOAT32_VEC2: return {array->dataAs<vec2>()[index], 0, 1};
+  case ANARI_FLOAT32_VEC3: return {array->dataAs<vec3>()[index], 1};
+  case ANARI_FLOAT32_VEC4: return array->dataAs<vec4>()[index];
+  default: throw std::runtime_error("Unsupported data type");
+  }
+}
+
 }

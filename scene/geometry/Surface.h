@@ -21,8 +21,6 @@ struct Surface : public SceneObject
 
   void getInstances(std::vector<rpr_shape> &out_shapes, mat4 transform);
 
-  rpr_shape getBaseShape();
-
   ~Surface() override;
 
  private:

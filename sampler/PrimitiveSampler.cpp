@@ -14,15 +14,13 @@ void PrimitiveSampler::commit()
   {
     throw std::runtime_error("'array' is a required parameter");
   }
-  std::vector<int> index;
   std::vector<vec4> processedData;
+  processedData.reserve(data->size());
 
-  index.reserve(data->size());
   for(int indexNumber=0; indexNumber<data->size(); indexNumber++)
   {
-    index.push_back(indexNumber);
+    processedData.push_back(Attribute::processColor(data, indexNumber));
   }
-  Primitives::processAttributeArray(data, index, processedData);
   m_attribute = new PerShapeAttribute(m_context, m_matsys, processedData.size(), (float*) processedData.data());
 }
 
