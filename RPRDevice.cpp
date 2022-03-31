@@ -417,6 +417,12 @@ int RPRDevice::getProperty(
       writeToVoidP(mem, version);
       return 1;
     }
+    if (prop == "geometryMaxIndex" && type == ANARI_UINT64)
+    {
+      uint64 limit = std::numeric_limits<rpr_int>::max();
+      writeToVoidP(mem, limit);
+      return 1;
+    }
   } else
     return referenceFromHandle(object).getProperty(name, type, mem, mask);
 
