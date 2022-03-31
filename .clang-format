@@ -40,7 +40,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
 #BreakConstructorInitializersStyle: BeforeComma
 BreakStringLiterals: false
-ColumnLimit: 100
+ColumnLimit: 110
 CommentPragmas: '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4

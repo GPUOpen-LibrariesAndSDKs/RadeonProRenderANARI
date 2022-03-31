@@ -1,5 +1,16 @@
-// Copyright 2021 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2021 The Khronos Group
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #include "Array.h"
 
@@ -8,10 +19,7 @@ namespace rpr {
 
 // Array //
 
-Array::Array(void *appMem,
-    ANARIMemoryDeleter deleter,
-    void *deleterPtr,
-    ANARIDataType elementType)
+Array::Array(void *appMem, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType elementType)
     : m_mem(appMem), m_deleter(deleter), m_elementType(elementType)
 {}
 
@@ -45,10 +53,11 @@ void Array::makePrivatizedCopy(size_t numElements)
   void *appMem = m_mem;
 
   size_t numBytes = numElements * sizeOfDataType(elementType());
-  m_mem = malloc(numBytes);
+  m_mem           = malloc(numBytes);
   std::memcpy(m_mem, appMem, numBytes);
 
-  if (m_deleter) {
+  if (m_deleter)
+  {
     m_deleter(m_deleterPtr, appMem);
     m_deleter = nullptr;
   }
@@ -58,11 +67,13 @@ void Array::makePrivatizedCopy(size_t numElements)
 
 void Array::freeAppMemory()
 {
-  if (m_deleter && m_mem) {
+  if (m_deleter && m_mem)
+  {
     m_deleter(m_deleterPtr, m_mem);
-    m_mem = nullptr;
+    m_mem     = nullptr;
     m_deleter = nullptr;
-  } else if (wasPrivatized() && m_mem) {
+  } else if (wasPrivatized() && m_mem)
+  {
     free(m_mem);
     m_mem = nullptr;
   }
@@ -70,12 +81,8 @@ void Array::freeAppMemory()
 
 // Array1D //
 
-Array1D::Array1D(void *appMemory,
-    ANARIMemoryDeleter deleter,
-    void *deleterPtr,
-    ANARIDataType type,
-    uint64_t numItems,
-    uint64_t byteStride)
+Array1D::Array1D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+    uint64_t numItems, uint64_t byteStride)
     : Array(appMemory, deleter, deleterPtr, type), m_size(numItems)
 {
   if (byteStride != 0)
@@ -99,14 +106,8 @@ void Array1D::privatize()
 
 // Array2D //
 
-Array2D::Array2D(void *appMemory,
-    ANARIMemoryDeleter deleter,
-    void *deleterPtr,
-    ANARIDataType type,
-    uint64_t numItems1,
-    uint64_t numItems2,
-    uint64_t byteStride1,
-    uint64_t byteStride2)
+Array2D::Array2D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+    uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2)
     : Array(appMemory, deleter, deleterPtr, type)
 {
   if (byteStride1 != 0 || byteStride2 != 0)
@@ -138,15 +139,8 @@ void Array2D::privatize()
 
 // Array3D //
 
-Array3D::Array3D(void *appMemory,
-    ANARIMemoryDeleter deleter,
-    void *deleterPtr,
-    ANARIDataType type,
-    uint64_t numItems1,
-    uint64_t numItems2,
-    uint64_t numItems3,
-    uint64_t byteStride1,
-    uint64_t byteStride2,
+Array3D::Array3D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+    uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1, uint64_t byteStride2,
     uint64_t byteStride3)
     : Array(appMemory, deleter, deleterPtr, type)
 {
@@ -180,12 +174,8 @@ void Array3D::privatize()
 
 // ObjectArray //
 
-ObjectArray::ObjectArray(void *appMemory,
-    ANARIMemoryDeleter deleter,
-    void *deleterPtr,
-    ANARIDataType type,
-    uint64_t numItems,
-    uint64_t byteStride)
+ObjectArray::ObjectArray(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+    uint64_t numItems, uint64_t byteStride)
     : Array(appMemory, deleter, deleterPtr, type)
 {
   if (byteStride != 0)
@@ -194,7 +184,7 @@ ObjectArray::ObjectArray(void *appMemory,
   m_handleArray.resize(numItems);
 
   auto **srcBegin = (Object **)appMemory;
-  auto **srcEnd = srcBegin + numItems;
+  auto **srcEnd   = srcBegin + numItems;
 
   std::transform(srcBegin, srcEnd, m_handleArray.begin(), [](Object *obj) {
     obj->refInc();

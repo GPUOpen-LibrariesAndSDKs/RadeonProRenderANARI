@@ -1,5 +1,15 @@
-// Copyright 2020 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #pragma once
 
@@ -11,19 +21,19 @@ namespace rpr {
 
 struct Camera : public Object
 {
-public:
+ public:
   explicit Camera(rpr_camera &camera);
-  void commit() override;
-  static Camera *createInstance(rpr_context &context, const char *type);
-  void attachToScene(rpr_scene scene);
   ~Camera() override;
 
-  protected:
-  rpr_camera m_camera;
+  void           commit() override;
+  static Camera *createInstance(rpr_context &context, const char *type);
+  void           attachToScene(rpr_scene scene);
 
+ protected:
+  rpr_camera m_camera;
 };
 
-} // namespace reference
+} // namespace rpr
 
 ANARI_TYPEFOR_SPECIALIZATION(rpr::Camera *, ANARI_CAMERA)
 

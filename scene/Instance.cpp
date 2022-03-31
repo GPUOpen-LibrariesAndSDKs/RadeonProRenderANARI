@@ -1,5 +1,15 @@
-// Copyright 2020 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #include "Instance.h"
 
@@ -13,10 +23,10 @@ Instance::Instance()
 
 void Instance::commit()
 {
-  m_group = getParamObject<Group>("group");
+  m_group     = getParamObject<Group>("group");
   m_transform = getParam<mat4x3>("transform", mat4x3(1));
 
-  if(!m_group)
+  if (!m_group)
   {
     throw std::runtime_error("'group' is a required parameter!");
   }
@@ -29,7 +39,6 @@ void Instance::attachToScene(rpr_scene scene)
 {
   m_group->attachToScene(scene, m_transform);
 }
-
 
 } // namespace rpr
 
