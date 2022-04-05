@@ -1,5 +1,16 @@
-// Copyright 2021 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2021 The Khronos Group
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #pragma once
 
@@ -21,16 +32,13 @@ enum class ArrayShape
 
 struct Array : public Object
 {
-  Array(void *appMemory,
-      ANARIMemoryDeleter deleter,
-      void *deleterPtr,
-      ANARIDataType elementType);
+  Array(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType elementType);
   virtual ~Array();
 
   ANARIDataType elementType() const;
 
   void *map();
-  void unmap();
+  void  unmap();
 
   template <typename T>
   T *dataAs();
@@ -38,29 +46,25 @@ struct Array : public Object
   virtual ArrayShape shape() const = 0;
 
   virtual void privatize() = 0;
-  bool wasPrivatized() const;
+  bool         wasPrivatized() const;
 
  protected:
   void makePrivatizedCopy(size_t numElements);
   void freeAppMemory();
 
-  void *m_mem{nullptr};
+  void              *m_mem{nullptr};
   ANARIMemoryDeleter m_deleter{nullptr};
-  void *m_deleterPtr{nullptr};
+  void              *m_deleterPtr{nullptr};
 
  private:
   ANARIDataType m_elementType{ANARI_UNKNOWN};
-  bool m_privatized{false};
+  bool          m_privatized{false};
 };
 
 struct Array1D : public Array
 {
-  Array1D(void *appMemory,
-      ANARIMemoryDeleter deleter,
-      void *deleterPtr,
-      ANARIDataType type,
-      uint64_t numItems,
-      uint64_t byteStride);
+  Array1D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+      uint64_t numItems, uint64_t byteStride);
 
   ArrayShape shape() const override;
 
@@ -74,19 +78,13 @@ struct Array1D : public Array
 
 struct Array2D : public Array
 {
-  Array2D(void *appMemory,
-      ANARIMemoryDeleter deleter,
-      void *deleterPtr,
-      ANARIDataType type,
-      uint64_t numItems1,
-      uint64_t numItems2,
-      uint64_t byteStride1,
-      uint64_t byteStride2);
+  Array2D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+      uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2);
 
   ArrayShape shape() const override;
 
   size_t size(int dim) const;
-  uvec2 size() const;
+  uvec2  size() const;
 
   void privatize() override;
 
@@ -96,21 +94,14 @@ struct Array2D : public Array
 
 struct Array3D : public Array
 {
-  Array3D(void *appMemory,
-      ANARIMemoryDeleter deleter,
-      void *deleterPtr,
-      ANARIDataType type,
-      uint64_t numItems1,
-      uint64_t numItems2,
-      uint64_t numItems3,
-      uint64_t byteStride1,
-      uint64_t byteStride2,
+  Array3D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+      uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1, uint64_t byteStride2,
       uint64_t byteStride3);
 
   ArrayShape shape() const override;
 
   size_t size(int dim) const;
-  uvec3 size() const;
+  uvec3  size() const;
 
   void privatize() override;
 
@@ -120,12 +111,8 @@ struct Array3D : public Array
 
 struct ObjectArray : public Array
 {
-  ObjectArray(void *appMemory,
-      ANARIMemoryDeleter deleter,
-      void *deleterPtr,
-      ANARIDataType type,
-      uint64_t numItems,
-      uint64_t byteStride);
+  ObjectArray(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+      uint64_t numItems, uint64_t byteStride);
   ~ObjectArray();
 
   ArrayShape shape() const override;
@@ -141,7 +128,7 @@ struct ObjectArray : public Array
 
  private:
   std::vector<Object *> m_handleArray;
-  size_t m_numAppended{0};
+  size_t                m_numAppended{0};
 };
 
 // Inlined definitions ////////////////////////////////////////////////////////
@@ -156,14 +143,13 @@ inline T *Array::dataAs()
 // Object specializations /////////////////////////////////////////////////////
 
 template <>
-inline ObjectArray *Object::getParamObject<ObjectArray>(
-    const std::string &name, ObjectArray *valIfNotFound)
+inline ObjectArray *Object::getParamObject<ObjectArray>(const std::string &name, ObjectArray *valIfNotFound)
 {
   if (!hasParam(name))
     return valIfNotFound;
 
   using PTR_T = IntrusivePtr<Array1D>;
-  PTR_T val = getParam<PTR_T>(name, PTR_T());
+  PTR_T val   = getParam<PTR_T>(name, PTR_T());
   return (ObjectArray *)val.ptr;
 }
 

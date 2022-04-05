@@ -1,5 +1,16 @@
-// Copyright 2020 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2021 The Khronos Group
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #pragma once
 
@@ -16,16 +27,16 @@ using namespace glm;
 
 static float randUniformDist()
 {
-  static thread_local std::minstd_rand generator;
+  static thread_local std::minstd_rand         generator;
   static std::uniform_real_distribution<float> distribution{0.f, 1.f};
   return distribution(generator);
 }
 
 static vec3 randomDir()
 {
-  static thread_local std::minstd_rand gen;
+  static thread_local std::minstd_rand         gen;
   static std::uniform_real_distribution<float> dist{-1.f, 1.f};
-  vec3 dir(dist(gen), dist(gen), dist(gen));
+  vec3                                         dir(dist(gen), dist(gen), dist(gen));
   return normalize(dir);
 }
 
@@ -72,26 +83,24 @@ struct range_t
 using box1 = range_t<float>;
 using box3 = range_t<vec3>;
 
-
 // Operations on range_t //
 
 template <typename T>
 inline typename range_t<T>::element_t size(const range_t<T> &r)
 {
-    return r.upper - r.lower;
+  return r.upper - r.lower;
 }
 
 template <typename T>
 inline typename range_t<T>::element_t center(const range_t<T> &r)
 {
-    return .5f * (r.lower + r.upper);
+  return .5f * (r.lower + r.upper);
 }
 
 template <typename T>
-inline typename range_t<T>::element_t clamp(
-        const typename range_t<T>::element_t &t, const range_t<T> &r)
+inline typename range_t<T>::element_t clamp(const typename range_t<T>::element_t &t, const range_t<T> &r)
 {
-    return max(r.lower, min(t, r.upper));
+  return max(r.lower, min(t, r.upper));
 }
 
 // Helper functions ///////////////////////////////////////////////////////////
@@ -111,4 +120,38 @@ inline float reduce_max(const vec4 &v)
   return std::max(std::max(std::max(v.x, v.y), v.z), v.w);
 }
 
-} // namespace anari
+inline vec3 xfmPoint(const mat4 &m, const vec3 &p)
+{
+  return vec3(m * vec4(p, 1.f));
+}
+
+inline box3 xfmBox(const mat4 &m, const box3 &b)
+{
+  box3 retval;
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.lower.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.lower.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.upper.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.lower.x, b.upper.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.lower.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.lower.y, b.upper.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.upper.y, b.lower.z)));
+  retval.extend(xfmPoint(m, vec3(b.upper.x, b.upper.y, b.upper.z)));
+  return retval;
+}
+
+inline mat4 calculateRotation(vec3 direction, vec3 startDirection = vec3(0, 0, -1))
+{
+  if (direction == startDirection)
+  {
+    return mat4(1); // no rotation
+  }
+  if (direction == -startDirection)
+  {
+    return rotate(mat4(1), pi<float32>(), vec3(1, 0, 0)); // reverse on 180 degrees
+  }
+  float angle = acos(dot(normalize(direction), normalize(startDirection)));
+  vec3  axis  = cross(startDirection, direction);
+  return rotate(mat4(1), angle, axis);
+}
+
+} // namespace anari::rpr

@@ -1,54 +1,43 @@
-// Copyright 2020 The Khronos Group
-// SPDX-License-Identifier: Apache-2.0
+/**********************************************************************
+Copyright 2022 Advanced Micro Devices, Inc
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+********************************************************************/
 
 #include "Instance.h"
-#include "geometry/Surface.h"
 
 namespace anari {
 namespace rpr {
 
-void Instance::commit(){
-  DataView<GeometricModel *> models(getParamObject<Data>("geometry"));
-  DataView<Light *> lights(getParamObject<Data>("light"));
-
-  m_shapes.clear();
-  m_lights.clear();
-
-  m_lower_bound = vec3(std::numeric_limits<float>::max());
-  m_upper_bound = vec3(-std::numeric_limits<float>::max());
-
-  for(int model_number=0; model_number< models.size(); model_number++){
-    Surface* model = models.data()[model_number];
-
-    //bounds calculating
-    m_upper_bound.x = max(m_upper_bound.x, model->m_upper_bound.x);
-    m_upper_bound.y = max(m_upper_bound.y, model->m_upper_bound.y);
-    m_upper_bound.z = max(m_upper_bound.z, model->m_upper_bound.z);
-
-    m_lower_bound.x = min(m_lower_bound.x, model->m_lower_bound.x);
-    m_lower_bound.y = min(m_lower_bound.y, model->m_lower_bound.y);
-    m_lower_bound.z = min(m_lower_bound.z, model->m_lower_bound.z);
-
-    for(rpr_shape shape : model->m_shapes){
-      m_shapes.push_back(shape);
-    }
-    //TODO skip non unique shapes
-  }
-
-  for(int light_number=0; light_number<lights.size(); light_number++){
-    m_lights.push_back(lights.data()[light_number]);
-  }
+Instance::Instance()
+{
+  setCommitPriority(COMMIT_PRIORITY_INSTANCE);
 }
 
-void Instance::addToScene(rpr_scene scene){
+void Instance::commit()
+{
+  m_group     = getParamObject<Group>("group");
+  m_transform = getParam<mat4x3>("transform", mat4x3(1));
 
-  for(rpr_shape shape : m_shapes){
-    CHECK(rprSceneAttachShape(scene, shape))
+  if (!m_group)
+  {
+    throw std::runtime_error("'group' is a required parameter!");
   }
 
-  for(Light* light : m_lights){
-    light->addToScene(scene);
-  }
+  resetBounds();
+  extendBounds(xfmBox(m_transform, m_group->bounds()));
+}
+
+void Instance::attachToScene(rpr_scene scene)
+{
+  m_group->attachToScene(scene, m_transform);
 }
 
 } // namespace rpr
