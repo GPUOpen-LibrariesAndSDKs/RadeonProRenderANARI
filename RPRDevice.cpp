@@ -220,11 +220,9 @@ static std::map<int, SetParamFcn *> setParamFcns = {
 int RPRDevice::deviceImplements(const char *_extension)
 {
   std::string extension = _extension;
-  if (extension == ANARI_KHR_AREA_LIGHTS)
+  if (extension == "ANARI_KHR_AREA_LIGHTS")
     return 1;
-  if (extension == ANARI_KHR_FRAME_COMPLETION_CALLBACK)
-    return 1;
-  if (extension == ANARI_KHR_STOCHASTIC_RENDERING)
+  if (extension == "ANARI_KHR_FRAME_COMPLETION_CALLBACK")
     return 1;
   return 0;
 }

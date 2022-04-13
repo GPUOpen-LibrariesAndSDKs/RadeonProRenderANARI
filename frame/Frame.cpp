@@ -74,7 +74,7 @@ void Frame::commit()
   auto numPixels = m_size.x * m_size.y;
 
   m_accum.resize(numPixels);
-  m_mappedPixelBuffer.resize(numPixels * sizeOfDataType(m_format));
+  m_mappedPixelBuffer.resize(numPixels * sizeOf(m_format));
   m_depthBuffer.resize(numPixels);
 
   // create framebuffer desc
