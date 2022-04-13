@@ -43,7 +43,7 @@ std::map<std::string, std::string> RPRPlugins = {{"Northstar", "Northstar64.dll"
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {{"Northstar", "libNorthstar64.dylib"}};
 #else
-std::map<std::string, std::string> RPRPlugins = {{"Northstar", "./libNorthstar64.so"}};
+std::map<std::string, std::string> RPRPlugins = {{"Northstar", "libNorthstar64.so"}};
 //{"HybridPro", "./HybridPro.so"}}; // hybrid support will be added later
 #endif
 
