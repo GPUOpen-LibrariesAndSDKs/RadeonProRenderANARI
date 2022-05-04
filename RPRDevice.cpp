@@ -43,7 +43,7 @@ std::map<std::string, std::string> RPRPlugins = {{"Northstar", "Northstar64.dll"
 #elif defined(__APPLE__)
 std::map<std::string, std::string> RPRPlugins = {{"Northstar", "libNorthstar64.dylib"}};
 #else
-std::map<std::string, std::string> RPRPlugins = {{"Northstar", "./libNorthstar64.so"}};
+std::map<std::string, std::string> RPRPlugins = {{"Northstar", "libNorthstar64.so"}};
 //{"HybridPro", "./HybridPro.so"}}; // hybrid support will be added later
 #endif
 
@@ -220,11 +220,9 @@ static std::map<int, SetParamFcn *> setParamFcns = {
 int RPRDevice::deviceImplements(const char *_extension)
 {
   std::string extension = _extension;
-  if (extension == ANARI_KHR_AREA_LIGHTS)
+  if (extension == "ANARI_KHR_AREA_LIGHTS")
     return 1;
-  if (extension == ANARI_KHR_FRAME_COMPLETION_CALLBACK)
-    return 1;
-  if (extension == ANARI_KHR_STOCHASTIC_RENDERING)
+  if (extension == "ANARI_KHR_FRAME_COMPLETION_CALLBACK")
     return 1;
   return 0;
 }
