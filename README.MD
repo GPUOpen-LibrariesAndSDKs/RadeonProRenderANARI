@@ -37,8 +37,9 @@ cd path/to/source
 mkdir build
 cd build
 cmake ..
-cmake --build .
+cmake --build . -t install
 ```
+It's important to have directory with installed device in LD_LIBRARY_PATH
 ### Windows
 Visual studio 17 or 19 must be installed. Building using MinGW may produce an error!
 * create build directory into directory with source code
