@@ -24,7 +24,7 @@ Instance::Instance()
 void Instance::commit()
 {
   m_group     = getParamObject<Group>("group");
-  m_transform = getParam<mat4x3>("transform", mat4x3(1));
+  m_transform = getParam<mat4>("transform", mat4(1));
 
   if (!m_group)
   {
