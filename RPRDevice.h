@@ -17,45 +17,48 @@ limitations under the License.
 // rpr
 #include "RadeonProRender.h"
 // anari
-#include "anari/detail/Device.h"
-#include "anari/detail/IntrusivePtr.h"
-#include "anari/detail/ParameterizedObject.h"
+#include "anari/backend/utilities/IntrusivePtr.h"
+#include "anari/backend/DeviceImpl.h"
+#include "anari/backend/utilities/ParameterizedObject.h"
 #include "interface.h"
 
 namespace anari::rpr {
 
 struct Object;
 
-struct RPR_DEVICE_INTERFACE RPRDevice : public Device, public ParameterizedObject, public RefCounted
+struct RPR_DEVICE_INTERFACE RPRDevice : public DeviceImpl, public ParameterizedObject, public RefCounted
 {
   /////////////////////////////////////////////////////////////////////////////
   // Main interface to accepting API calls
   /////////////////////////////////////////////////////////////////////////////
 
-  // Device API ///////////////////////////////////////////////////////////////
-
-  int deviceImplements(const char *extension) override;
-
-  void deviceSetParameter(const char *id, ANARIDataType type, const void *mem) override;
-
-  void deviceUnsetParameter(const char *id) override;
-
-  void deviceCommit() override;
-
-  void deviceRetain() override;
-
-  void deviceRelease() override;
-
   // Data Arrays //////////////////////////////////////////////////////////////
 
-  ANARIArray1D newArray1D(void *appMemory, ANARIMemoryDeleter deleter, void *userdata, ANARIDataType,
-      uint64_t numItems1, uint64_t byteStride1) override;
+  ANARIArray1D newArray1D(const void *appMemory,
+      ANARIMemoryDeleter deleter,
+      const void *userdata,
+      ANARIDataType,
+      uint64_t numItems1,
+      uint64_t byteStride1) override;
 
-  ANARIArray2D newArray2D(void *appMemory, ANARIMemoryDeleter deleter, void *userdata, ANARIDataType,
-      uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2) override;
+  ANARIArray2D newArray2D(const void *appMemory,
+      ANARIMemoryDeleter deleter,
+      const void *userdata,
+      ANARIDataType,
+      uint64_t numItems1,
+      uint64_t numItems2,
+      uint64_t byteStride1,
+      uint64_t byteStride2) override;
 
-  ANARIArray3D newArray3D(void *appMemory, ANARIMemoryDeleter deleter, void *userdata, ANARIDataType,
-      uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1, uint64_t byteStride2,
+  ANARIArray3D newArray3D(const void *appMemory,
+      ANARIMemoryDeleter deleter,
+      const void *userdata,
+      ANARIDataType,
+      uint64_t numItems1,
+      uint64_t numItems2,
+      uint64_t numItems3,
+      uint64_t byteStride1,
+      uint64_t byteStride2,
       uint64_t byteStride3) override;
 
   void *mapArray(ANARIArray) override;
@@ -98,7 +101,7 @@ struct RPR_DEVICE_INTERFACE RPRDevice : public Device, public ParameterizedObjec
 
   void unsetParameter(ANARIObject object, const char *name) override;
 
-  void commit(ANARIObject object) override;
+  void commitParameters(ANARIObject object) override;
 
   void release(ANARIObject _obj) override;
 
@@ -108,7 +111,11 @@ struct RPR_DEVICE_INTERFACE RPRDevice : public Device, public ParameterizedObjec
 
   ANARIFrame newFrame() override;
 
-  const void *frameBufferMap(ANARIFrame fb, const char *channel) override;
+  const void *frameBufferMap(ANARIFrame fb,
+      const char *channel,
+      uint32_t *width,
+      uint32_t *height,
+      ANARIDataType *pixelType) override;
 
   void frameBufferUnmap(ANARIFrame fb, const char *channel) override;
 
@@ -138,6 +145,10 @@ struct RPR_DEVICE_INTERFACE RPRDevice : public Device, public ParameterizedObjec
 
   std::vector<Object *> m_objectsToCommit;
   bool                  m_needToSortCommits{false};
+
+  void deviceSetParameter(const char *id, ANARIDataType type, const void *mem);
+  void deviceUnsetParameter(const char *id);
+  void deviceCommit();
 };
 
 } // namespace anari::rpr

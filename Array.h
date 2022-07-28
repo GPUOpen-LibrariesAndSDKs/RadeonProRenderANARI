@@ -32,8 +32,8 @@ enum class ArrayShape
 
 struct Array : public Object
 {
-  Array(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType elementType);
-  virtual ~Array();
+  Array(const void *appMemory, ANARIMemoryDeleter deleter, const void *deleterPtr, ANARIDataType elementType);
+  ~Array() override;
 
   ANARIDataType elementType() const;
 
@@ -52,9 +52,9 @@ struct Array : public Object
   void makePrivatizedCopy(size_t numElements);
   void freeAppMemory();
 
-  void              *m_mem{nullptr};
+  const void        *m_mem{nullptr};
   ANARIMemoryDeleter m_deleter{nullptr};
-  void              *m_deleterPtr{nullptr};
+  const void        *m_deleterPtr{nullptr};
 
  private:
   ANARIDataType m_elementType{ANARI_UNKNOWN};
@@ -63,7 +63,7 @@ struct Array : public Object
 
 struct Array1D : public Array
 {
-  Array1D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+  Array1D(const void *appMemory, ANARIMemoryDeleter deleter, const void *deleterPtr, ANARIDataType type,
       uint64_t numItems, uint64_t byteStride);
 
   ArrayShape shape() const override;
@@ -78,7 +78,7 @@ struct Array1D : public Array
 
 struct Array2D : public Array
 {
-  Array2D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+  Array2D(const void *appMemory, ANARIMemoryDeleter deleter, const void *deleterPtr, ANARIDataType type,
       uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2);
 
   ArrayShape shape() const override;
@@ -94,7 +94,7 @@ struct Array2D : public Array
 
 struct Array3D : public Array
 {
-  Array3D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+  Array3D(const void *appMemory, ANARIMemoryDeleter deleter, const void *deleterPtr, ANARIDataType type,
       uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1, uint64_t byteStride2,
       uint64_t byteStride3);
 
@@ -111,9 +111,9 @@ struct Array3D : public Array
 
 struct ObjectArray : public Array
 {
-  ObjectArray(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
+  ObjectArray(const void *appMemory, ANARIMemoryDeleter deleter, const void *deleterPtr, ANARIDataType type,
       uint64_t numItems, uint64_t byteStride);
-  ~ObjectArray();
+  ~ObjectArray() override;
 
   ArrayShape shape() const override;
 
@@ -136,7 +136,8 @@ struct ObjectArray : public Array
 template <typename T>
 inline T *Array::dataAs()
 {
-  assert(ANARITypeFor<T>::value == m_elementType);
+  if (ANARITypeFor<T>::value != m_elementType)
+    throw std::runtime_error("incorrect element type queried for array");
   return (T *)m_mem;
 }
 
@@ -149,7 +150,7 @@ inline ObjectArray *Object::getParamObject<ObjectArray>(const std::string &name,
     return valIfNotFound;
 
   using PTR_T = IntrusivePtr<Array1D>;
-  PTR_T val   = getParam<PTR_T>(name, PTR_T());
+  auto val    = getParam<PTR_T>(name, PTR_T());
   return (ObjectArray *)val.ptr;
 }
 

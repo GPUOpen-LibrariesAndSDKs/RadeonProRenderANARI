@@ -105,6 +105,24 @@ bool Frame::getProperty(const std::string &name, ANARIDataType type, void *ptr, 
   return Object::getProperty(name, type, ptr, mask);
 }
 
+void *Frame::map(const char *channel, uint32_t *width, uint32_t *height, ANARIDataType *pixelType)
+{
+  if(strcmp(channel, "color") == 0)
+  {
+    *width = m_size.x;
+    *height = m_size.y;
+    *pixelType = m_format;
+    return mapColorBuffer();
+  }
+  else
+  {
+    *width = 0;
+    *height = 0;
+    return nullptr;
+  }
+
+}
+
 void *Frame::mapColorBuffer()
 {
   CHECK(rprContextResolveFrameBuffer(m_context, m_framebuffer, m_framebuffer_resolved, true))

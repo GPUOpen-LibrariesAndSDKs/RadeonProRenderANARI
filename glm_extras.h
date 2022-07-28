@@ -16,12 +16,14 @@ limitations under the License.
 
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
+#include "anari/anari_cpp/ext/glm.h"
 // std
 #include <limits>
 #include <optional>
 #include <random>
 
-namespace anari::rpr {
+namespace anari {
+namespace rpr {
 
 using namespace glm;
 
@@ -154,4 +156,9 @@ inline mat4 calculateRotation(vec3 direction, vec3 startDirection = vec3(0, 0, -
   return rotate(mat4(1), angle, axis);
 }
 
-} // namespace anari::rpr
+} // namespace rpr
+
+ANARI_TYPEFOR_SPECIALIZATION(rpr::box1, ANARI_FLOAT32_BOX1);
+ANARI_TYPEFOR_SPECIALIZATION(rpr::box3, ANARI_FLOAT32_BOX3);
+
+} // namespace anari
