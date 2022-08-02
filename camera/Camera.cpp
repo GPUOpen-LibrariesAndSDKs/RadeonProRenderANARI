@@ -42,7 +42,7 @@ void Camera::commit()
   vec3 pos       = getParam<vec3>("position", vec3(0.f));
   vec3 at        = getParam<vec3>("direction", vec3(0.f, 0.f, -1.f)) + pos;
   vec3 up        = normalize(getParam<vec3>("up", vec3(0.f, 1.f, 0.f)));
-  mat4 transform = getParam<mat4x3>("transform", mat4x3(1));
+  mat4 transform = getParam<mat4>("transform", mat4(1));
   CHECK(rprCameraLookAt(m_camera, pos[0], pos[1], pos[2], at[0], at[1], at[2], up[0], up[1], up[2]))
 
   if (transform != mat4(1))

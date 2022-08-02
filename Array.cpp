@@ -19,7 +19,10 @@ namespace rpr {
 
 // Array //
 
-Array::Array(void *appMem, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType elementType)
+Array::Array(const void *appMem,
+    ANARIMemoryDeleter deleter,
+    const void *deleterPtr,
+    ANARIDataType elementType)
     : m_mem(appMem), m_deleter(deleter), m_elementType(elementType)
 {}
 
@@ -35,7 +38,7 @@ ANARIDataType Array::elementType() const
 
 void *Array::map()
 {
-  return m_mem;
+  return const_cast<void*>(m_mem);
 }
 
 void Array::unmap()
@@ -50,14 +53,14 @@ bool Array::wasPrivatized() const
 
 void Array::makePrivatizedCopy(size_t numElements)
 {
-  void *appMem = m_mem;
+  const void *appMem = m_mem;
 
   size_t numBytes = numElements * sizeOf(elementType());
-  m_mem           = malloc(numBytes);
-  std::memcpy(m_mem, appMem, numBytes);
+  void *tmp_mem = malloc(numBytes);
+  std::memcpy(tmp_mem, appMem, numBytes);
+  m_mem = tmp_mem;
 
-  if (m_deleter)
-  {
+  if (m_deleter) {
     m_deleter(m_deleterPtr, appMem);
     m_deleter = nullptr;
   }
@@ -67,22 +70,24 @@ void Array::makePrivatizedCopy(size_t numElements)
 
 void Array::freeAppMemory()
 {
-  if (m_deleter && m_mem)
-  {
+  if (m_deleter && m_mem) {
     m_deleter(m_deleterPtr, m_mem);
-    m_mem     = nullptr;
+    m_mem = nullptr;
     m_deleter = nullptr;
-  } else if (wasPrivatized() && m_mem)
-  {
-    free(m_mem);
+  } else if (wasPrivatized() && m_mem) {
+    free(const_cast<void*>(m_mem));
     m_mem = nullptr;
   }
 }
 
 // Array1D //
 
-Array1D::Array1D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
-    uint64_t numItems, uint64_t byteStride)
+Array1D::Array1D(const void *appMemory,
+    ANARIMemoryDeleter deleter,
+    const void *deleterPtr,
+    ANARIDataType type,
+    uint64_t numItems,
+    uint64_t byteStride)
     : Array(appMemory, deleter, deleterPtr, type), m_size(numItems)
 {
   if (byteStride != 0)
@@ -106,8 +111,14 @@ void Array1D::privatize()
 
 // Array2D //
 
-Array2D::Array2D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
-    uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2)
+Array2D::Array2D(const void *appMemory,
+    ANARIMemoryDeleter deleter,
+    const void *deleterPtr,
+    ANARIDataType type,
+    uint64_t numItems1,
+    uint64_t numItems2,
+    uint64_t byteStride1,
+    uint64_t byteStride2)
     : Array(appMemory, deleter, deleterPtr, type)
 {
   if (byteStride1 != 0 || byteStride2 != 0)
@@ -129,7 +140,7 @@ size_t Array2D::size(int dim) const
 
 uvec2 Array2D::size() const
 {
-  return uvec2(uint32_t(size(0)), uint32_t(size(1)));
+  return {uint32_t(size(0)), uint32_t(size(1))};
 }
 
 void Array2D::privatize()
@@ -139,8 +150,15 @@ void Array2D::privatize()
 
 // Array3D //
 
-Array3D::Array3D(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
-    uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1, uint64_t byteStride2,
+Array3D::Array3D(const void *appMemory,
+    ANARIMemoryDeleter deleter,
+    const void *deleterPtr,
+    ANARIDataType type,
+    uint64_t numItems1,
+    uint64_t numItems2,
+    uint64_t numItems3,
+    uint64_t byteStride1,
+    uint64_t byteStride2,
     uint64_t byteStride3)
     : Array(appMemory, deleter, deleterPtr, type)
 {
@@ -164,7 +182,7 @@ size_t Array3D::size(int dim) const
 
 uvec3 Array3D::size() const
 {
-  return uvec3(uint32_t(size(0)), uint32_t(size(1)), uint32_t(size(2)));
+  return {uint32_t(size(0)), uint32_t(size(1)), uint32_t(size(2))};
 }
 
 void Array3D::privatize()
@@ -174,8 +192,12 @@ void Array3D::privatize()
 
 // ObjectArray //
 
-ObjectArray::ObjectArray(void *appMemory, ANARIMemoryDeleter deleter, void *deleterPtr, ANARIDataType type,
-    uint64_t numItems, uint64_t byteStride)
+ObjectArray::ObjectArray(const void *appMemory,
+    ANARIMemoryDeleter deleter,
+    const void *deleterPtr,
+    ANARIDataType type,
+    uint64_t numItems,
+    uint64_t byteStride)
     : Array(appMemory, deleter, deleterPtr, type)
 {
   if (byteStride != 0)
@@ -184,7 +206,7 @@ ObjectArray::ObjectArray(void *appMemory, ANARIMemoryDeleter deleter, void *dele
   m_handleArray.resize(numItems);
 
   auto **srcBegin = (Object **)appMemory;
-  auto **srcEnd   = srcBegin + numItems;
+  auto **srcEnd = srcBegin + numItems;
 
   std::transform(srcBegin, srcEnd, m_handleArray.begin(), [](Object *obj) {
     obj->refInc();

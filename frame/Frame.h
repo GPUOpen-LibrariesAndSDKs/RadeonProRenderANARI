@@ -31,12 +31,11 @@ struct Frame : public Object
   explicit Frame(rpr_context context);
   ~Frame() override;
 
-  bool getProperty(
-      const std::string &name, ANARIDataType type, void *ptr, ANARIWaitMask mask) override;
+  bool getProperty(const std::string &name, ANARIDataType type, void *ptr, ANARIWaitMask mask) override;
 
-  void   commit() override;
-  void  *mapColorBuffer();
-  float *mapDepthBuffer();
+  void commit() override;
+
+  void *map(const char *channel, uint32_t *width, uint32_t *height, ANARIDataType *pixelType);
 
   void renderFrame();
   void invokeContinuation(ANARIDevice device) const;
@@ -49,8 +48,10 @@ struct Frame : public Object
   float duration() const;
 
  private:
-  void deleteFramebuffers();
-  void clearFramebuffers();
+  void   deleteFramebuffers();
+  void   clearFramebuffers();
+  void  *mapColorBuffer();
+  float *mapDepthBuffer();
 
   // Data //
   ANARIDataType m_format{ANARI_UNKNOWN};

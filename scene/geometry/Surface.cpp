@@ -32,7 +32,7 @@ void Surface::commit()
   if (!material)
     throw std::runtime_error("'material' is a required attribute");
 
-  // cleanup before new commit
+  // cleanup before new commitParameters
   clearInstances();
   if (m_material_instance)
   {

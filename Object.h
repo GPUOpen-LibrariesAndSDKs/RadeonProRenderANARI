@@ -15,8 +15,8 @@ limitations under the License.
 #pragma once
 
 // anari
-#include "anari/detail/IntrusivePtr.h"
-#include "anari/detail/ParameterizedObject.h"
+#include "anari/backend/utilities/IntrusivePtr.h"
+#include "anari/backend/utilities/ParameterizedObject.h"
 #include "anari/type_utility.h"
 // anari_cpp
 #include "anari/anari_cpp/ext/glm.h"

@@ -14,7 +14,7 @@ limitations under the License.
 
 #include "RPRDevice.h"
 
-#include "anari/detail/Library.h"
+#include "anari/backend/LibraryImpl.h"
 
 #include "camera/Camera.h"
 #include "frame/Frame.h"
@@ -157,56 +157,28 @@ static void removeParamOnObject(ANARIObject obj, const char *p)
         [](ANARIObject o, const char *p, const void *v) { setParamOnObject(o, p, const_cast<void *>(v)); }   \
   }
 
-static std::map<int, SetParamFcn *> setParamFcns = {
-    declare_param_setter(ANARIDataType),
-    declare_param_setter(Device *),
-    declare_param_setter_void_ptr(void *),
-    declare_param_setter(ANARIFrameCompletionCallback),
-    declare_param_setter(bool),
-    declare_param_setter_object(Object *),
-    declare_param_setter_object(Camera *),
-    declare_param_setter_object(Array *),
-    declare_param_setter_object(Array1D *),
-    declare_param_setter_object(Array2D *),
-    declare_param_setter_object(Array3D *),
-    declare_param_setter_object(Frame *),
-    declare_param_setter_object(Geometry *),
-    declare_param_setter_object(Group *),
-    declare_param_setter_object(Instance *),
-    declare_param_setter_object(Light *),
-    declare_param_setter_object(Material *),
-    declare_param_setter_object(Renderer *),
-    declare_param_setter_object(Sampler *),
-    declare_param_setter_object(Surface *),
-    declare_param_setter_object(SpatialField *),
-    declare_param_setter_object(Volume *),
-    declare_param_setter_object(World *),
-    declare_param_setter_string(const char *),
-    declare_param_setter(char),
-    declare_param_setter(unsigned char),
-    declare_param_setter(short),
-    declare_param_setter(int),
-    declare_param_setter(unsigned int),
-    declare_param_setter(long),
-    declare_param_setter(unsigned long),
-    declare_param_setter(long long),
-    declare_param_setter(unsigned long long),
-    declare_param_setter(float),
-    declare_param_setter(double),
-    declare_param_setter(ivec2),
-    declare_param_setter(ivec3),
-    declare_param_setter(ivec4),
-    declare_param_setter(uvec2),
-    declare_param_setter(uvec3),
-    declare_param_setter(uvec4),
-    declare_param_setter(vec2),
-    declare_param_setter(vec3),
-    declare_param_setter(vec4),
-    declare_param_setter(mat2),
-    declare_param_setter(mat3),
-    declare_param_setter(mat3x2),
-    declare_param_setter(mat4x3),
-    declare_param_setter(mat4)};
+static std::map<int, SetParamFcn *> setParamFcns = {declare_param_setter(ANARIDataType),
+    declare_param_setter(DeviceImpl *), declare_param_setter_void_ptr(void *),
+    declare_param_setter(ANARIFrameCompletionCallback), declare_param_setter(bool),
+    declare_param_setter_object(Object *), declare_param_setter_object(Camera *),
+    declare_param_setter_object(Array *), declare_param_setter_object(Array1D *),
+    declare_param_setter_object(Array2D *), declare_param_setter_object(Array3D *),
+    declare_param_setter_object(Frame *), declare_param_setter_object(Geometry *),
+    declare_param_setter_object(Group *), declare_param_setter_object(Instance *),
+    declare_param_setter_object(Light *), declare_param_setter_object(Material *),
+    declare_param_setter_object(Renderer *), declare_param_setter_object(Sampler *),
+    declare_param_setter_object(Surface *), declare_param_setter_object(SpatialField *),
+    declare_param_setter_object(Volume *), declare_param_setter_object(World *),
+    declare_param_setter_string(const char *), declare_param_setter(char),
+    declare_param_setter(unsigned char), declare_param_setter(short), declare_param_setter(int),
+    declare_param_setter(unsigned int), declare_param_setter(long), declare_param_setter(unsigned long),
+    declare_param_setter(long long), declare_param_setter(unsigned long long), declare_param_setter(float),
+    declare_param_setter(double), declare_param_setter(ivec2), declare_param_setter(ivec3),
+    declare_param_setter(ivec4), declare_param_setter(uvec2), declare_param_setter(uvec3),
+    declare_param_setter(uvec4), declare_param_setter(vec2), declare_param_setter(vec3),
+    declare_param_setter(vec4), declare_param_setter(mat2), declare_param_setter(mat3),
+    declare_param_setter(mat3x2), declare_param_setter(mat4x3), declare_param_setter(mat4),
+    declare_param_setter(box1), declare_param_setter(box3)};
 
 #undef declare_param_setter
 #undef declare_param_setter_object
@@ -216,16 +188,6 @@ static std::map<int, SetParamFcn *> setParamFcns = {
 ///////////////////////////////////////////////////////////////////////////////
 // ExampleDevice definitions //////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-int RPRDevice::deviceImplements(const char *_extension)
-{
-  std::string extension = _extension;
-  if (extension == "ANARI_KHR_AREA_LIGHTS")
-    return 1;
-  if (extension == "ANARI_KHR_FRAME_COMPLETION_CALLBACK")
-    return 1;
-  return 0;
-}
 
 void RPRDevice::deviceSetParameter(const char *_id, ANARIDataType type, const void *mem)
 {
@@ -268,19 +230,9 @@ void RPRDevice::deviceCommit()
   CHECK(rprContextCreateMaterialSystem(m_context, 0, &m_matsys))
 }
 
-void RPRDevice::deviceRetain()
-{
-  this->refInc();
-}
-
-void RPRDevice::deviceRelease()
-{
-  this->refDec();
-}
-
 // Data Arrays ////////////////////////////////////////////////////////////////
 
-ANARIArray1D RPRDevice::newArray1D(void *appMemory, ANARIMemoryDeleter deleter, void *userData,
+ANARIArray1D RPRDevice::newArray1D(const void *appMemory, ANARIMemoryDeleter deleter, const void *userData,
     ANARIDataType type, uint64_t numItems, uint64_t byteStride)
 {
   if (isObject(type))
@@ -294,14 +246,14 @@ ANARIArray1D RPRDevice::newArray1D(void *appMemory, ANARIMemoryDeleter deleter, 
   }
 }
 
-ANARIArray2D RPRDevice::newArray2D(void *appMemory, ANARIMemoryDeleter deleter, void *userData,
+ANARIArray2D RPRDevice::newArray2D(const void *appMemory, ANARIMemoryDeleter deleter, const void *userData,
     ANARIDataType type, uint64_t numItems1, uint64_t numItems2, uint64_t byteStride1, uint64_t byteStride2)
 {
   return createObjectForAPI<Array2D, ANARIArray2D>(
       appMemory, deleter, userData, type, numItems1, numItems2, byteStride1, byteStride2);
 }
 
-ANARIArray3D RPRDevice::newArray3D(void *appMemory, ANARIMemoryDeleter deleter, void *userData,
+ANARIArray3D RPRDevice::newArray3D(const void *appMemory, ANARIMemoryDeleter deleter, const void *userData,
     ANARIDataType type, uint64_t numItems1, uint64_t numItems2, uint64_t numItems3, uint64_t byteStride1,
     uint64_t byteStride2, uint64_t byteStride3)
 {
@@ -431,6 +383,12 @@ int RPRDevice::getProperty(
 
 void RPRDevice::setParameter(ANARIObject object, const char *name, ANARIDataType type, const void *mem)
 {
+  if (handleIsDevice(object))
+  {
+    deviceSetParameter(name, type, mem);
+    return;
+  }
+
   if (type == ANARI_UNKNOWN)
     throw std::runtime_error("cannot set ANARI_UNKNOWN parameter type");
 
@@ -446,12 +404,21 @@ void RPRDevice::setParameter(ANARIObject object, const char *name, ANARIDataType
 
 void RPRDevice::unsetParameter(ANARIObject o, const char *name)
 {
-  referenceFromHandle(o).removeParam(name);
+  if (handleIsDevice(o))
+    deviceUnsetParameter(name);
+  else
+    referenceFromHandle(o).removeParam(name);
 }
 
-void RPRDevice::commit(ANARIObject h)
+void RPRDevice::commitParameters(ANARIObject object)
 {
-  auto &o = referenceFromHandle(h);
+  if (handleIsDevice(object))
+  {
+    deviceCommit();
+    return;
+  }
+
+  auto &o = referenceFromHandle(object);
   o.refInc(RefType::INTERNAL);
   if (o.commitPriority() != COMMIT_PRIORITY_DEFAULT)
     m_needToSortCommits = true;
@@ -462,6 +429,11 @@ void RPRDevice::release(ANARIObject o)
 {
   if (!o)
     return;
+  else if (handleIsDevice(o))
+  {
+    this->refDec();
+    return;
+  }
 
   auto &obj = referenceFromHandle(o);
 
@@ -476,7 +448,10 @@ void RPRDevice::release(ANARIObject o)
 
 void RPRDevice::retain(ANARIObject o)
 {
-  referenceFromHandle(o).refInc(RefType::PUBLIC);
+  if (handleIsDevice(o))
+    this->refInc();
+  else
+    referenceFromHandle(o).refInc(RefType::PUBLIC);
 }
 
 // Frame Manipulation /////////////////////////////////////////////////////////
@@ -486,16 +461,10 @@ ANARIFrame RPRDevice::newFrame()
   return createObjectForAPI<Frame, ANARIFrame>(m_context);
 }
 
-const void *RPRDevice::frameBufferMap(ANARIFrame _fb, const char *channel)
+const void *RPRDevice::frameBufferMap(
+    ANARIFrame fb, const char *channel, uint32_t *width, uint32_t *height, ANARIDataType *pixelType)
 {
-  auto &fb = referenceFromHandle<Frame>(_fb);
-
-  if (channel == std::string("color"))
-    return fb.mapColorBuffer();
-  else if (channel == std::string("depth"))
-    return fb.mapDepthBuffer();
-  else
-    return nullptr;
+  return referenceFromHandle<Frame>(fb).map(channel, width, height, pixelType);
 }
 
 void RPRDevice::frameBufferUnmap(ANARIFrame _fb, const char *channel)
@@ -591,7 +560,7 @@ void RPRDevice::flushCommitBuffer()
 
 static char deviceName[] = "rpr";
 
-extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_NEW_DEVICE(rpr, subtype)
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_NEW_DEVICE(rpr, subtype, library)
 {
   return (ANARIDevice) new anari::rpr::RPRDevice();
 }
@@ -614,12 +583,13 @@ extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_OBJECT_SUBTYPES(
   return nullptr;
 }
 
-extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_OBJECT_PARAMETERS(
-    rpr, libdata, deviceSubtype, objectSubtype, objectType)
+extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_OBJECT_PROPERTY(
+    rpr, libdata, deviceSubtype, objectSubtype, objectType, propertyName, propertyType)
 {
   // TODO
   return nullptr;
 }
+
 extern "C" RPR_DEVICE_INTERFACE ANARI_DEFINE_LIBRARY_GET_PARAMETER_PROPERTY(rpr, libdata, deviceSubtype,
     objectSubtype, objectType, parameterName, parameterType, propertyName, propertyType)
 {

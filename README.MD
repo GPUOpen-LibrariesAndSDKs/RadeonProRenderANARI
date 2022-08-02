@@ -27,7 +27,7 @@ This is implementation of ANARI device based on RadeonProRender engine
 * KHR_AUXILIARY_BUFFERS
 * ANARI_KHR_TRANSFORMATION_MOTION_BLUR
 ## Dependencies
-[ANARI SDK](https://github.com/KhronosGroup/ANARI-SDK) must be installed on computer before RPR device building.
+[ANARI SDK](https://github.com/KhronosGroup/ANARI-SDK) version 0.2.0 must be installed on computer before RPR device building.
 ## Building the device
 The repository uses CMake 3.11+ to build the device
 For example, to build (must be in a separate directory from the source directory), you can do:

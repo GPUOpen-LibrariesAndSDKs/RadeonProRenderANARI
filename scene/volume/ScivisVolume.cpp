@@ -34,7 +34,7 @@ void ScivisVolume::commit()
   if (!opacity)
     throw std::runtime_error("'opacity' is a required parameter");
 
-  auto valueRange   = getParam<vec2>("valueRange", vec2(0, 1));
+  auto valueRange   = getParam<box1>("valueRange", box1(0, 1));
   auto densityScale = getParam<float32>("densityScale", 1.f);
 
   extendBounds(field->bounds());
@@ -47,15 +47,15 @@ void ScivisVolume::commit()
   float32 normalizedValue;
   for (float32 voxelValue : field->m_grid)
   {
-    if (voxelValue > valueRange.y)
+    if (voxelValue > valueRange.upper)
     {
-      normalizedValue = valueRange.y;
-    } else if (voxelValue < valueRange.x)
+      normalizedValue = valueRange.upper;
+    } else if (voxelValue < valueRange.lower)
     {
-      normalizedValue = valueRange.x;
+      normalizedValue = valueRange.lower;
     } else
     {
-      normalizedValue = (voxelValue - valueRange.x) / (valueRange.y - valueRange.x);
+      normalizedValue = (voxelValue - valueRange.lower) / (valueRange.upper - valueRange.lower);
     }
     normalizedGridData.push_back(normalizedValue);
     densityGridData.push_back(processDensity(normalizedValue, opacity, field->m_filterType));
